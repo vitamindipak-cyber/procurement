@@ -89,10 +89,10 @@ Deno.serve(async (request: Request) => {
           body: JSON.stringify({
             systemInstruction: { parts: [{ text: 'जवाफ सिधा, नेपालीमा, स्रोतप्रति इमानदार र व्यावहारिक राख्नुहोस्।' }] },
             contents: [{ role: 'user', parts: [{ text: prompt }] }],
-            generationConfig: { temperature: 0.2, maxOutputTokens: 1400 },
+            generationConfig: { temperature: 0.2, maxOutputTokens: 900 },
             store: false,
           }),
-          signal: AbortSignal.timeout(15_000),
+          signal: AbortSignal.timeout(30_000),
         });
         try {
           payload = await response.json();
