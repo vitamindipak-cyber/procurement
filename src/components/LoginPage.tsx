@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, LockKeyhole, LogIn } from 'lucide-react';
-import loginBackground from '../../loginImage.jpeg';
+
+const loginBackground = new URL('../../loginImage.jpeg', import.meta.url).href;
 
 interface LoginPageProps {
   errorMessage?: string;
