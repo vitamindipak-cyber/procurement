@@ -625,7 +625,7 @@ export const StagesGuideView: React.FC<StagesGuideViewProps> = ({
               <div className="p-3 bg-red-50/60 rounded-xl border border-red-200 text-xs text-red-900 flex items-center gap-2">
                 <Info className="w-4 h-4 text-red-700 shrink-0" />
                 <span>
-                  सार्वजनिक खरिद ऐन २०६३ र नियमावली २०६४ (१६औँ संशोधन समेत) अनुसार सार्वजनिक निकायले यस चरणमा अक्षरसः पालना गर्नैपर्ने कडा कानूनी व्यवस्थाहरू:
+                  सार्वजनिक खरिद ऐन २०६३ र नियमावली २०६४ (१६औँ संशोधन समेत) अनुसार सार्वजनिक निकायले यस चरणमा अक्षरसः पालना गर्नैपर्ने कानूनी प्रावधानहरू:
                 </span>
               </div>
 
