@@ -1,24 +1,9 @@
 import React, { useState, useMemo } from 'react';
-import bidNoBidImage from '../../../bid-no-bid.png';
 import {
-  Target,
-  CheckCircle2,
-  AlertTriangle,
-  XCircle,
   Calculator,
-  ShieldCheck,
-  Scale,
-  DollarSign,
-  TrendingUp,
-  Percent,
   Sliders,
   RotateCcw,
-  Sparkles,
   Info,
-  Check,
-  HelpCircle,
-  Building2,
-  Lock,
 } from 'lucide-react';
 
 interface CriterionItem {
@@ -313,7 +298,7 @@ export const BidNoBidAnalyzer: React.FC = () => {
             </div>
 
             <div className="space-y-5">
-              {criteria.map((item, idx) => (
+              {criteria.map((item) => (
                 <div
                   key={item.id}
                   className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-slate-50 transition-colors space-y-3"

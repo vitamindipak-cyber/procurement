@@ -3,6 +3,101 @@ import { AppUser, ManagedUserInput, UserRole } from '../types/auth';
 import { TrackedProject } from '../types/procurement';
 import { Database, Json, supabase } from './supabase';
 
+const LOCAL_STORAGE_KEY_PROJECTS = 'app_local_procurement_projects';
+const LOCAL_STORAGE_KEY_USERS = 'app_local_users';
+const LOCAL_STORAGE_KEY_SESSION = 'app_local_session_user';
+
+export const DEFAULT_LOCAL_ADMIN: AppUser = {
+  id: 'local-admin-1',
+  username: 'admin',
+  role: 'admin',
+  createdAt: '2026-01-01T00:00:00.000Z',
+};
+
+const getLocalProjects = (): TrackedProject[] => {
+  try {
+    const raw = localStorage.getItem(LOCAL_STORAGE_KEY_PROJECTS);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {
+    console.error('Failed to load local projects', e);
+  }
+  return [
+    {
+      id: 'proj-local-sample-1',
+      title: 'वडा कार्यालय प्रशासनिक भवन निर्माण कार्य',
+      officeName: 'शहीदभूमि गाउँपालिका, गाउँ कार्यपालिकाको कार्यालय',
+      procurementType: 'works',
+      methodId: 'ncb-works',
+      estimatedAmount: 18500000,
+      currentStageId: 'bidding',
+      progressPercent: 40,
+      budgetSource: 'आन्तरिक स्रोत तथा समपूरक अनुदान',
+      startDate: '2081-01-15',
+      targetCompletionDate: '2081-12-30',
+      contractorName: 'सगरमाथा निर्माण सेवा प्रा.लि.',
+      contractAmount: 16250000,
+      checklistStatus: {
+        'prep-1': true,
+        'prep-2': true,
+        'bid-1': true,
+      },
+      notes: 'स्थानीय मोडमा सञ्चालित नमूना आयोजना। तपाईं यसलाई सम्पादन गर्न वा नयाँ थप्न सक्नुहुन्छ।',
+    },
+    {
+      id: 'proj-local-sample-2',
+      title: 'स्वास्थ्य चौकीका लागि औषधि तथा सर्जिकल उपकरण खरिद',
+      officeName: 'स्वास्थ्य सेवा विभाग, टेकु',
+      procurementType: 'goods',
+      methodId: 'ncb-goods',
+      estimatedAmount: 4800000,
+      currentStageId: 'contract-award',
+      progressPercent: 75,
+      budgetSource: 'नेपाल सरकार सशर्त अनुदान',
+      startDate: '2081-02-01',
+      targetCompletionDate: '2081-08-15',
+      contractorName: 'नेपाल हेल्थकेयर सप्लायर्स प्रा.लि.',
+      contractAmount: 4320000,
+      checklistStatus: {
+        'prep-1': true,
+        'prep-2': true,
+        'bid-1': true,
+        'eval-1': true,
+      },
+      notes: 'सम्झौता कार्यान्वयन चरणमा रहेको।',
+    },
+  ];
+};
+
+const saveLocalProjects = (projects: TrackedProject[]): void => {
+  try {
+    localStorage.setItem(LOCAL_STORAGE_KEY_PROJECTS, JSON.stringify(projects));
+  } catch (e) {
+    console.error('Failed to save local projects', e);
+  }
+};
+
+const getLocalUsers = (): AppUser[] => {
+  try {
+    const raw = localStorage.getItem(LOCAL_STORAGE_KEY_USERS);
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return [
+    DEFAULT_LOCAL_ADMIN,
+    {
+      id: 'local-user-2',
+      username: 'procurement_officer',
+      role: 'user',
+      createdAt: '2026-01-02T00:00:00.000Z',
+    },
+  ];
+};
+
+const saveLocalUsers = (users: AppUser[]): void => {
+  try {
+    localStorage.setItem(LOCAL_STORAGE_KEY_USERS, JSON.stringify(users));
+  } catch {}
+};
+
 const requireSupabase = () => {
   if (!supabase) throw new Error('Supabase सेटअप भएको छैन।');
   return supabase;
@@ -15,6 +110,25 @@ const requireData = <T,>(data: T | null, error: { message: string } | null): T =
 };
 
 export const signInWithUsername = async (username: string, password: string): Promise<AppUser> => {
+  if (!supabase) {
+    const login = username.trim() || 'admin';
+    const users = getLocalUsers();
+    let existing = users.find((u) => u.username.toLowerCase() === login.toLowerCase());
+    if (!existing) {
+      existing = {
+        id: `local-user-${Date.now()}`,
+        username: login,
+        role: login.toLowerCase() === 'admin' ? 'admin' : 'user',
+        createdAt: new Date().toISOString(),
+      };
+      saveLocalUsers([...users, existing]);
+    }
+    try {
+      localStorage.setItem(LOCAL_STORAGE_KEY_SESSION, JSON.stringify(existing));
+    } catch {}
+    return existing;
+  }
+
   const client = requireSupabase();
   const login = username.trim();
   if (login.includes('@')) {
@@ -44,6 +158,22 @@ export const signUpWithEmail = async (
   email: string,
   password: string,
 ): Promise<AppUser | null> => {
+  if (!supabase) {
+    const login = username.trim() || 'user';
+    const newUser: AppUser = {
+      id: `local-user-${Date.now()}`,
+      username: login,
+      role: login.toLowerCase() === 'admin' ? 'admin' : 'user',
+      createdAt: new Date().toISOString(),
+    };
+    const users = getLocalUsers();
+    saveLocalUsers([...users, newUser]);
+    try {
+      localStorage.setItem(LOCAL_STORAGE_KEY_SESSION, JSON.stringify(newUser));
+    } catch {}
+    return newUser;
+  }
+
   const client = requireSupabase();
   const normalizedEmail = email.trim();
   const emailRedirectTo = window.location.origin;
@@ -68,6 +198,12 @@ export const signUpWithEmail = async (
 };
 
 export const getAppUser = async (userId: string): Promise<AppUser> => {
+  if (!supabase) {
+    const users = getLocalUsers();
+    const found = users.find((u) => u.id === userId);
+    return found || DEFAULT_LOCAL_ADMIN;
+  }
+
   const client = requireSupabase();
   const { data, error } = await client
     .from('user_profiles')
@@ -84,6 +220,14 @@ export const getAppUser = async (userId: string): Promise<AppUser> => {
 };
 
 export const restoreSessionUser = async (): Promise<AppUser | null> => {
+  if (!supabase) {
+    try {
+      const raw = localStorage.getItem(LOCAL_STORAGE_KEY_SESSION);
+      if (raw) return JSON.parse(raw);
+    } catch {}
+    return null;
+  }
+
   const client = requireSupabase();
   const { data, error } = await client.auth.getSession();
   if (error) throw new Error(error.message);
@@ -92,8 +236,13 @@ export const restoreSessionUser = async (): Promise<AppUser | null> => {
 };
 
 export const signOut = async (): Promise<void> => {
-  const { error } = await requireSupabase().auth.signOut();
-  if (error) throw new Error(error.message);
+  try {
+    localStorage.removeItem(LOCAL_STORAGE_KEY_SESSION);
+  } catch {}
+  if (supabase) {
+    const { error } = await supabase.auth.signOut();
+    if (error) throw new Error(error.message);
+  }
 };
 
 type ProjectRow = Database['public']['Tables']['procurement_projects']['Row'];
@@ -149,17 +298,35 @@ const toProjectRow = (project: TrackedProject) => ({
 });
 
 export const listProjects = async (): Promise<TrackedProject[]> => {
-  const { data, error } = await requireSupabase()
-    .from('procurement_projects')
-    .select('*')
-    .order('created_at', { ascending: false });
-  return requireData(data, error).map(fromProjectRow);
+  if (!supabase) {
+    return getLocalProjects();
+  }
+  try {
+    const { data, error } = await requireSupabase()
+      .from('procurement_projects')
+      .select('*')
+      .order('created_at', { ascending: false });
+    return requireData(data, error).map(fromProjectRow);
+  } catch (err) {
+    console.warn('Supabase projects fetch failed, using local fallback:', err);
+    return getLocalProjects();
+  }
 };
 
 export const createProject = async (
   project: TrackedProject,
   ownerId: string,
 ): Promise<TrackedProject> => {
+  if (!supabase) {
+    const projects = getLocalProjects();
+    const newProj: TrackedProject = {
+      ...project,
+      id: project.id || `proj-local-${Date.now()}`,
+    };
+    saveLocalProjects([newProj, ...projects]);
+    return newProj;
+  }
+
   const { data, error } = await requireSupabase()
     .from('procurement_projects')
     .insert({ ...toProjectRow(project), owner_id: ownerId })
@@ -169,6 +336,13 @@ export const createProject = async (
 };
 
 export const updateProject = async (project: TrackedProject): Promise<TrackedProject> => {
+  if (!supabase) {
+    const projects = getLocalProjects();
+    const updatedList = projects.map((p) => (p.id === project.id ? project : p));
+    saveLocalProjects(updatedList);
+    return project;
+  }
+
   const { data, error } = await requireSupabase()
     .from('procurement_projects')
     .update(toProjectRow(project))
@@ -216,6 +390,9 @@ const mapUser = (user: NonNullable<UserFunctionResponse['user']>): AppUser => ({
 });
 
 export const listManagedUsers = async (): Promise<AppUser[]> => {
+  if (!supabase) {
+    return getLocalUsers();
+  }
   const { data, error } = await requireSupabase()
     .from('user_profiles')
     .select('id, username, role, created_at')
@@ -229,17 +406,47 @@ export const listManagedUsers = async (): Promise<AppUser[]> => {
 };
 
 export const createManagedUser = async (input: ManagedUserInput): Promise<AppUser> => {
+  if (!supabase) {
+    const users = getLocalUsers();
+    const newUser: AppUser = {
+      id: `local-user-${Date.now()}`,
+      username: input.username,
+      role: input.role,
+      createdAt: new Date().toISOString(),
+    };
+    saveLocalUsers([...users, newUser]);
+    return newUser;
+  }
   const response = await invokeUserFunction({ action: 'create', ...input });
   if (!response.user) throw new Error('नयाँ प्रयोगकर्ता विवरण प्राप्त भएन।');
   return mapUser(response.user);
 };
 
 export const updateManagedUser = async (id: string, input: ManagedUserInput): Promise<AppUser> => {
+  if (!supabase) {
+    const users = getLocalUsers();
+    let updated: AppUser | undefined;
+    const newUsers = users.map((u) => {
+      if (u.id === id) {
+        updated = { ...u, username: input.username, role: input.role };
+        return updated;
+      }
+      return u;
+    });
+    saveLocalUsers(newUsers);
+    if (!updated) throw new Error('प्रयोगकर्ता भेटिएन।');
+    return updated;
+  }
   const response = await invokeUserFunction({ action: 'update', id, ...input });
   if (!response.user) throw new Error('परिवर्तित प्रयोगकर्ता विवरण प्राप्त भएन।');
   return mapUser(response.user);
 };
 
 export const deleteManagedUser = async (id: string): Promise<void> => {
+  if (!supabase) {
+    const users = getLocalUsers();
+    saveLocalUsers(users.filter((u) => u.id !== id));
+    return;
+  }
   await invokeUserFunction({ action: 'delete', id });
 };
