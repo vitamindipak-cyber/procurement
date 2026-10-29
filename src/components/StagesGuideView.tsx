@@ -9,6 +9,7 @@ import {
   AlertTriangle,
   ChevronRight,
   ShieldCheck,
+  ShieldAlert,
   Scale,
   ExternalLink,
   Building2,
@@ -28,6 +29,7 @@ import {
 } from 'lucide-react';
 import { PROCUREMENT_STAGES } from '../data/procurementData';
 import { EGP_GUIDELINE_SECTIONS } from '../data/egpGuidelines';
+import { EntitySafeguardsHub } from './entity/EntitySafeguardsHub';
 import {
   ProcurementStage,
   StatutoryRule,
@@ -37,7 +39,7 @@ import {
   StageChecklistItem
 } from '../types/procurement';
 
-type StageSubTab = 'overview' | 'statutory' | 'ppmo' | 'pprc' | 'audit' | 'checklist' | 'dos-donts';
+type StageSubTab = 'overview' | 'statutory' | 'ppmo' | 'pprc' | 'safeguards' | 'audit' | 'checklist' | 'dos-donts';
 
 interface StagesGuideViewProps {
   onSelectMethod?: (methodId: string) => void;
@@ -223,6 +225,43 @@ export const StagesGuideView: React.FC<StagesGuideViewProps> = ({
         </div>
       </div>
 
+      {/* Quick Switch Banner: Stages Guide + PPMO/PPRC Safeguards */}
+      <div className="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 p-4 rounded-2xl text-white shadow-md border border-blue-700/40 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-amber-400 text-slate-950 font-black text-lg flex items-center justify-center shrink-0 shadow-sm">
+            ८
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="font-extrabold text-sm sm:text-base text-white">
+                नयाँ उप-ट्याब ८: PPMO/PPRC सावधानी (guide.docx)
+              </h3>
+              <span className="px-2 py-0.5 bg-amber-400 text-slate-950 font-black text-[10px] rounded-full uppercase tracking-wider">
+                नयाँ थप
+              </span>
+            </div>
+            <p className="text-xs text-blue-200 mt-0.5">
+              PPMO का १,२९५ राय र PPRC का २२१ निर्णयका आधारमा सार्वजनिक निकायले पुर्‍याउनुपर्ने चरणगत सजगता र १२ प्रश्न रुजु सूची
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={() => {
+            setActiveSubTab('safeguards');
+            const el = document.getElementById('stage-subtabs-container');
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+          }}
+          className={`px-4 py-2.5 rounded-xl font-extrabold text-xs transition-all shadow-sm flex items-center gap-2 shrink-0 ${
+            activeSubTab === 'safeguards'
+              ? 'bg-amber-400 text-slate-950 ring-2 ring-white scale-102'
+              : 'bg-white text-blue-950 hover:bg-amber-100 hover:scale-102'
+          }`}
+        >
+          <ShieldAlert className="w-4 h-4 text-blue-900" />
+          <span>{activeSubTab === 'safeguards' ? '✓ उप-ट्याब ८ सक्रिय छ' : 'उप-ट्याब ८ हेर्नुहोस् →'}</span>
+        </button>
+      </div>
+
       {/* Horizontal Stepper Nav (7 Stages) */}
       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
         {PROCUREMENT_STAGES.map((stg) => {
@@ -304,25 +343,38 @@ export const StagesGuideView: React.FC<StagesGuideViewProps> = ({
         </div>
 
         {/* Legal Basis Banner */}
-        <div className="px-6 py-3 bg-red-50/80 border-b border-red-200 flex items-center justify-between gap-3 text-xs">
+        <div className="px-6 py-3 bg-red-50/80 border-b border-red-200 flex flex-wrap items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-2">
             <Scale className="w-4 h-4 text-red-700 shrink-0" />
             <span className="font-bold text-red-950 uppercase tracking-wide">कानूनी आधार (Legal Basis):</span>
             <span className="font-semibold text-red-800">{activeStage.legalBasis}</span>
           </div>
-          {egpSections.length > 0 && onNavigateToEgpGuide && (
+          <div className="flex items-center gap-2">
+            {egpSections.length > 0 && onNavigateToEgpGuide && (
+              <button
+                onClick={onNavigateToEgpGuide}
+                className="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-700 hover:text-blue-900 bg-white px-2.5 py-1 rounded-md border border-blue-200 shadow-2xs shrink-0"
+              >
+                <span>e-GP निर्देशिका हेर्नुहोस्</span>
+                <ExternalLink className="w-3 h-3" />
+              </button>
+            )}
             <button
-              onClick={onNavigateToEgpGuide}
-              className="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-700 hover:text-blue-900 bg-white px-2.5 py-1 rounded-md border border-blue-200 shadow-2xs shrink-0"
+              onClick={() => setActiveSubTab('safeguards')}
+              className={`inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1 rounded-md border transition-all shadow-2xs shrink-0 ${
+                activeSubTab === 'safeguards'
+                  ? 'bg-blue-700 text-white border-blue-800'
+                  : 'bg-white text-blue-800 border-blue-300 hover:bg-blue-50'
+              }`}
             >
-              <span>e-GP निर्देशिका हेर्नुहोस्</span>
-              <ExternalLink className="w-3 h-3" />
+              <ShieldAlert className="w-3.5 h-3.5 text-amber-500" />
+              <span>८. PPMO/PPRC सावधानी (guide.docx)</span>
             </button>
-          )}
+          </div>
         </div>
 
         {/* Sub-Navigation Tabs */}
-        <div className="px-6 pt-4 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2 bg-white">
+        <div id="stage-subtabs-container" className="px-6 pt-4 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2 bg-white scroll-mt-20">
           <div className="flex flex-wrap gap-1">
             <button
               onClick={() => setActiveSubTab('overview')}
@@ -426,10 +478,24 @@ export const StagesGuideView: React.FC<StagesGuideViewProps> = ({
               <Sparkles className="w-3.5 h-3.5" />
               <span>७. के गर्ने / के नगर्ने</span>
             </button>
+
+            <button
+              onClick={() => setActiveSubTab('safeguards')}
+              className={`px-3.5 py-2 text-xs font-bold rounded-t-xl transition-all border-b-2 flex items-center gap-1.5 ${activeSubTab === 'safeguards'
+                  ? 'border-amber-500 text-blue-950 bg-amber-50 font-black shadow-xs ring-1 ring-amber-300'
+                  : 'border-blue-400 text-blue-900 bg-blue-50/80 hover:text-blue-950 hover:bg-blue-100'
+                }`}
+            >
+              <ShieldAlert className="w-4 h-4 text-amber-600 shrink-0" />
+              <span>८. PPMO/PPRC सावधानी (guide.docx)</span>
+              <span className="px-1.5 py-0.2 bg-amber-300 text-amber-950 rounded-full text-[10px] font-black animate-pulse">
+                नयाँ
+              </span>
+            </button>
           </div>
 
           {/* Search Bar in Active Stage */}
-          {activeSubTab !== 'overview' && activeSubTab !== 'dos-donts' && (
+          {activeSubTab !== 'overview' && activeSubTab !== 'dos-donts' && activeSubTab !== 'safeguards' && (
             <div className="relative mb-2 shrink-0 w-full sm:w-64">
               <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
               <input
@@ -449,6 +515,7 @@ export const StagesGuideView: React.FC<StagesGuideViewProps> = ({
               )}
             </div>
           )}
+
         </div>
 
         {/* Tab Content Display Area */}
@@ -558,7 +625,7 @@ export const StagesGuideView: React.FC<StagesGuideViewProps> = ({
               <div className="p-3 bg-red-50/60 rounded-xl border border-red-200 text-xs text-red-900 flex items-center gap-2">
                 <Info className="w-4 h-4 text-red-700 shrink-0" />
                 <span>
-                  सार्वजनिक खरिद ऐन २०६३ र नियमावली २०६४ (१६औँ संशोधन समेत) अनुसार सार्वजनिक निकायले यस चरणमा अक्षरसः पालना गर्नैपर्ने कडा कानूनी व्यवस्थाहरू:
+                  सार्वजनिक खरिद ऐन २०६३ र नियमावली २०६४ (१६औँ संशोधन समेत) अनुसार सार्वजनिक निकायले यस चरणमा अक्षरसः पालना गर्नैपर्ने कानूनी प्रावधानहरू:
                 </span>
               </div>
 
@@ -941,6 +1008,17 @@ export const StagesGuideView: React.FC<StagesGuideViewProps> = ({
                 </div>
               </div>
             </div>
+          )}
+
+          {/* TAB 8: PPMO/PPRC SAFEGUARDS (PPMO १,२९५ राय र PPRC २२१ निर्णयमा आधारित सावधानी) */}
+          {activeSubTab === 'safeguards' && (
+            <EntitySafeguardsHub
+              currentStageNo={activeStage.stageNo}
+              onNavigateToStage={(stgNo) => {
+                const found = PROCUREMENT_STAGES.find((s) => s.stageNo === stgNo);
+                if (found) setActiveStage(found);
+              }}
+            />
           )}
         </div>
 
