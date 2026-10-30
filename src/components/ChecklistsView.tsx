@@ -9,6 +9,7 @@ import {
   ShieldCheck, 
   Layers, 
   ArrowRight,
+  Gavel,
   Check
 } from 'lucide-react';
 import { COMPLIANCE_CHECKLIST_MASTER, PROCUREMENT_STAGES } from '../data/procurementData';
@@ -16,10 +17,12 @@ import { ProcurementType } from '../types/procurement';
 
 interface ChecklistsViewProps {
   onNavigateToMethodChecklists?: () => void;
+  onNavigateToEvaluation?: () => void;
 }
 
 export const ChecklistsView: React.FC<ChecklistsViewProps> = ({
   onNavigateToMethodChecklists,
+  onNavigateToEvaluation,
 }) => {
   const [selectedType, setSelectedType] = useState<ProcurementType | 'all'>('all');
   const [selectedStage, setSelectedStage] = useState<string>('all');
@@ -95,6 +98,15 @@ export const ChecklistsView: React.FC<ChecklistsViewProps> = ({
 
         {/* Action Controls */}
         <div className="flex items-center gap-2.5 shrink-0 no-print">
+          {onNavigateToEvaluation && (
+            <button
+              onClick={onNavigateToEvaluation}
+              className="px-3.5 py-2 text-xs font-semibold text-blue-900 bg-blue-50 hover:bg-blue-100 rounded-lg flex items-center gap-1.5 transition-colors border border-blue-100"
+            >
+              <Gavel className="w-4 h-4" />
+              <span>बोलपत्र मूल्याङ्कन गाइड</span>
+            </button>
+          )}
           {onNavigateToMethodChecklists && (
             <button
               onClick={onNavigateToMethodChecklists}

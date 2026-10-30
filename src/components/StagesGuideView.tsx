@@ -27,6 +27,7 @@ import {
   Sparkles,
   Info
 } from 'lucide-react';
+import bannerImage from '../../banner1.png';
 import { PROCUREMENT_STAGES } from '../data/procurementData';
 import { EGP_GUIDELINE_SECTIONS } from '../data/egpGuidelines';
 import { EntitySafeguardsHub } from './entity/EntitySafeguardsHub';
@@ -170,21 +171,30 @@ export const StagesGuideView: React.FC<StagesGuideViewProps> = ({
   return (
     <div className="space-y-6">
       {/* View Header */}
-      <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-red-950 p-6 sm:p-8 rounded-2xl text-white shadow-md relative overflow-hidden">
-        <div className="absolute right-0 top-0 w-96 h-96 bg-red-600/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
+      <div className="bg-gradient-to-r from-[#2563eb] via-[#1e4f91] to-[#173b63] text-white rounded-2xl p-4 sm:p-8 shadow-sm relative overflow-hidden">
+        <div className="absolute right-0 top-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[45%] lg:block">
+          <img
+            src={bannerImage}
+            alt=""
+            aria-hidden="true"
+            className="h-full w-full object-cover object-right"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#1e4f91] via-[#1e4f91]/55 to-[#173b63]/35" />
+        </div>
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="space-y-2">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-red-600/30 border border-red-500/40 text-red-200 text-xs font-semibold rounded-full backdrop-blur-xs">
-                <ShieldCheck className="w-3.5 h-3.5 text-red-400" />
+          <div className="space-y-2 lg:max-w-[58%]">
+            {/* <div className="flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-500/20 border border-blue-400/30 text-blue-200 text-xs font-semibold rounded-full backdrop-blur-xs">
+                <ShieldCheck className="w-3.5 h-3.5 text-blue-300" />
                 सार्वजनिक निकाय विशेष मार्गदर्शन (Procuring Entity Guide)
               </span>
               <span className="inline-flex items-center gap-1 px-2.5 py-0.5 bg-blue-500/20 text-blue-300 text-[11px] rounded-md font-mono border border-blue-400/30">
                 PPA २०६३ + १६औँ नियमावली + PPMO राय + PPRC नजिर
               </span>
-            </div>
-            <h1 className="text-xl sm:text-3xl font-extrabold tracking-tight text-white">
+            </div> */}
+            <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-white">
               सार्वजनिक खरिदका ७ प्रक्रियागत चरण र सार्वजनिक निकायले पुर्‍याउनुपर्ने सजगता
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 max-w-3xl leading-relaxed">
@@ -192,7 +202,7 @@ export const StagesGuideView: React.FC<StagesGuideViewProps> = ({
             </p>
           </div>
 
-          <div className="flex items-center gap-2 self-start md:self-auto shrink-0 no-print">
+          {/* <div className="flex items-center gap-2 self-start md:self-auto shrink-0 no-print">
             <button
               onClick={() => window.print()}
               className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-medium border border-white/20 transition-all backdrop-blur-xs"
@@ -201,11 +211,11 @@ export const StagesGuideView: React.FC<StagesGuideViewProps> = ({
               <Printer className="w-4 h-4" />
               <span>प्रिन्ट / PDF</span>
             </button>
-          </div>
+          </div> */}
         </div>
 
         {/* Global Key Highlights Banner */}
-        <div className="mt-6 pt-5 border-t border-white/10 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+        <div className="relative z-10 mt-6 pt-5 border-t border-white/10 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
           <div className="bg-white/5 border border-white/10 p-2.5 rounded-xl">
             <span className="text-slate-400 block text-[10px]">ऐन तथा नियमावली:</span>
             <span className="text-white font-bold">PPA २०६३ & PPR २०६४</span>
