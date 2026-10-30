@@ -244,14 +244,11 @@ export const StagesGuideView: React.FC<StagesGuideViewProps> = ({
           <div>
             <div className="flex items-center gap-2">
               <h3 className="font-extrabold text-sm sm:text-base text-white">
-                नयाँ उप-ट्याब ८: PPMO/PPRC सावधानी (guide.docx)
+                PPMO/PPRC सावधानी
               </h3>
-              <span className="px-2 py-0.5 bg-amber-400 text-slate-950 font-black text-[10px] rounded-full uppercase tracking-wider">
-                नयाँ थप
-              </span>
             </div>
             <p className="text-xs text-blue-200 mt-0.5">
-              PPMO का १,२९५ राय र PPRC का २२१ निर्णयका आधारमा सार्वजनिक निकायले पुर्‍याउनुपर्ने चरणगत सजगता र १२ प्रश्न रुजु सूची
+              PPMO का राय र PPRC का निर्णयका आधारमा सार्वजनिक निकायले पुर्‍याउनुपर्ने चरणगत सजगता र १२ प्रश्न रुजु सूची
             </p>
           </div>
         </div>
