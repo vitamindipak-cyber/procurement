@@ -285,7 +285,7 @@ export const ProcurementMethodsView: React.FC<ProcurementMethodsViewProps> = ({
                       <span>अन्तर्राष्ट्रिय बोलपत्र (ICB) विशेष हब</span>
                     </div>
                     <h5 className="text-sm font-bold text-white mt-1">
-                      ७-चरणको ICB चक्र, Incoterms 2020 र Local Agent पोर्टल खोल्नुहोस्
+                      ७-चरणको ICB चक्र, LC भुक्तानी, Incoterms 2020 र Local Agent पोर्टल खोल्नुहोस्
                     </h5>
                     <p className="text-xs text-blue-100/80 mt-0.5">
                       PPA दफा १४/१५, नियम ३१ङ/३९, १५-चरणको मूल्याङ्कन र अन्तरक्रियात्मक चेकलिस्टहरू।

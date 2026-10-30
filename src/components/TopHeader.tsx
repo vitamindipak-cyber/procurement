@@ -32,6 +32,7 @@ const TAB_TITLES: Record<string, { title: string; category: string }> = {
   'dilemma-solver': { title: 'खरिद समस्या समाधान', category: 'सल्लाह तथा नजिर' },
   methods: { title: 'खरिदका सम्पूर्ण विधिहरू', category: 'विधिहरू' },
   'method-checklists': { title: 'विधि अनुसारको चेकलिस्ट', category: 'अनुपालन' },
+  'bid-evaluation': { title: 'बोलपत्र मूल्याङ्कन गाइड', category: 'अनुपालन' },
   'law-corpus': { title: 'ऐन तथा नियमावली संग्रह', category: 'कानूनी संग्रह' },
   amendments: { title: '१६औँ संशोधनका विशेषताहरू', category: 'संशोधन' },
   stages: { title: 'प्रक्रियागत ७ चरणहरू', category: 'चरणहरू' },

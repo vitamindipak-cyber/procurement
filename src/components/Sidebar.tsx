@@ -24,6 +24,7 @@ import {
   Clock,
   HardHat,
   Globe,
+  Gavel,
 } from 'lucide-react';
 import { UserRole } from '../types/auth';
 
@@ -97,6 +98,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         { id: 'methods', label: 'खरिद विधिहरू', icon: Layers, desc: ' ' },
         { id: 'icb-guide', label: 'अन्तर्राष्ट्रिय बोलपत्र (ICB)', icon: Globe, desc: ' ' },
         { id: 'method-checklists', label: 'विधिगत चेकलिस्ट', icon: FileCheck2, desc: ' ' },
+        { id: 'bid-evaluation', label: 'बोलपत्र मूल्याङ्कन गाइड', icon: Gavel, desc: ' ' },
         { id: 'stages', label: 'प्रक्रियागत ७ चरणहरू', icon: ClipboardList, desc: ' ' },
         { id: 'egp-guidelines', label: 'e-GP निर्देशिका, २०८०', icon: FileCheck, desc: ' ' },
         { id: 'checklists', label: 'एकीकृत चेकलिस्ट', icon: ShieldCheck, desc: ' ' },

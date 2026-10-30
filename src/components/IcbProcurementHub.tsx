@@ -43,6 +43,7 @@ import {
   ICB_QUIZ_QUESTIONS,
   ICB_GLOSSARY_TERMS,
   ICB_FAQS,
+  ICB_LC_GUIDE,
   IcbStage,
   IncotermRule,
 } from '../data/icbProcurementData';
@@ -67,7 +68,7 @@ export const IcbProcurementHub: React.FC<IcbProcurementHubProps> = ({
   
   // Active Main Subtab
   const [activeTab, setActiveTab] = useState<
-    'workflow' | 'incoterms' | 'local-agent' | 'evaluation' | 'quiz' | 'glossary-faq'
+    'workflow' | 'incoterms' | 'lc' | 'local-agent' | 'evaluation' | 'quiz' | 'glossary-faq'
   >('workflow');
 
   // Stage Selector for Workflow
@@ -276,6 +277,7 @@ export const IcbProcurementHub: React.FC<IcbProcurementHubProps> = ({
           {[
             { id: 'workflow', label: 'चरणबद्ध खरिद प्रक्रिया (७ चरण)', icon: Layers },
             { id: 'incoterms', label: 'Incoterms 2020 गाइड (Goods ICB)', icon: Truck },
+            { id: 'lc', label: 'LC भुक्तानी र आयात', icon: FileCheck2 },
             { id: 'local-agent', label: 'स्थानीय एजेन्ट (Local Agent Guide)', icon: Users },
             { id: 'evaluation', label: 'मूल्याङ्कन तथा १५ उपचरण', icon: Scale },
             { id: 'quiz', label: 'अन्तरक्रियात्मक क्विज (Quiz & Scenarios)', icon: Sparkles },
@@ -812,8 +814,160 @@ export const IcbProcurementHub: React.FC<IcbProcurementHubProps> = ({
         </div>
       )}
 
+      {activeTab === 'lc' && (
+        <div className="space-y-6">
+          <section className="rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-950 via-[#132c4b] to-slate-900 p-5 sm:p-7 text-white shadow-sm">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-blue-200">
+              <FileCheck2 className="h-4 w-4" />
+              <span>Goods ICB • Letter of Credit (LC/प्रतीतपत्र)</span>
+            </div>
+            <h2 className="mt-2 text-xl font-bold sm:text-2xl">LC भुक्तानी, आयात र कागजात मिलान</h2>
+            <p className="mt-2 max-w-4xl text-sm leading-relaxed text-blue-100">{ICB_LC_GUIDE.overview}</p>
+          </section>
+
+          <section className="space-y-3">
+            <h3 className="text-lg font-bold text-slate-900">LC का मुख्य सिद्धान्त</h3>
+            <div className="grid gap-3 md:grid-cols-2">
+              {ICB_LC_GUIDE.principles.map((item, index) => (
+                <div key={index} className="rounded-xl border border-slate-200 bg-white p-4 text-sm leading-relaxed text-slate-700 shadow-xs">
+                  <span className="mb-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-800">
+                    {index + 1}
+                  </span>
+                  <p>{item}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs sm:p-6">
+            <h3 className="text-lg font-bold text-slate-900">LC का प्रकार र सार्वजनिक निकायले ध्यान दिने कुरा</h3>
+            <div className="mt-4 grid gap-3 md:grid-cols-2">
+              {ICB_LC_GUIDE.lcTypes.map((item) => (
+                <div key={item.type} className="rounded-xl border border-blue-100 bg-blue-50/50 p-4">
+                  <h4 className="text-sm font-bold text-blue-900">{item.type}</h4>
+                  <p className="mt-1 text-xs leading-relaxed text-slate-700">{item.description}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {viewPerspective === 'entity' && (
+            <>
+              <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs sm:p-6">
+                <h3 className="text-lg font-bold text-slate-900">LC खोल्नुअघि सार्वजनिक निकायले तयारी गर्ने</h3>
+                <div className="mt-4 grid gap-2 md:grid-cols-2">
+                  {ICB_LC_GUIDE.preparation.map((item, index) => (
+                    <div key={index} className="flex gap-2 rounded-lg bg-slate-50 p-3 text-sm leading-relaxed text-slate-700">
+                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </section>
+
+              <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs sm:p-6">
+                <h3 className="text-lg font-bold text-slate-900">कार्यालयको LC कार्यप्रवाह</h3>
+                <div className="mt-4 grid gap-3 md:grid-cols-2">
+                  {ICB_LC_GUIDE.workflow.map((step, index) => (
+                    <div key={step.title} className="flex gap-3 rounded-xl border border-slate-200 p-4">
+                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-900 text-xs font-bold text-white">
+                        {index + 1}
+                      </span>
+                      <div>
+                        <h4 className="text-sm font-bold text-slate-900">{step.title}</h4>
+                        <p className="mt-1 text-xs leading-relaxed text-slate-600">{step.detail}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            </>
+          )}
+
+          {viewPerspective === 'entity' && (
+            <section className="rounded-2xl border border-indigo-200 bg-indigo-50/40 p-5 shadow-xs sm:p-6">
+              <h3 className="text-lg font-bold text-slate-900">सार्वजनिक निकाय: कानुनी अनुपालन, अभिलेख र वित्तीय नियन्त्रण</h3>
+              <div className="mt-4 grid gap-3 md:grid-cols-2">
+                {ICB_LC_GUIDE.publicEntityControls.map((item) => (
+                  <div key={item.reference} className="rounded-xl border border-indigo-100 bg-white p-4">
+                    <h4 className="text-xs font-bold text-indigo-900">{item.reference}</h4>
+                    <p className="mt-2 text-xs leading-relaxed text-slate-700">{item.action}</p>
+                  </div>
+                ))}
+              </div>
+              <h4 className="mt-5 text-sm font-bold text-slate-900">बजेट, कर तथा आयात नियन्त्रण</h4>
+              <div className="mt-2 grid gap-2 md:grid-cols-2">
+                {ICB_LC_GUIDE.publicEntityFinancialControls.map((item, index) => (
+                  <div key={index} className="flex gap-2 rounded-lg bg-white p-3 text-xs leading-relaxed text-slate-700">
+                    <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-indigo-600" />
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs sm:p-6">
+            <h3 className="text-lg font-bold text-slate-900">LC कागजात: माग/पेश गर्नुपर्ने सूची र मिलान</h3>
+            <p className="mt-1 text-xs text-slate-500">कारोबार, सम्झौता र भन्सारका लागि आवश्यक कागजात मात्र स्पष्ट रूपमा तोक्नुहोस्।</p>
+            <div className="mt-4 grid gap-3 md:grid-cols-2">
+              {ICB_LC_GUIDE.documents.map((document) => (
+                <div key={document.name} className="rounded-xl bg-slate-50 p-4">
+                  <h4 className="text-sm font-bold text-blue-900">{document.name}</h4>
+                  <p className="mt-1 text-xs leading-relaxed text-slate-600">{document.check}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <div className="grid gap-6 lg:grid-cols-2">
+            <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs sm:p-6">
+              <h3 className="text-lg font-bold text-slate-900">LC draft जाँच सूची</h3>
+              <div className="mt-4 space-y-2">
+                {ICB_LC_GUIDE.draftChecklist.map((item, index) => (
+                  <div key={index} className="flex gap-2 text-sm leading-relaxed text-slate-700">
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-blue-700" />
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className="rounded-2xl border border-amber-200 bg-amber-50/60 p-5 shadow-xs sm:p-6">
+              <h3 className="text-lg font-bold text-slate-900">जोखिम र नियन्त्रण</h3>
+              <div className="mt-4 space-y-3">
+                {ICB_LC_GUIDE.risks.map((item) => (
+                  <div key={item.risk} className="rounded-xl border border-amber-100 bg-white p-3">
+                    <p className="text-xs font-semibold leading-relaxed text-slate-800">{item.risk}</p>
+                    <p className="mt-1 text-xs leading-relaxed text-slate-600"><strong>नियन्त्रण:</strong> {item.control}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+
+          {viewPerspective === 'bidder' && (
+            <section className="rounded-2xl border border-indigo-200 bg-indigo-50/60 p-5 shadow-xs sm:p-6">
+              <h3 className="text-lg font-bold text-slate-900">अन्तर्राष्ट्रिय आपूर्तिकर्ताको जाँच सूची</h3>
+              <div className="mt-4 grid gap-2 md:grid-cols-2">
+                {ICB_LC_GUIDE.supplierChecklist.map((item, index) => (
+                  <div key={index} className="flex gap-2 rounded-lg bg-white p-3 text-sm leading-relaxed text-slate-700">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-indigo-600" />
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          <div className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-xs leading-relaxed text-amber-950">
+            <strong>कानुनी तथा बैंकिङ सावधानी:</strong> {ICB_LC_GUIDE.caution}
+          </div>
+        </div>
+      )}
+
       {/* ------------------------------------------------------------- */}
-      {/* TAB 3: LOCAL AGENT SPECIAL SUB-MODULE                         */}
+      {/* TAB 4: LOCAL AGENT SPECIAL SUB-MODULE                         */}
       {/* ------------------------------------------------------------- */}
       {activeTab === 'local-agent' && (
         <div className="space-y-6">
