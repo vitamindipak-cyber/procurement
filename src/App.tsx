@@ -30,6 +30,7 @@ import { UserManagementView } from './components/UserManagementView';
 import { BidderPortalView } from './components/BidderPortalView';
 import { BiddingFormsGenerator } from './components/BiddingFormsGenerator';
 import { IcbProcurementHub } from './components/IcbProcurementHub';
+import { BidEvaluationGuideView } from './components/BidEvaluationGuideView';
 import { TrackedProject } from './types/procurement';
 import { AppUser, ManagedUserInput } from './types/auth';
 import {
@@ -461,7 +462,15 @@ function ProcurementApp({
 
           {activeTab === 'checklists' && (
             <ChecklistsView
+              onNavigateToEvaluation={() => setActiveTab('bid-evaluation')}
               onNavigateToMethodChecklists={() => setActiveTab('method-checklists')}
+            />
+          )}
+
+          {activeTab === 'bid-evaluation' && (
+            <BidEvaluationGuideView
+              onNavigateToLaw={() => setActiveTab('law-corpus')}
+              onNavigateToChecklists={() => setActiveTab('checklists')}
             />
           )}
 

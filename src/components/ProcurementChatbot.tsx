@@ -69,7 +69,7 @@ function relatedQuestionContext(question: string, previousQuestion: string) {
 
 function localFallbackAnswer(question: string, sources: ProcurementEvidence[]) {
   if (!sources.length) {
-    return 'Gemini सेवा अहिले 503 त्रुटिका कारण उपलब्ध छैन, र यस प्रश्नको प्रत्यक्ष आधार स्थानीय स्रोतमा पनि भेटिएन। अनुमान गरेर कानुनी उत्तर दिनुभन्दा आधिकारिक पछिल्लो ऐन/नियम र सम्बन्धित बोलपत्र कागजात जाँच्नुहोस्।';
+    return 'यस प्रश्नसँग प्रत्यक्ष मिल्ने स्थानीय स्रोत भेटिएन। अनुमान गरेर कानुनी उत्तर दिनुभन्दा आधिकारिक पछिल्लो ऐन/नियम र सम्बन्धित बोलपत्र कागजात जाँच्नुहोस्।';
   }
   const terms = Array.from(new Set(question.toLocaleLowerCase('ne-NP').split(/[^\p{L}\p{N}]+/u).filter((term) => term.length > 2)));
   const sentences = sources.flatMap((source, sourceIndex) => source.excerpt
@@ -90,7 +90,7 @@ function localFallbackAnswer(question: string, sources: ProcurementEvidence[]) {
   }).slice(0, 3).map(({ text }) => text);
   const lead = sources[0];
   const answer = excerpts.length ? excerpts.join('\n\n') : lead.excerpt.slice(0, 700);
-  return `Gemini सेवा अहिले 503 त्रुटिका कारण उपलब्ध छैन। तत्कालका लागि स्थानीय स्रोत **${lead.title} (${lead.reference})** मा भेटिएको सान्दर्भिक अंश:\n\n${answer}\n\nयो स्थानीय स्रोतबाट निकालिएको अंश हो, Gemini ले तयार गरेको संश्लेषित राय होइन। लागू हुने पछिल्लो ऐन/नियम र जारी कागजातसँग रुजु गर्नुहोस्।`;
+  return `स्थानीय स्रोत **${lead.title} (${lead.reference})** मा भेटिएको सान्दर्भिक अंश:\n\n${answer}\n\nयो स्रोतबाट निकालिएको अंश हो, AI ले तयार गरेको संश्लेषित राय होइन। लागू हुने पछिल्लो ऐन/नियम र जारी कागजातसँग रुजु गर्नुहोस्।`;
 }
 
 function SourceCard({ source, index, onNavigate }: { source: ProcurementEvidence; index: number; onNavigate: (tab: string) => void }) {
@@ -126,7 +126,7 @@ function SourceCard({ source, index, onNavigate }: { source: ProcurementEvidence
 export default function ProcurementChatbot({ onNavigate }: ProcurementChatbotProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [question, setQuestion] = useState('');
-  const [isSearching, setIsSearching] = useState(false);
+  const [pendingAiResponses, setPendingAiResponses] = useState(0);
   const [error, setError] = useState('');
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -135,6 +135,8 @@ export default function ProcurementChatbot({ onNavigate }: ProcurementChatbotPro
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const voiceTranscriptRef = useRef('');
   const lastSpokenMessageIdRef = useRef<string | null>(null);
+  const conversationVersionRef = useRef(0);
+  const isSearching = pendingAiResponses > 0;
 
   const speakText = (text: string) => {
     if (!('speechSynthesis' in window)) {
@@ -232,6 +234,7 @@ export default function ProcurementChatbot({ onNavigate }: ProcurementChatbotPro
   };
 
   const clearConversation = () => {
+    conversationVersionRef.current += 1;
     voiceTranscriptRef.current = '';
     recognitionRef.current?.abort();
     recognitionRef.current = null;
@@ -246,7 +249,7 @@ export default function ProcurementChatbot({ onNavigate }: ProcurementChatbotPro
 
   const sendQuestion = async (value = question) => {
     const prompt = value.trim();
-    if (!prompt || isSearching) return;
+    if (!prompt) return;
     if (recognitionRef.current) {
       voiceTranscriptRef.current = '';
       recognitionRef.current.abort();
@@ -255,15 +258,24 @@ export default function ProcurementChatbot({ onNavigate }: ProcurementChatbotPro
     }
     setQuestion('');
     setError('');
-    setIsSearching(true);
+    const requestVersion = conversationVersionRef.current;
+    const previousQuestion = [...messages].reverse().find((message) => message.role === 'user')?.text || '';
+    const retrievalQuery = relatedQuestionContext(prompt, previousQuestion);
+    const sources = searchProcurementKnowledge(retrievalQuery, 4);
+    const assistantMessageId = crypto.randomUUID();
     const userMessage: ChatMessage = { id: crypto.randomUUID(), role: 'user', text: prompt };
-    setMessages((current) => [...current, userMessage]);
+    const quickAnswer: ChatMessage = {
+      id: assistantMessageId,
+      role: 'assistant',
+      text: localFallbackAnswer(prompt, sources),
+      sources,
+    };
+    setMessages((current) => [...current, userMessage, quickAnswer]);
 
+    if (!supabase) return;
+
+    setPendingAiResponses((count) => count + 1);
     try {
-      if (!supabase) throw new Error('Supabase सेटअप नभएकाले AI जवाफ सेवा उपलब्ध छैन।');
-      const previousQuestion = [...messages].reverse().find((message) => message.role === 'user')?.text || '';
-      const retrievalQuery = relatedQuestionContext(prompt, previousQuestion);
-      const sources = searchProcurementKnowledge(retrievalQuery, 4);
       const history = messages.slice(-8).map(({ role, text }) => ({ role, text }));
       const { data, error: invokeError } = await supabase.functions.invoke<{ answer?: string; error?: string }>('procurement-chat', {
         body: {
@@ -285,30 +297,16 @@ export default function ProcurementChatbot({ onNavigate }: ProcurementChatbotPro
         throw new Error(serviceMessage || 'AI सेवा उपलब्ध भएन। Edge Function deploy र GEMINI_API_KEY secret सेटअप जाँच्नुहोस्।');
       }
       if (!data?.answer) throw new Error(data?.error || 'AI बाट जवाफ प्राप्त भएन। फेरि प्रयास गर्नुहोस्।');
-      const assistantMessage: ChatMessage = {
-        id: crypto.randomUUID(),
-        role: 'assistant',
-        text: data.answer,
-        sources,
-      };
-      setMessages((current) => [...current, assistantMessage]);
+      if (requestVersion === conversationVersionRef.current) {
+        setMessages((current) => current.map((message) => message.id === assistantMessageId
+          ? { ...message, text: data.answer! }
+          : message));
+      }
     } catch (caughtError: unknown) {
       const message = caughtError instanceof Error ? caughtError.message : 'AI जवाफ प्राप्त भएन। फेरि प्रयास गर्नुहोस्।';
-      if (message.includes('503')) {
-        const previousQuestion = [...messages].reverse().find((item) => item.role === 'user')?.text || '';
-        const sources = searchProcurementKnowledge(relatedQuestionContext(prompt, previousQuestion), 4);
-        setMessages((current) => [...current, {
-          id: crypto.randomUUID(),
-          role: 'assistant',
-          text: localFallbackAnswer(prompt, sources),
-          sources,
-        }]);
-        setError('');
-      } else {
-        setError(message);
-      }
+      if (requestVersion === conversationVersionRef.current) setError(`स्थानीय स्रोतको द्रुत जवाफ देखाइएको छ। विस्तृत AI जवाफ उपलब्ध भएन: ${message}`);
     } finally {
-      setIsSearching(false);
+      setPendingAiResponses((count) => Math.max(0, count - 1));
     }
   };
 
@@ -399,7 +397,7 @@ export default function ProcurementChatbot({ onNavigate }: ProcurementChatbotPro
               </div>
             ))
           )}
-          {isSearching && <p role="status" className="text-sm text-slate-500">स्रोत जाँचेर Gemini बाट सीधा जवाफ तयार हुँदैछ…</p>}
+          {isSearching && <p role="status" className="text-sm text-slate-500">द्रुत स्रोत जवाफ देखाइएको छ; Gemini बाट विस्तृत जवाफ खोजिँदैछ…</p>}
           {error && <p role="alert" className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">{error}</p>}
           <div ref={bottomRef} />
         </div>
@@ -422,12 +420,10 @@ export default function ProcurementChatbot({ onNavigate }: ProcurementChatbotPro
               maxLength={1600}
               placeholder="तपाईंको प्रश्न लेख्नुहोस्… (Enter पठाउन, Shift+Enter नयाँ लाइन)"
               className="max-h-40 min-h-12 flex-1 resize-y bg-transparent px-2 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400"
-              disabled={isSearching}
             />
             <button
               type="button"
               onClick={startVoiceInput}
-              disabled={isSearching}
               aria-label={isListening ? 'आवाज रेकर्डिङ रोक्नुहोस्' : 'बोलेर प्रश्न सोध्नुहोस्'}
               title={isListening ? 'रेकर्डिङ रोक्नुहोस्' : 'बोलेर प्रश्न सोध्नुहोस्'}
               className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border transition disabled:cursor-not-allowed disabled:opacity-50 ${
@@ -438,7 +434,7 @@ export default function ProcurementChatbot({ onNavigate }: ProcurementChatbotPro
             >
               {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
             </button>
-            <button type="submit" disabled={!question.trim() || isSearching} className="inline-flex h-10 shrink-0 items-center gap-2 rounded-xl bg-blue-700 px-3.5 text-sm font-semibold text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-50">
+            <button type="submit" disabled={!question.trim()} className="inline-flex h-10 shrink-0 items-center gap-2 rounded-xl bg-blue-700 px-3.5 text-sm font-semibold text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-50">
               <Send className="h-4 w-4" /><span className="hidden sm:inline">जवाफ पाउनुहोस्</span>
             </button>
           </div>
