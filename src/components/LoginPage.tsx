@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Eye, EyeOff, LockKeyhole, LogIn } from 'lucide-react';
+import { Building2, Eye, EyeOff, HardHat, LockKeyhole, LogIn, Scale, ShieldCheck } from 'lucide-react';
 
 const loginBackground = new URL('../../loginImage.jpeg', import.meta.url).href;
 
@@ -74,9 +74,27 @@ export const LoginPage: React.FC<LoginPageProps> = ({ errorMessage, onLogin, onS
               <div className="mt-0.5 text-sm text-blue-100/90">खरिद प्रक्रिया गाइड</div>
             </div>
           </div>
-          <p className="text-sm font-semibold uppercase tracking-[.18em] text-blue-200">सजिलो · पारदर्शी · व्यवस्थित</p>
-          <h2 className="mt-4 text-4xl font-bold leading-tight tracking-tight xl:text-5xl">सार्वजनिक खरिदका हरेक चरणमा<br />विश्वसनीय साथ।</h2>
-          <p className="mt-5 max-w-lg text-base leading-7 text-blue-50/85">खरिद योजना, खरिद व्यवस्थापन, कानुनी सन्दर्भ र उपयोगी सामग्रीहरू एउटै स्थलमा।</p>
+          <p className="text-sm font-semibold uppercase tracking-[.18em] text-blue-200">सजिलो · पारदर्शी · कानुनसम्मत</p>
+          <h2 className="mt-4 text-4xl font-bold leading-tight tracking-tight xl:text-5xl">सार्वजनिक खरिद प्रक्रियाको<br />पूर्ण र व्यावहारिक गाइड।</h2>
+          <p className="mt-5 max-w-lg text-base leading-7 text-blue-50/85">
+            सार्वजनिक निकायका खरिद अधिकृत र बोलपत्रदाता दुवैका लागि ऐन २०६३ तथा नियमावली २०६४ (१६औँ संशोधन) मा आधारित चरणबद्ध जानकारी, क्याल्कुलेटर र कागजात सहयोग।
+          </p>
+          <div className="mt-8 grid max-w-lg gap-3 sm:grid-cols-2">
+            <div className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-sm">
+              <Building2 className="h-5 w-5 text-sky-200" />
+              <p className="mt-2 text-sm font-bold">सार्वजनिक निकाय</p>
+              <p className="mt-1 text-xs leading-relaxed text-blue-100/80">विधि छनोट, ७ चरण, मूल्याङ्कन समिति र अनुपालन चेकलिस्ट।</p>
+            </div>
+            <div className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-sm">
+              <HardHat className="h-5 w-5 text-emerald-200" />
+              <p className="mt-2 text-sm font-bold">बोलपत्रदाता</p>
+              <p className="mt-1 text-xs leading-relaxed text-blue-100/80">योग्यता जाँच, फाराम, e-GP दाखिला र पुनरावलोकन बाटो।</p>
+            </div>
+          </div>
+          <div className="mt-6 flex flex-wrap gap-4 text-xs text-blue-100/85">
+            <span className="inline-flex items-center gap-1.5"><Scale className="h-3.5 w-3.5" /> ऐन · नियम · SBD</span>
+            <span className="inline-flex items-center gap-1.5"><ShieldCheck className="h-3.5 w-3.5" /> १६औँ संशोधन समावेश</span>
+          </div>
         </div>
 
         <section className="w-full rounded-3xl border border-white/70 bg-white/95 p-6 shadow-2xl shadow-slate-950/20 backdrop-blur-md sm:p-9">
@@ -262,7 +280,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ errorMessage, onLogin, onS
           )}
 
           <p className="mt-5 text-center text-sm text-slate-600">
-            {isSignUp ? 'पहिले नै खाता छ?' : 'नयाँ user हो?'}{' '}
+            {isSignUp ? 'पहिले नै खाता छ?' : 'नयाँ प्रयोगकर्ता हो?'}{' '}
             <button
               type="button"
               onClick={() => switchMode(!isSignUp)}

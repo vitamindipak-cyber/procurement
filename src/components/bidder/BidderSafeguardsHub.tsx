@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import cautionsImage from '../../../cautions.png';
 import {
   ShieldAlert,
   ShieldCheck,
@@ -49,7 +50,7 @@ export const BidderSafeguardsHub: React.FC = () => {
   useEffect(() => {
     try {
       localStorage.setItem('bidder_submission_audit_questions', JSON.stringify(checkedQuestions));
-    } catch {}
+    } catch { }
   }, [checkedQuestions]);
 
   const handleToggleQuestion = (id: string) => {
@@ -104,50 +105,75 @@ export const BidderSafeguardsHub: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Top Banner */}
-      <div className="bg-gradient-to-r from-emerald-950 via-teal-900 to-slate-900 text-white rounded-2xl p-6 sm:p-8 shadow-sm relative overflow-hidden">
-        <div className="relative z-10 space-y-4">
-          <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-wider text-emerald-200">
-            <span className="flex items-center gap-1 bg-emerald-800/80 px-2.5 py-1 rounded-md border border-emerald-600/40">
-              <HardHat className="w-3.5 h-3.5 text-emerald-300" />
-              बोलपत्रदाता विशेष मार्गदर्शन
-            </span>
-            <span>·</span>
-            <span className="text-amber-300 font-mono">guide.docx अध्ययनमा आधारित</span>
+      <div className="bg-gradient-to-r from-emerald-950 via-teal-900 to-slate-900 text-white rounded-2xl py-4 sm:py-5 px-5 sm:px-7 shadow-sm relative overflow-hidden">
+        {/* Top Header Row with text on the left and cautions.png on the right */}
+        <div className="relative">
+          {/* Right-side cautions.png strictly within top header row, seamlessly blended on the left */}
+          <div
+            className="pointer-events-none absolute inset-y-0 right-0 w-full sm:w-[48%] md:w-[42%] lg:w-[36%] overflow-hidden select-none"
+            style={{
+              maskImage:
+                'linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.2) 20%, rgba(0, 0, 0, 0.85) 55%, black 85%)',
+              WebkitMaskImage:
+                'linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.2) 20%, rgba(0, 0, 0, 0.85) 55%, black 85%)',
+            }}
+            aria-hidden="true"
+          >
+            <img
+              src={cautionsImage}
+              alt="बोलपत्रदाता सावधानी"
+              className="h-full w-full object-cover object-right"
+            />
+            {/* Soft left-edge blend overlay matching banner's teal/slate colors */}
+            <div className="absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-teal-950 via-teal-900/60 to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-r from-emerald-950/30 via-transparent to-transparent pointer-events-none sm:hidden" />
           </div>
 
-          <h2 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight">
-            सार्वजनिक खरिदमा बोलपत्रदाताले अपनाउनुपर्ने चरणगत सावधानीहरू
-          </h2>
-
-          <p className="text-xs sm:text-sm text-emerald-100/90 max-w-4xl leading-relaxed">
-            PPMO का <strong>१,२९५ राय/परामर्श</strong> र पुनरावलोकन समितिका <strong>२२१ निर्णयहरू</strong>को अध्ययनले देखाउँछ कि बोलपत्रदाताको कम दर वा प्राविधिक क्षमता मात्र पर्याप्त हुँदैन; फारमको पूर्णता, वैध जमानत, अख्तियारनामा, हदम्याद र कागजात पेश गर्ने अनुशासनले मात्र ठेक्का सुरक्षित गर्दछ।
-          </p>
-
-          {/* Key Metrics Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 text-xs">
-            <div className="bg-white/10 rounded-xl p-3 border border-white/15 backdrop-blur-xs">
-              <span className="text-emerald-200 block text-[11px]">खारेज भएका निवेदनहरू</span>
-              <span className="text-lg sm:text-xl font-extrabold font-mono text-rose-300">१०१ निवेदन</span>
-              <span className="text-[10px] text-rose-200 block mt-0.5">कागजात/हदम्याद नपुगेका कारण</span>
+          {/* Text Content */}
+          <div className="relative z-10 max-w-2xl space-y-2">
+            <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-wider text-emerald-200">
+              <span className="flex items-center gap-1 bg-emerald-800/80 px-2 py-0.5 rounded-md border border-emerald-600/40">
+                <HardHat className="w-3.5 h-3.5 text-emerald-300" />
+                बोलपत्रदाता विशेष मार्गदर्शन
+              </span>
+              <span>·</span>
+              <span className="text-amber-300 font-mono">PPMO राय र PPRC निर्णयमा आधारित</span>
             </div>
 
-            <div className="bg-white/10 rounded-xl p-3 border border-white/15 backdrop-blur-xs">
-              <span className="text-emerald-200 block text-[11px]">जफत भएको धरौटी</span>
-              <span className="text-lg sm:text-xl font-extrabold font-mono text-amber-300">३६+ ठेक्कामा</span>
-              <span className="text-[10px] text-amber-200 block mt-0.5">गलत प्रक्रियामा उजुरी गर्दा</span>
-            </div>
+            <h2 className="text-lg sm:text-xl lg:text-2xl font-bold tracking-tight">
+              सार्वजनिक खरिदमा बोलपत्रदाताले अपनाउनुपर्ने चरणगत सावधानीहरू
+            </h2>
 
-            <div className="bg-white/10 rounded-xl p-3 border border-white/15 backdrop-blur-xs">
-              <span className="text-emerald-200 block text-[11px]">बोलपत्रदाताको पक्षमा निर्णय</span>
-              <span className="text-lg sm:text-xl font-extrabold font-mono text-emerald-300">१०८ निर्णय</span>
-              <span className="text-[10px] text-emerald-200 block mt-0.5">निकायका बदर भएका निर्णयहरू</span>
-            </div>
+            <p className="text-xs sm:text-[13px] text-emerald-100/90 leading-normal sm:leading-relaxed">
+              PPMO का <strong>१,२९५ राय/परामर्श</strong> र पुनरावलोकन समितिका <strong>२२१ निर्णयहरू</strong>को अध्ययनले देखाउँछ कि बोलपत्रदाताको कम दर वा प्राविधिक क्षमता मात्र पर्याप्त हुँदैन; फारमको पूर्णता, वैध जमानत, अख्तियारनामा, हदम्याद र कागजात पेश गर्ने अनुशासनले मात्र ठेक्का सुरक्षित गर्दछ।
+            </p>
+          </div>
+        </div>
 
-            <div className="bg-white/10 rounded-xl p-3 border border-white/15 backdrop-blur-xs">
-              <span className="text-emerald-200 block text-[11px]">अन्तिम सबमिसन अडिट</span>
-              <span className="text-lg sm:text-xl font-extrabold font-mono text-white">१२ प्रश्न</span>
-              <span className="text-[10px] text-emerald-200 block mt-0.5">बिड बुझाउनु अघि अनिवार्य</span>
-            </div>
+        {/* Key Metrics Grid - positioned strictly below Row 1, completely uncovered by cautions.png */}
+        <div className="relative z-20 grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-3 sm:pt-3.5 text-xs">
+          <div className="bg-white/10 rounded-xl px-3 py-2 border border-white/15 backdrop-blur-xs">
+            <span className="text-emerald-200 block text-[11px]">खारेज भएका निवेदनहरू</span>
+            <span className="text-base sm:text-lg font-bold font-mono text-rose-300">१०१ निवेदन</span>
+            <span className="text-[10px] text-rose-200 block mt-0.5 leading-tight">कागजात/हदम्याद नपुगेका कारण</span>
+          </div>
+
+          <div className="bg-white/10 rounded-xl px-3 py-2 border border-white/15 backdrop-blur-xs">
+            <span className="text-emerald-200 block text-[11px]">जफत भएको धरौटी</span>
+            <span className="text-base sm:text-lg font-bold font-mono text-amber-300">३६+ ठेक्कामा</span>
+            <span className="text-[10px] text-amber-200 block mt-0.5 leading-tight">गलत प्रक्रियामा उजुरी गर्दा</span>
+          </div>
+
+          <div className="bg-white/10 rounded-xl px-3 py-2 border border-white/15 backdrop-blur-xs">
+            <span className="text-emerald-200 block text-[11px]">बोलपत्रदाताको पक्षमा निर्णय</span>
+            <span className="text-base sm:text-lg font-bold font-mono text-emerald-300">१०८ निर्णय</span>
+            <span className="text-[10px] text-emerald-200 block mt-0.5 leading-tight">निकायका बदर भएका निर्णयहरू</span>
+          </div>
+
+          <div className="bg-white/10 rounded-xl px-3 py-2 border border-white/15 backdrop-blur-xs">
+            <span className="text-emerald-200 block text-[11px]">अन्तिम सबमिसन अडिट</span>
+            <span className="text-base sm:text-lg font-bold font-mono text-white">१२ प्रश्न</span>
+            <span className="text-[10px] text-emerald-200 block mt-0.5 leading-tight">बिड बुझाउनु अघि अनिवार्य</span>
           </div>
         </div>
       </div>
@@ -157,11 +183,10 @@ export const BidderSafeguardsHub: React.FC = () => {
         <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
           <button
             onClick={() => setActiveTab('safeguards')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-              activeTab === 'safeguards'
-                ? 'bg-emerald-800 text-white shadow-xs'
-                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-            }`}
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${activeTab === 'safeguards'
+              ? 'bg-emerald-800 text-white shadow-xs'
+              : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+              }`}
           >
             <ShieldAlert className="w-4 h-4" />
             <span>चरणगत बोलपत्रदाता सावधानीहरू ({BIDDER_SAFEGUARDS.length})</span>
@@ -169,11 +194,10 @@ export const BidderSafeguardsHub: React.FC = () => {
 
           <button
             onClick={() => setActiveTab('twelve-questions')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-              activeTab === 'twelve-questions'
-                ? 'bg-emerald-800 text-white shadow-xs'
-                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-            }`}
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${activeTab === 'twelve-questions'
+              ? 'bg-emerald-800 text-white shadow-xs'
+              : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+              }`}
           >
             <CheckCircle2 className="w-4 h-4" />
             <span>अन्तिम Submit अघि जाँच्नुपर्ने १२ प्रश्न</span>
@@ -184,11 +208,10 @@ export const BidderSafeguardsHub: React.FC = () => {
 
           <button
             onClick={() => setActiveTab('review-protocol')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-              activeTab === 'review-protocol'
-                ? 'bg-emerald-800 text-white shadow-xs'
-                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-            }`}
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${activeTab === 'review-protocol'
+              ? 'bg-emerald-800 text-white shadow-xs'
+              : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+              }`}
           >
             <Scale className="w-4 h-4" />
             <span>पुनरावलोकन उजुरीमा जोगिने उपाय (दफा ४७/५०)</span>
@@ -196,11 +219,10 @@ export const BidderSafeguardsHub: React.FC = () => {
 
           <button
             onClick={() => setActiveTab('patterns')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-              activeTab === 'patterns'
-                ? 'bg-emerald-800 text-white shadow-xs'
-                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-            }`}
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${activeTab === 'patterns'
+              ? 'bg-emerald-800 text-white shadow-xs'
+              : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+              }`}
           >
             <Gavel className="w-4 h-4" />
             <span>PPRC मा बोलपत्रदाता हार्ने मुख्य कारणहरू</span>
@@ -233,11 +255,10 @@ export const BidderSafeguardsHub: React.FC = () => {
                 <button
                   key={cat.id}
                   onClick={() => setSelectedCategoryFilter(cat.id)}
-                  className={`px-2.5 py-1 rounded-lg font-semibold transition-all ${
-                    selectedCategoryFilter === cat.id
-                      ? 'bg-emerald-800 text-white shadow-2xs'
-                      : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-100'
-                  }`}
+                  className={`px-2.5 py-1 rounded-lg font-semibold transition-all ${selectedCategoryFilter === cat.id
+                    ? 'bg-emerald-800 text-white shadow-2xs'
+                    : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-100'
+                    }`}
                 >
                   {cat.label}
                 </button>
@@ -290,11 +311,10 @@ export const BidderSafeguardsHub: React.FC = () => {
                         return (
                           <span
                             key={idx}
-                            className={`px-2 py-0.5 rounded text-[11px] font-mono font-bold border ${
-                              isPprc
-                                ? 'bg-purple-50 text-purple-800 border-purple-200'
-                                : 'bg-blue-50 text-blue-800 border-blue-200'
-                            }`}
+                            className={`px-2 py-0.5 rounded text-[11px] font-mono font-bold border ${isPprc
+                              ? 'bg-purple-50 text-purple-800 border-purple-200'
+                              : 'bg-blue-50 text-blue-800 border-blue-200'
+                              }`}
                             title={isPprc ? 'PPRC पुनरावलोकन निर्णय' : 'PPMO राय/परामर्श'}
                           >
                             [{ref}]
@@ -381,9 +401,8 @@ export const BidderSafeguardsHub: React.FC = () => {
               </div>
               <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden border border-slate-200">
                 <div
-                  className={`h-full transition-all duration-300 ${
-                    verifiedPercent === 100 ? 'bg-emerald-600' : 'bg-emerald-700'
-                  }`}
+                  className={`h-full transition-all duration-300 ${verifiedPercent === 100 ? 'bg-emerald-600' : 'bg-emerald-700'
+                    }`}
                   style={{ width: `${verifiedPercent}%` }}
                 />
               </div>
@@ -405,18 +424,16 @@ export const BidderSafeguardsHub: React.FC = () => {
                 <div
                   key={q.id}
                   onClick={() => handleToggleQuestion(q.id)}
-                  className={`p-4 rounded-xl border cursor-pointer transition-all flex items-start gap-3.5 select-none ${
-                    isChecked
-                      ? 'bg-emerald-50/70 border-emerald-300 shadow-2xs'
-                      : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50'
-                  }`}
+                  className={`p-4 rounded-xl border cursor-pointer transition-all flex items-start gap-3.5 select-none ${isChecked
+                    ? 'bg-emerald-50/70 border-emerald-300 shadow-2xs'
+                    : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                    }`}
                 >
                   <div
-                    className={`w-5 h-5 rounded-md border flex items-center justify-center shrink-0 mt-0.5 transition-colors ${
-                      isChecked
-                        ? 'bg-emerald-600 border-emerald-600 text-white'
-                        : 'border-slate-300 bg-white'
-                    }`}
+                    className={`w-5 h-5 rounded-md border flex items-center justify-center shrink-0 mt-0.5 transition-colors ${isChecked
+                      ? 'bg-emerald-600 border-emerald-600 text-white'
+                      : 'border-slate-300 bg-white'
+                      }`}
                   >
                     {isChecked && <Check className="w-3.5 h-3.5" />}
                   </div>
@@ -424,9 +441,8 @@ export const BidderSafeguardsHub: React.FC = () => {
                   <div className="flex-1 space-y-1">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <h4
-                        className={`text-xs sm:text-sm font-bold ${
-                          isChecked ? 'text-emerald-950 font-semibold' : 'text-slate-900'
-                        }`}
+                        className={`text-xs sm:text-sm font-bold ${isChecked ? 'text-emerald-950 font-semibold' : 'text-slate-900'
+                          }`}
                       >
                         {q.questionNumber}. {q.questionText}
                       </h4>

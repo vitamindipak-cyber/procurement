@@ -175,11 +175,35 @@ export const IcbProcurementHub: React.FC<IcbProcurementHubProps> = ({
     Math.round((completedWorkflowChecklistItems / (totalWorkflowChecklistItems || 1)) * 100)
   );
 
+  const workflowProgress = (
+    <div
+      className={`w-full sm:max-w-xs backdrop-blur-xs p-2.5 rounded-xl border text-xs ${
+        initialUserMode === 'bidder'
+          ? 'bg-blue-950 text-white border-blue-900'
+          : 'bg-white/10 border-white/15'
+      }`}
+    >
+      <div className="flex items-center justify-between mb-1">
+        <span className="text-blue-200 font-medium">चेकलिस्ट समग्र प्रगति:</span>
+        <span className="font-bold text-amber-300">{progressPercentage}%</span>
+      </div>
+      <div className="w-full bg-white/20 h-1.5 rounded-full overflow-hidden">
+        <div
+          className="bg-gradient-to-r from-amber-400 to-emerald-400 h-full transition-all duration-500 rounded-full"
+          style={{ width: `${progressPercentage}%` }}
+        />
+      </div>
+    </div>
+  );
+
   return (
     <div className="space-y-6">
       {/* ------------------------------------------------------------- */}
       {/* HERO SECTION / BANNER                                         */}
       {/* ------------------------------------------------------------- */}
+      {initialUserMode === 'bidder' ? (
+        <div className="flex justify-end">{workflowProgress}</div>
+      ) : (
       <div className="bg-gradient-to-r from-blue-950 via-[#132c4b] to-slate-900 text-white rounded-2xl py-4 sm:py-5 px-5 sm:px-7 shadow-sm transition-all duration-300 relative overflow-hidden">
         {/* Subtle background graphics */}
         <div className="absolute right-0 top-0 bottom-0 w-96 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-500/10 via-transparent to-transparent pointer-events-none" />
@@ -197,9 +221,9 @@ export const IcbProcurementHub: React.FC<IcbProcurementHubProps> = ({
 
             <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight flex flex-wrap items-center gap-2 text-white">
               <span>अन्तर्राष्ट्रिय स्तरको खुला बोलपत्र (ICB) विस्तृत गाइड</span>
-              <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-200 border border-amber-400/30">
+              {/* <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-200 border border-amber-400/30">
                 ऐन दफा १५ • नियम ३१ङ
-              </span>
+              </span> */}
             </h1>
 
             <p className="text-xs text-blue-100/90 max-w-3xl leading-relaxed">
@@ -253,21 +277,11 @@ export const IcbProcurementHub: React.FC<IcbProcurementHubProps> = ({
             </div>
 
             {/* Overall Progress Display */}
-            <div className="bg-white/10 backdrop-blur-xs p-2.5 rounded-xl border border-white/15 text-xs">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-blue-200 font-medium">चेकलिस्ट समग्र प्रगति:</span>
-                <span className="font-bold text-amber-300">{progressPercentage}%</span>
-              </div>
-              <div className="w-full bg-white/20 h-1.5 rounded-full overflow-hidden">
-                <div
-                  className="bg-gradient-to-r from-amber-400 to-emerald-400 h-full transition-all duration-500 rounded-full"
-                  style={{ width: `${progressPercentage}%` }}
-                />
-              </div>
-            </div>
+            {workflowProgress}
           </div>
         </div>
       </div>
+      )}
 
       {/* ------------------------------------------------------------- */}
       {/* SUB-TABS NAVIGATION BAR                                       */}
@@ -315,7 +329,7 @@ export const IcbProcurementHub: React.FC<IcbProcurementHubProps> = ({
                 ICB Lifecycle Stages (चरण १ देखि ७ सम्म)
               </span>
               <span className="text-xs font-semibold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-full border border-blue-200">
-                दृष्टिकोण: {viewPerspective === 'entity' ? '🏛️ सार्वजनिक निकाय' : '💼 बोलपत्रदाता'}
+                {viewPerspective === 'entity' ? '🏛️ सार्वजनिक निकाय' : '💼 बोलपत्रदाता'}
               </span>
             </div>
 

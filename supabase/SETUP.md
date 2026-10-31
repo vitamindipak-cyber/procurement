@@ -97,9 +97,8 @@ The chatbot retrieves relevant local Act/Rules, SBD/DBD, PPMO opinion, PPRC
 decision, and app content in the browser. It sends the current question, up to
 six recent chat turns, and up to five retrieved excerpts to the authenticated
 `procurement-chat` Edge Function. That function validates the Supabase user
-session and calls Google's Gemini 3.8 Flash API. On temporary server overload,
-it retries once with a short backoff, then tries Gemini 3.6 Flash with one
-retry. The browser never receives the Gemini key. The chatbot UI discloses this
+session and calls Google's Gemini 2.5 Flash API with low latency. On temporary server overload,
+it retries with Gemini 2.0 Flash or Gemini 1.5 Flash. The browser never receives the Gemini key. The chatbot UI discloses this
 data flow to users.
 
 Create a Gemini API key in Google AI Studio, then add it as an Edge Function

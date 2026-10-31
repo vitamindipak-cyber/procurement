@@ -14,11 +14,16 @@ import {
   ChevronDown,
   Building,
   HelpCircle,
-  Globe
+  Globe,
+  Ban
 } from 'lucide-react';
 import { PROCUREMENT_METHODS } from '../data/procurementData';
 import { ProcurementMethod, ProcurementType } from '../types/procurement';
 import { GuideSourceNotice } from './GuideSourceNotice';
+import {
+  getProhibitionsForProvision,
+  getExceptionsForProvision,
+} from '../data/restrictionsExceptionsData';
 
 interface ProcurementMethodsViewProps {
   initialSelectedMethodId?: string | null;
@@ -67,6 +72,17 @@ export const ProcurementMethodsView: React.FC<ProcurementMethodsViewProps> = ({
     setActiveMethodModal(null);
     if (onClearInitialMethod) onClearInitialMethod();
   };
+
+  const methodProhibitions = activeMethodModal ? [
+    ...getProhibitionsForProvision(activeMethodModal.legalActSection, 'act'),
+    ...getProhibitionsForProvision(activeMethodModal.legalRuleSection, 'rules'),
+  ] : [];
+  const methodExceptions = activeMethodModal ? [
+    ...getExceptionsForProvision(activeMethodModal.legalActSection, 'act'),
+    ...getExceptionsForProvision(activeMethodModal.legalRuleSection, 'rules'),
+  ] : [];
+  const uniqueProhibitions = Array.from(new Map(methodProhibitions.map((p) => [p.id, p])).values());
+  const uniqueExceptions = Array.from(new Map(methodExceptions.map((e) => [e.id, e])).values());
 
   return (
     <div className="space-y-6">
@@ -320,6 +336,55 @@ export const ProcurementMethodsView: React.FC<ProcurementMethodsViewProps> = ({
                   ))}
                 </div>
               </div>
+
+              {/* Prohibitions & Exceptions for this method */}
+              {(uniqueProhibitions.length > 0 || uniqueExceptions.length > 0) && (
+                <div className="space-y-3">
+                  <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                    <Scale className="w-4 h-4 text-amber-600" />
+                    <span>यस विधिसँग सम्बन्धित कानूनी बन्देज तथा अपवादहरू:</span>
+                  </h4>
+
+                  {uniqueProhibitions.length > 0 && (
+                    <div className="p-3 bg-red-50/70 border border-red-200 rounded-xl space-y-1.5">
+                      <div className="flex items-center gap-1.5 font-bold text-xs text-red-800">
+                        <Ban className="w-3.5 h-3.5 text-red-600" />
+                        <span>कानूनी बन्देजहरू (गर्न निषेध गरिएका कार्यहरू):</span>
+                      </div>
+                      <div className="space-y-1">
+                        {uniqueProhibitions.map((p) => (
+                          <div key={p.id} className="text-xs text-red-950 pl-3">
+                            • {p.prohibitionText}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {uniqueExceptions.length > 0 && (
+                    <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
+                      <div className="flex items-center gap-1.5 font-bold text-xs text-slate-800">
+                        <Scale className="w-3.5 h-3.5 text-blue-600" />
+                        <span>विशेष अपवाद तथा छुटहरू (Exceptions):</span>
+                      </div>
+                      <div className="space-y-1.5">
+                        {uniqueExceptions.map((exc) => (
+                          <div key={exc.id} className="flex items-start justify-between gap-2 text-xs pl-3">
+                            <span className="text-slate-800 leading-relaxed">
+                              • <strong className="text-slate-900">{exc.subjectOrSection}:</strong> {exc.exceptionText}
+                            </span>
+                            <span className={`shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                              exc.outcome === 'मिल्ने' ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'
+                            }`}>
+                              {exc.outcomeLabel}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Step-by-Step Procedure (पूर्ण प्रक्रियागत चरणहरू) */}
               <div>

@@ -56,6 +56,7 @@ import {
   Target,
   UtensilsCrossed,
 } from 'lucide-react';
+import { ProcessGuideStrip } from './ProcessGuideStrip';
 import { BiddingFormsGenerator } from './BiddingFormsGenerator';
 import { RationProcurementHub } from './bidder/RationProcurementHub';
 import { BidNoBidAnalyzer } from './bidder/BidNoBidAnalyzer';
@@ -1006,13 +1007,13 @@ export const BidderPortalView: React.FC<BidderPortalViewProps> = ({
             <div className="flex-1 min-w-0 max-w-2xl">
               <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-emerald-300 mb-1.5 truncate">
                 <ShieldCheck className="w-4 h-4 shrink-0" />
-                <span className="truncate">बोलपत्रदाता विशेष सावधानी निर्देशिका • PPMO & PPRC Precedents Guide (guide.docx)</span>
+                <span className="truncate">बोलपत्रदाताले अपनाउनुपर्ने विशेष सावधानी • PPMO & PPRC Precedents Guide</span>
               </div>
               <h1 className="text-xl lg:text-2xl font-bold tracking-tight truncate">
                 सार्वजनिक खरिदमा बोलपत्रदाताले अपनाउनुपर्ने चरणगत सावधानीहरू
               </h1>
               <p className="text-xs sm:text-sm text-emerald-100/90 mt-1 leading-relaxed line-clamp-2">
-                PPMO का १,२९५ राय र पुनरावलोकन समितिका २२१ निर्णयको अध्ययन (guide.docx) बाट साभार गरिएका चरणगत सावधानी, १०१ खारेज भएका निवेदनको विश्लेषण र १२-बुँदे अन्तिम सबमिसन अडिट।
+                PPMO का १,२९५ राय र पुनरावलोकन समितिका २२१ निर्णयको आधारमा तयार गरिएका चरणगत सावधानी, १०१ खारेज भएका निवेदनको विश्लेषण र १२-बुँदे अन्तिम सबमिसन अडिट।
               </p>
             </div>
 
@@ -1196,14 +1197,14 @@ export const BidderPortalView: React.FC<BidderPortalViewProps> = ({
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
               <span className="truncate">बोलपत्रदाता विशेष कर्नर • Bidder's Dedicated Portal</span>
             </div>
-            <h1 className="text-xl lg:text-2xl font-bold tracking-tight flex items-center gap-2 truncate">
-              <span>सार्वजनिक खरिद बोलपत्रदाता सहयोगी</span>
+            <h1 className="text-xl lg:text-2xl font-bold tracking-tight flex items-center gap-2">
+              <span>बोलपत्रदाताका लागि पूर्ण खरिद गाइड</span>
               <span className="text-xs bg-emerald-700/80 text-white px-2.5 py-0.5 rounded-full font-medium shrink-0">
-                Bidder Mode
+                बोलपत्रदाता मोड
               </span>
             </h1>
-            <p className="text-xs sm:text-sm text-emerald-100/90 mt-1 leading-relaxed line-clamp-2">
-              निर्माण व्यवसायी, आपूर्तिकर्ता तथा परामर्शदाताहरूका लागि योग्यता स्व-मूल्याङ्कन, SBD का फाराम जेनेरेटर, e-GP बिडिङ गाइड, र पुनरावलोकन सम्बन्धी एकीकृत सहयोगी सुविधा।
+            <p className="text-xs sm:text-sm text-emerald-100/90 mt-1 leading-relaxed line-clamp-3">
+              निर्माण व्यवसायी, आपूर्तिकर्ता तथा परामर्शदाताका लागि योग्यता जाँच, बिड/नो-बिड निर्णय, फाराम, e-GP दाखिला र पुनरावलोकन — ऐन २०६३ र नियमावली २०६४ अनुसार सरल भाषामा।
             </p>
           </div>
 
@@ -1213,7 +1214,7 @@ export const BidderPortalView: React.FC<BidderPortalViewProps> = ({
         </div>
 
         <div
-          className="pointer-events-none absolute inset-y-0 right-0 w-[42%] overflow-hidden"
+          className="pointer-events-none absolute inset-y-0 right-0 hidden w-[42%] overflow-hidden md:block"
           style={{
             maskImage: 'linear-gradient(to right, transparent 0%, black 35%)',
             WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 35%)',
@@ -1239,6 +1240,7 @@ export const BidderPortalView: React.FC<BidderPortalViewProps> = ({
 
       {/* Navigation Sub-Tabs */}
       <div className="bg-white p-2 rounded-2xl border border-slate-200 shadow-2xs">
+        <p className="px-2 pt-1 pb-1.5 text-[11px] font-bold uppercase tracking-wide text-slate-500">विषय र उपकरण छान्नुहोस्</p>
         <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
           {[
             { id: 'overview', label: 'ड्यासबोर्ड मुख्य पृष्ठ', icon: Layers },
@@ -1251,7 +1253,7 @@ export const BidderPortalView: React.FC<BidderPortalViewProps> = ({
             { id: 'consulting-services', label: 'परामर्श सेवा (Consulting)', icon: Award },
             { id: 'non-consulting-services', label: 'गैर-परामर्श सेवा (Non-Consulting)', icon: Users },
             { id: 'fatal-mistakes', label: 'घातक गल्तीहरू र जोखिम अडिट', icon: ShieldAlert },
-            { id: 'bidder-safeguards', label: 'बोलपत्रदाता सावधानी निर्देशिका (guide.docx)', icon: ShieldCheck },
+            { id: 'bidder-safeguards', label: 'बोलपत्रदाताले अपनाउनुपर्ने सावधानी', icon: ShieldCheck },
             { id: 'forms', label: 'बोलपत्र फाराम जेनेरेटर (SBD Sec IV)', icon: FileText },
             { id: 'checklist', label: 'बिड पेश गर्नुपूर्वको ३०-बुँदे चेकलिस्ट', icon: CheckSquare },
             { id: 'egp-guide', label: 'e-GP बिडिङ गाइड (निर्देशिका)', icon: FileCheck2 },
@@ -1282,6 +1284,7 @@ export const BidderPortalView: React.FC<BidderPortalViewProps> = ({
       {/* ------------------------------------------------------------- */}
       {activeSubTab === 'overview' && (
         <div className="space-y-6">
+          <ProcessGuideStrip audience="bidder" onSelect={setActiveSubTab} />
           {/* Quick Stats & Action Cards: Key Bidder Tools */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {/* Card 1: Works Eligibility */}
@@ -1473,7 +1476,7 @@ export const BidderPortalView: React.FC<BidderPortalViewProps> = ({
                 <ShieldCheck className="w-5 h-5" />
               </div>
               <h3 className="text-sm font-bold text-slate-900 group-hover:text-emerald-800 transition-colors">
-                बोलपत्रदाता सावधानी निर्देशिका (guide.docx)
+                बोलपत्रदाताले अपनाउनुपर्ने सावधानी
               </h3>
               <p className="text-xs text-slate-500 mt-1 leading-relaxed">
                 PPMO का १,२९५ राय र पुनरावलोकनका २२१ निर्णयमा आधारित चरणगत सावधानी र १२-बुँदे अडिट।
@@ -4594,7 +4597,7 @@ export const BidderPortalView: React.FC<BidderPortalViewProps> = ({
                 <ShieldCheck className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
                 <div className="text-slate-800">
                   <strong className="text-emerald-950 block font-bold">
-                    विशेष अडिट (guide.docx): बोलपत्रदाताले अन्तिम Submit अघि जाँच्नुपर्ने १२ अनिवार्य प्रश्न
+                    विशेष अडिट: बोलपत्रदाताले अन्तिम Submit अघि जाँच्नुपर्ने १२ अनिवार्य प्रश्न
                   </strong>
                   PPMO र पुनरावलोकन समितिको अध्ययनमा आधारित १२-बुँदे अन्तिम सबमिसन अडिट छुट्टै उपलब्ध छ।
                 </div>
@@ -4898,7 +4901,7 @@ export const BidderPortalView: React.FC<BidderPortalViewProps> = ({
                 <AlertTriangle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
                 <div className="text-slate-800">
                   <strong className="text-amber-900 block font-bold">
-                    PPRC २२१ निर्णयको अध्ययन (guide.docx): १०१ निवेदन खारेज र ३६ मा धरौटी जफत!
+                    PPRC २२१ निर्णयको अध्ययन: १०१ निवेदन खारेज र ३६ मा धरौटी जफत!
                   </strong>
                   हदम्याद नाघेको (७ दिन), सिधै समितिमा गएको, वा रु २ करोडभन्दा कमको ठेक्का भएका कारण धरौटी जफत भएका छन्।
                 </div>

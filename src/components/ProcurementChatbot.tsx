@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ArrowUpRight, Bot, BookOpen, FileText, Mic, MicOff, RotateCcw, Search, Send, Sparkles, Volume2, VolumeX } from 'lucide-react';
+import { ArrowUpRight, Bot, BookOpen, ClipboardCheck, FileText, Mic, MicOff, RotateCcw, Scale, Search, Send, Sparkles, Volume2, VolumeX } from 'lucide-react';
 import {
   PROCUREMENT_OFFICIAL_LINKS,
   ProcurementEvidence,
@@ -16,7 +16,47 @@ interface ChatMessage {
   role: 'user' | 'assistant';
   text: string;
   sources?: ProcurementEvidence[];
+  speakOnArrival?: boolean;
 }
+
+type ChatTask = 'general' | 'legal' | 'method' | 'checklist' | 'draft';
+
+const taskActions: {
+  task: Exclude<ChatTask, 'general'>;
+  title: string;
+  description: string;
+  prompt: string;
+  icon: React.ReactNode;
+}[] = [
+    {
+      task: 'legal',
+      title: 'कानूनी प्रश्न',
+      description: 'दफा/नियम र स्रोतसहित सरल उत्तर',
+      prompt: 'सार्वजनिक खरिद ऐन, नियमावली वा संशोधनसम्बन्धी प्रश्न: [आफ्नो प्रश्न यहाँ लेख्नुहोस्]',
+      icon: <Scale className="h-5 w-5" />,
+    },
+    {
+      task: 'method',
+      title: 'खरिद विधि छनोट',
+      description: 'प्रकृति र लागतका आधारमा मार्गदर्शन',
+      prompt: 'मेरो खरिदका लागि उपयुक्त विधि सिफारिस गर्नुहोस्। खरिदको प्रकार/विवरण: [ ]; स्वीकृत लागत अनुमान (रु.): [ ]; विशेष अवस्था: [छैन/उल्लेख गर्नुहोस्]',
+      icon: <Search className="h-5 w-5" />,
+    },
+    {
+      task: 'checklist',
+      title: 'चरणबद्ध चेकलिस्ट',
+      description: 'चरणअनुसार काम र कागजातको सूची',
+      prompt: 'मेरो खरिदको चरणबद्ध चेकलिस्ट बनाउनुहोस्। खरिदको प्रकार/विधि: [ ]; हालको चरण: [ ]; लागत अनुमान (रु.): [ ]',
+      icon: <ClipboardCheck className="h-5 w-5" />,
+    },
+    {
+      task: 'draft',
+      title: 'सूचना/पत्र मस्यौदा',
+      description: 'सूचना, LOI वा पत्रको सम्पादनयोग्य मस्यौदा',
+      prompt: 'खरिदसम्बन्धी मस्यौदा तयार गर्नुहोस्। कागजातको प्रकार (सूचना/LOI/पत्र): [ ]; निकाय/कार्यालय: [ ]; ठेक्का नं. र विषय: [ ]; आवश्यक विवरण: [ ]',
+      icon: <FileText className="h-5 w-5" />,
+    },
+  ];
 
 interface SpeechRecognitionAlternativeLike {
   transcript: string;
@@ -38,6 +78,7 @@ interface SpeechRecognitionErrorLike {
 
 interface SpeechRecognitionLike {
   lang: string;
+  continuous?: boolean;
   interimResults: boolean;
   maxAlternatives: number;
   onresult: ((event: SpeechRecognitionEventLike) => void) | null;
@@ -65,32 +106,6 @@ const suggestedQuestions = [
 function relatedQuestionContext(question: string, previousQuestion: string) {
   const isShortFollowUp = question.trim().length < 42 || /^(त्यो|यसमा|त्यसमा|उक्त|त्यसको|यसको|त्यसपछि|किन|कसरी|how|why|what about)\b/i.test(question.trim());
   return isShortFollowUp && previousQuestion ? `${previousQuestion} ${question}` : question;
-}
-
-function localFallbackAnswer(question: string, sources: ProcurementEvidence[]) {
-  if (!sources.length) {
-    return 'यस प्रश्नसँग प्रत्यक्ष मिल्ने स्थानीय स्रोत भेटिएन। अनुमान गरेर कानुनी उत्तर दिनुभन्दा आधिकारिक पछिल्लो ऐन/नियम र सम्बन्धित बोलपत्र कागजात जाँच्नुहोस्।';
-  }
-  const terms = Array.from(new Set(question.toLocaleLowerCase('ne-NP').split(/[^\p{L}\p{N}]+/u).filter((term) => term.length > 2)));
-  const sentences = sources.flatMap((source, sourceIndex) => source.excerpt
-    .split(/(?<=[।.!?])\s+/u)
-    .map((sentence) => {
-      const text = sentence.trim();
-      const normalized = text.toLocaleLowerCase('ne-NP');
-      const matches = terms.filter((term) => normalized.includes(term)).length;
-      return { text, sourceIndex, score: matches * 2 - sourceIndex * 0.15 };
-    })
-    .filter((item) => item.text.length > 24 && item.score > 0));
-  sentences.sort((left, right) => right.score - left.score);
-  const seen = new Set<string>();
-  const excerpts = sentences.filter(({ text }) => {
-    if (seen.has(text)) return false;
-    seen.add(text);
-    return true;
-  }).slice(0, 3).map(({ text }) => text);
-  const lead = sources[0];
-  const answer = excerpts.length ? excerpts.join('\n\n') : lead.excerpt.slice(0, 700);
-  return `स्थानीय स्रोत **${lead.title} (${lead.reference})** मा भेटिएको सान्दर्भिक अंश:\n\n${answer}\n\nयो स्रोतबाट निकालिएको अंश हो, AI ले तयार गरेको संश्लेषित राय होइन। लागू हुने पछिल्लो ऐन/नियम र जारी कागजातसँग रुजु गर्नुहोस्।`;
 }
 
 function SourceCard({ source, index, onNavigate }: { source: ProcurementEvidence; index: number; onNavigate: (tab: string) => void }) {
@@ -123,9 +138,47 @@ function SourceCard({ source, index, onNavigate }: { source: ProcurementEvidence
   );
 }
 
+function buildLocalFallbackAnswer(question: string, sources: ProcurementEvidence[], reason?: string): string {
+  if (!sources || sources.length === 0) {
+    return 'सम्बन्धित स्थानीय सामग्री फेला परेन। कृपया आधिकारिक ऐन र नियमावलीको पाठ हेर्नुहोस्।';
+  }
+
+  const terms = Array.from(
+    new Set(
+      question
+        .toLocaleLowerCase('ne-NP')
+        .split(/[^\p{L}\p{N}]+/u)
+        .filter((term) => term.length >= 2)
+    )
+  );
+
+  const scoredSentences = sources
+    .flatMap((source, sourceIndex) => {
+      const parts = source.excerpt.split(/(?<=[।.!?\n])\s+/u);
+      return parts.map((sentence) => {
+        const text = sentence.trim();
+        const normalized = text.toLocaleLowerCase('ne-NP');
+        const matchCount = terms.filter((term) => normalized.includes(term)).length;
+        const score = matchCount * 3 - sourceIndex * 0.2;
+        return { text, reference: source.reference, title: source.title, score };
+      });
+    })
+    .filter((item) => item.text.length > 20)
+    .sort((a, b) => b.score - a.score);
+
+  const topExcerpts = Array.from(new Set(scoredSentences.slice(0, 3).map((item) => item.text)));
+  const leadSource = sources[0];
+  const bodyText = topExcerpts.length > 0 ? topExcerpts.join('\n\n') : leadSource.excerpt.slice(0, 700);
+
+  const note = reason ? `(${reason})` : '';
+
+  return `⚠️ **AI सेवा समयमा उपलब्ध हुन सकेन ${note}।**\n\nतपाईंको प्रश्नका लागि स्थानीय ऐन/नियमावली **${leadSource.title} (${leadSource.reference})** मा रहेको सान्दर्भिक व्यवस्था:\n\n${bodyText}\n\n*(थप विस्तृत आधिकारिक कागजातका लागि तल सूचीकृत स्रोतहरू हेर्न सक्नुहुन्छ वा केही समयपछि पुनः प्रयास गर्न सक्नुहुन्छ।)*`;
+}
+
 export default function ProcurementChatbot({ onNavigate }: ProcurementChatbotProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [question, setQuestion] = useState('');
+  const [selectedTask, setSelectedTask] = useState<ChatTask>('general');
   const [pendingAiResponses, setPendingAiResponses] = useState(0);
   const [error, setError] = useState('');
   const [isListening, setIsListening] = useState(false);
@@ -134,9 +187,31 @@ export default function ProcurementChatbot({ onNavigate }: ProcurementChatbotPro
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const voiceTranscriptRef = useRef('');
+  const voiceInterimRef = useRef('');
+  const isManualStopRef = useRef(false);
+  const recognitionErrorRef = useRef<string | null>(null);
+  const silenceTimerRef = useRef<number | null>(null);
   const lastSpokenMessageIdRef = useRef<string | null>(null);
   const conversationVersionRef = useRef(0);
   const isSearching = pendingAiResponses > 0;
+
+  const resetSilenceTimer = () => {
+    if (silenceTimerRef.current) {
+      window.clearTimeout(silenceTimerRef.current);
+      silenceTimerRef.current = null;
+    }
+    // After speech is detected, 2.5 seconds of silence automatically stops recording and submits
+    silenceTimerRef.current = window.setTimeout(() => {
+      const captured = `${voiceTranscriptRef.current} ${voiceInterimRef.current}`.trim();
+      if (captured && recognitionRef.current) {
+        try {
+          recognitionRef.current.stop();
+        } catch {
+          // ignore
+        }
+      }
+    }, 2500);
+  };
 
   const speakText = (text: string) => {
     if (!('speechSynthesis' in window)) {
@@ -167,10 +242,10 @@ export default function ProcurementChatbot({ onNavigate }: ProcurementChatbotPro
 
   useEffect(() => {
     const latestMessage = messages[messages.length - 1];
-    if (latestMessage?.role !== 'assistant' || latestMessage.id === lastSpokenMessageIdRef.current) return;
+    if (isSearching || latestMessage?.role !== 'assistant' || !latestMessage.speakOnArrival || latestMessage.id === lastSpokenMessageIdRef.current) return;
     lastSpokenMessageIdRef.current = latestMessage.id;
     speakText(latestMessage.text);
-  }, [messages]);
+  }, [messages, isSearching]);
 
   useEffect(() => () => {
     recognitionRef.current?.abort();
@@ -178,50 +253,125 @@ export default function ProcurementChatbot({ onNavigate }: ProcurementChatbotPro
   }, []);
 
   const startVoiceInput = () => {
+    if (silenceTimerRef.current) {
+      window.clearTimeout(silenceTimerRef.current);
+      silenceTimerRef.current = null;
+    }
+
     if (isListening) {
-      recognitionRef.current?.stop();
+      isManualStopRef.current = true;
+      try {
+        recognitionRef.current?.stop();
+      } catch {
+        // ignore
+      }
       return;
     }
+
     const SpeechRecognition = (window as SpeechRecognitionWindow).SpeechRecognition
       || (window as SpeechRecognitionWindow).webkitSpeechRecognition;
+
     if (!SpeechRecognition) {
-      setError('यो ब्राउजरमा आवाजबाट प्रश्न लिने सुविधा उपलब्ध छैन। कृपया Chrome वा Edge प्रयोग गर्नुहोस् अथवा प्रश्न टाइप गर्नुहोस्।');
+      setError('यो ब्राउजरमा आवाजबाट प्रश्न सोध्ने सुविधा (Web Speech API) उपलब्ध छैन। कृपया Google Chrome प्रयोग गर्नुहोस् अथवा प्रश्न टाइप गर्नुहोस्।');
       return;
     }
+
     if ('speechSynthesis' in window) window.speechSynthesis.cancel();
     setIsSpeaking(false);
     setError('');
+
     voiceTranscriptRef.current = '';
-    const recognition = new SpeechRecognition();
+    voiceInterimRef.current = '';
+    isManualStopRef.current = false;
+    recognitionErrorRef.current = null;
+
+    let recognition: SpeechRecognitionLike;
+    try {
+      recognition = new SpeechRecognition();
+    } catch {
+      setError('माइक्रोफोन सेवा सुरु गर्न सकिएन। कृपया ब्राउजर रिफ्रेस गरी फेरि प्रयास गर्नुहोस्।');
+      return;
+    }
+
     recognition.lang = 'ne-NP';
+    recognition.continuous = true;
     recognition.interimResults = true;
     recognition.maxAlternatives = 1;
+
     recognition.onresult = (event) => {
       let interimTranscript = '';
       for (let index = event.resultIndex; index < event.results.length; index += 1) {
         const result = event.results[index];
-        if (result.isFinal) voiceTranscriptRef.current += result[0].transcript;
-        else interimTranscript += result[0].transcript;
+        if (result.isFinal) {
+          voiceTranscriptRef.current += ' ' + result[0].transcript;
+        } else {
+          interimTranscript += ' ' + result[0].transcript;
+        }
       }
-      setQuestion(`${voiceTranscriptRef.current} ${interimTranscript}`.trim());
+      voiceInterimRef.current = interimTranscript;
+      const liveText = `${voiceTranscriptRef.current} ${voiceInterimRef.current}`.replace(/\s+/g, ' ').trim();
+      if (liveText) {
+        setQuestion(liveText);
+        resetSilenceTimer();
+      }
     };
+
     recognition.onerror = (event) => {
-      const message = event.error === 'not-allowed' || event.error === 'service-not-allowed'
-        ? 'माइक्रोफोन अनुमति दिइएन। ब्राउजर सेटिङमा माइक्रोफोन अनुमति दिएर फेरि प्रयास गर्नुहोस्।'
-        : event.error === 'no-speech'
-          ? 'आवाज सुनिएन। माइक्रोफोन नजिकबाट फेरि बोल्नुहोस्।'
-          : `आवाज पहिचान गर्न सकिएन (${event.error})। फेरि प्रयास गर्नुहोस्।`;
-      setError(message);
-      voiceTranscriptRef.current = '';
+      recognitionErrorRef.current = event.error;
+      const hasTranscript = Boolean(`${voiceTranscriptRef.current} ${voiceInterimRef.current}`.trim());
+
+      let message = '';
+      if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+        message = 'माइक्रोफोन अनुमति अस्वीकार गरिएको छ। कृपया ब्राउजरको URL बारमा रहेको लक वा माइक आइकनमा क्लिक गरी अनुमति (Allow) दिएर फेरि प्रयास गर्नुहोस्।';
+      } else if (event.error === 'no-speech') {
+        if (!hasTranscript) {
+          message = 'आवाज स्पष्ट सुनिएन। कृपया माइक नजिक गएर स्पष्ट बोल्नुहोस् वा प्रश्न टाइप गर्नुहोस्।';
+        }
+      } else if (event.error === 'network') {
+        message = 'ब्राउजरको voice recognition सेवामा नेटवर्क समस्या देखियो। इन्टरनेट जडान जाँच्नुहोस् वा प्रश्न टाइप गर्नुहोस्।';
+      } else if (event.error === 'language-not-supported') {
+        message = 'यस ब्राउजरमा नेपाली भाषा (ne-NP) समर्थित भएन। कृपया Google Chrome प्रयोग गर्नुहोस् वा प्रश्न टाइप गर्नुहोस्।';
+      } else if (event.error === 'aborted') {
+        message = '';
+      } else {
+        message = `आवाज पहिचान गर्न सकिएन (${event.error})। कृपया फेरि प्रयास गर्नुहोस् वा प्रश्न टाइप गर्नुहोस्।`;
+      }
+
+      if (message) {
+        setError(message);
+      }
       setIsListening(false);
       recognitionRef.current = null;
     };
+
     recognition.onend = () => {
+      if (silenceTimerRef.current) {
+        window.clearTimeout(silenceTimerRef.current);
+        silenceTimerRef.current = null;
+      }
       setIsListening(false);
       recognitionRef.current = null;
-      const transcript = voiceTranscriptRef.current.trim();
-      if (transcript) void sendQuestion(transcript);
+
+      const transcript = `${voiceTranscriptRef.current} ${voiceInterimRef.current}`.replace(/\s+/g, ' ').trim();
+      voiceTranscriptRef.current = '';
+      voiceInterimRef.current = '';
+
+      if (transcript) {
+        setQuestion(transcript);
+        void sendQuestion(transcript);
+        return;
+      }
+
+      if (isManualStopRef.current) {
+        isManualStopRef.current = false;
+        return;
+      }
+
+      if (!recognitionErrorRef.current) {
+        setError('कुनै आवाज पहिचान भएन। कृपया माइक नजिक स्पष्ट बोल्नुहोस् वा प्रश्न टाइप गर्नुहोस्।');
+      }
     };
+
     recognitionRef.current = recognition;
     try {
       recognition.start();
@@ -234,8 +384,14 @@ export default function ProcurementChatbot({ onNavigate }: ProcurementChatbotPro
   };
 
   const clearConversation = () => {
+    if (silenceTimerRef.current) {
+      window.clearTimeout(silenceTimerRef.current);
+      silenceTimerRef.current = null;
+    }
     conversationVersionRef.current += 1;
+    isManualStopRef.current = true;
     voiceTranscriptRef.current = '';
+    voiceInterimRef.current = '';
     recognitionRef.current?.abort();
     recognitionRef.current = null;
     setIsListening(false);
@@ -244,13 +400,19 @@ export default function ProcurementChatbot({ onNavigate }: ProcurementChatbotPro
     setMessages([]);
     setError('');
     setQuestion('');
+    setSelectedTask('general');
     inputRef.current?.focus();
   };
 
-  const sendQuestion = async (value = question) => {
+  const sendQuestion = async (value = question, task = selectedTask) => {
+    if (silenceTimerRef.current) {
+      window.clearTimeout(silenceTimerRef.current);
+      silenceTimerRef.current = null;
+    }
     const prompt = value.trim();
     if (!prompt) return;
     if (recognitionRef.current) {
+      isManualStopRef.current = true;
       voiceTranscriptRef.current = '';
       recognitionRef.current.abort();
       recognitionRef.current = null;
@@ -260,26 +422,32 @@ export default function ProcurementChatbot({ onNavigate }: ProcurementChatbotPro
     setError('');
     const requestVersion = conversationVersionRef.current;
     const previousQuestion = [...messages].reverse().find((message) => message.role === 'user')?.text || '';
-    const retrievalQuery = relatedQuestionContext(prompt, previousQuestion);
-    const sources = searchProcurementKnowledge(retrievalQuery, 4);
+    const retrievalQuery = relatedQuestionContext(prompt.replace(/\[[^\]]*\]/g, ' '), previousQuestion);
+    const sources = searchProcurementKnowledge(retrievalQuery, 6);
     const assistantMessageId = crypto.randomUUID();
     const userMessage: ChatMessage = { id: crypto.randomUUID(), role: 'user', text: prompt };
-    const quickAnswer: ChatMessage = {
+    const pendingAnswer: ChatMessage = {
       id: assistantMessageId,
       role: 'assistant',
-      text: localFallbackAnswer(prompt, sources),
+      text: 'ऐन/नियम र सम्बन्धित स्रोत जाँचेर जवाफ तयार गर्दैछु…',
       sources,
     };
-    setMessages((current) => [...current, userMessage, quickAnswer]);
+    setMessages((current) => [...current, userMessage, pendingAnswer]);
 
-    if (!supabase) return;
+    if (!supabase) {
+      setMessages((current) => current.map((message) => message.id === assistantMessageId
+        ? { ...message, text: 'AI सेवा जडान भएको छैन। कृपया प्रशासकलाई Supabase configuration जाँच्न भन्नुहोस्।' }
+        : message));
+      return;
+    }
 
     setPendingAiResponses((count) => count + 1);
     try {
-      const history = messages.slice(-8).map(({ role, text }) => ({ role, text }));
+      const history = messages.filter((message) => message.role === 'user').slice(-4).map(({ role, text }) => ({ role, text }));
       const { data, error: invokeError } = await supabase.functions.invoke<{ answer?: string; error?: string }>('procurement-chat', {
         body: {
           question: prompt,
+          task,
           history,
           sources: sources.map(({ kind, title, reference, excerpt }) => ({ kind, title, reference, excerpt })),
         },
@@ -294,24 +462,30 @@ export default function ProcurementChatbot({ onNavigate }: ProcurementChatbotPro
             // Fall back to setup guidance when the function returned no JSON body.
           }
         }
-        throw new Error(serviceMessage || 'AI सेवा उपलब्ध भएन। Edge Function deploy र GEMINI_API_KEY secret सेटअप जाँच्नुहोस्।');
+        throw new Error(serviceMessage || 'AI सेवा समयमा उपलब्ध हुन सकेन (Timeout)।');
       }
       if (!data?.answer) throw new Error(data?.error || 'AI बाट जवाफ प्राप्त भएन। फेरि प्रयास गर्नुहोस्।');
       if (requestVersion === conversationVersionRef.current) {
         setMessages((current) => current.map((message) => message.id === assistantMessageId
-          ? { ...message, text: data.answer! }
+          ? { ...message, text: data.answer!, speakOnArrival: true }
           : message));
       }
     } catch (caughtError: unknown) {
       const message = caughtError instanceof Error ? caughtError.message : 'AI जवाफ प्राप्त भएन। फेरि प्रयास गर्नुहोस्।';
-      if (requestVersion === conversationVersionRef.current) setError(`स्थानीय स्रोतको द्रुत जवाफ देखाइएको छ। विस्तृत AI जवाफ उपलब्ध भएन: ${message}`);
+      if (requestVersion === conversationVersionRef.current) {
+        const fallbackAnswer = buildLocalFallbackAnswer(prompt, sources, message);
+        setMessages((current) => current.map((item) => item.id === assistantMessageId
+          ? { ...item, text: fallbackAnswer }
+          : item));
+        setError(`AI सेवा सन्देश: ${message}`);
+      }
     } finally {
       setPendingAiResponses((count) => Math.max(0, count - 1));
     }
   };
 
   return (
-    <div className="mx-auto max-w-6xl space-y-5 pb-6">
+    <div className="w-full space-y-6 pb-6">
       <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div className="bg-gradient-to-r from-[#173b63] to-[#28669a] px-5 py-6 text-white sm:px-7">
           <div className="flex flex-wrap items-start justify-between gap-4">
@@ -319,11 +493,11 @@ export default function ProcurementChatbot({ onNavigate }: ProcurementChatbotPro
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white/10 ring-1 ring-white/15"><Bot className="h-6 w-6" /></div>
               <div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <h1 className="text-xl font-bold sm:text-2xl">सार्वजनिक खरिद स्रोत सहायक</h1>
+                  <h1 className="text-xl font-bold sm:text-2xl">सार्वजनिक खरिद सहायक</h1>
                   <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2.5 py-1 text-[11px] font-semibold text-blue-50"><Sparkles className="h-3 w-3" /> स्रोत-आधारित खोज</span>
                 </div>
-                <p className="mt-2 max-w-3xl text-sm leading-6 text-blue-50/90">
-                  ऐन/नियम, PPMO राय, PPRC निर्णय, SBD/DBD र एपका सामग्रीबाट सीधा उत्तर पाउनुहोस्; आवश्यक परे आधार स्रोत खोल्नुहोस्।
+                <p className="mt-2 max-w-4xl text-sm leading-6 text-blue-50/90">
+                  ऐन/नियम र संशोधनका सन्दर्भसहित उत्तर, खरिद विधि छनोट, चरणबद्ध चेकलिस्ट र सूचना/LOI/पत्रको मस्यौदामा सहयोग पाउनुहोस्।
                 </p>
               </div>
             </div>
@@ -351,10 +525,30 @@ export default function ProcurementChatbot({ onNavigate }: ProcurementChatbotPro
             <div className="py-3">
               <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-blue-800"><Search className="h-6 w-6" /></div>
               <h2 className="mt-4 text-center text-lg font-bold text-slate-900">खरिदसम्बन्धी प्रश्न लेख्नुहोस्</h2>
-              <p className="mx-auto mt-1 max-w-2xl text-center text-sm leading-6 text-slate-600">दफा/नियम नम्बर, खरिद विधि, SBD/DBD, PPMO राय वा PPRC निर्णयको विषय उल्लेख गर्दा खोजी अझ सान्दर्भिक हुन्छ।</p>
+              <p className="mx-auto mt-1 max-w-3xl text-center text-sm leading-6 text-slate-600">कुनै सहायता छान्नुहोस् वा सिधै प्रश्न लेख्नुहोस्। लागत, खरिदको प्रकार, चरण वा मस्यौदाका विवरण दिनुहुँदा मार्गदर्शन अझ सान्दर्भिक हुन्छ।</p>
+              <div className="mt-5 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
+                {taskActions.map((action) => (
+                  <button
+                    key={action.task}
+                    type="button"
+                    onClick={() => {
+                      setSelectedTask(action.task);
+                      setQuestion(action.prompt);
+                      inputRef.current?.focus();
+                    }}
+                    className="flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-3 text-left transition hover:border-blue-300 hover:bg-blue-50/60"
+                  >
+                    <span className="mt-0.5 text-blue-700">{action.icon}</span>
+                    <span>
+                      <span className="block text-sm font-bold text-slate-800">{action.title}</span>
+                      <span className="mt-0.5 block text-xs text-slate-500">{action.description}</span>
+                    </span>
+                  </button>
+                ))}
+              </div>
               <div className="mt-5 flex flex-wrap justify-center gap-2">
                 {suggestedQuestions.map((item) => (
-                  <button key={item} type="button" onClick={() => void sendQuestion(item)} className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-left text-xs font-medium leading-5 text-slate-700 transition hover:border-blue-300 hover:bg-blue-50">
+                  <button key={item} type="button" onClick={() => { setSelectedTask('general'); void sendQuestion(item, 'general'); }} className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-left text-xs font-medium leading-5 text-slate-700 transition hover:border-blue-300 hover:bg-blue-50">
                     {item}
                   </button>
                 ))}
@@ -362,7 +556,7 @@ export default function ProcurementChatbot({ onNavigate }: ProcurementChatbotPro
             </div>
           ) : (
             messages.map((message) => (
-              <div key={message.id} className={message.role === 'user' ? 'ml-auto max-w-3xl' : 'max-w-4xl'}>
+              <div key={message.id} className={message.role === 'user' ? 'ml-auto max-w-2xl sm:max-w-3xl lg:max-w-4xl' : 'w-full max-w-full lg:max-w-5xl xl:max-w-6xl'}>
                 <div className={`flex items-start gap-3 ${message.role === 'user' ? 'flex-row-reverse' : ''}`}>
                   <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl ${message.role === 'user' ? 'bg-blue-700 text-white' : 'bg-slate-100 text-slate-700'}`}>
                     {message.role === 'user' ? <span className="text-xs font-bold">तपाईं</span> : <Bot className="h-4 w-4" />}
@@ -381,7 +575,7 @@ export default function ProcurementChatbot({ onNavigate }: ProcurementChatbotPro
                     )}
                     {message.sources && message.sources.length > 0 && (
                       <details className="mt-4 rounded-xl border border-slate-200 bg-white/80 p-3">
-                        <summary className="flex cursor-pointer list-none items-center gap-2 text-xs font-bold text-slate-700"><FileText className="h-4 w-4" /> जवाफका आधार स्रोत ({message.sources.length})</summary>
+                        <summary className="flex cursor-pointer list-none items-center gap-2 text-xs font-bold text-slate-700"><FileText className="h-4 w-4" /> सम्बन्धित स्थानीय सन्दर्भ—उत्तर होइन ({message.sources.length})</summary>
                         <div className="mt-3 space-y-3">
                           {message.sources.map((source, index) => <SourceCard key={source.id} source={source} index={index} onNavigate={onNavigate} />)}
                         </div>
@@ -403,6 +597,37 @@ export default function ProcurementChatbot({ onNavigate }: ProcurementChatbotPro
         </div>
 
         <form onSubmit={(event) => { event.preventDefault(); void sendQuestion(); }} className="border-t border-slate-200 bg-white p-4 sm:px-7">
+          <div className="mb-3 flex flex-wrap gap-2" aria-label="सहायता प्रकार छान्नुहोस्">
+            <button
+              type="button"
+              onClick={() => setSelectedTask('general')}
+              aria-pressed={selectedTask === 'general'}
+              className={`rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition ${selectedTask === 'general'
+                  ? 'border-blue-300 bg-blue-50 text-blue-800'
+                  : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                }`}
+            >
+              सामान्य प्रश्न
+            </button>
+            {taskActions.map((action) => (
+              <button
+                key={action.task}
+                type="button"
+                onClick={() => {
+                  setSelectedTask(action.task);
+                  setQuestion(action.prompt);
+                  inputRef.current?.focus();
+                }}
+                aria-pressed={selectedTask === action.task}
+                className={`rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition ${selectedTask === action.task
+                    ? 'border-blue-300 bg-blue-50 text-blue-800'
+                    : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                  }`}
+              >
+                {action.title}
+              </button>
+            ))}
+          </div>
           <label htmlFor="procurement-chat-question" className="sr-only">खरिदसम्बन्धी प्रश्न</label>
           <div className="flex items-end gap-2 rounded-2xl border border-slate-300 bg-slate-50 p-2 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/15">
             <textarea
@@ -426,11 +651,10 @@ export default function ProcurementChatbot({ onNavigate }: ProcurementChatbotPro
               onClick={startVoiceInput}
               aria-label={isListening ? 'आवाज रेकर्डिङ रोक्नुहोस्' : 'बोलेर प्रश्न सोध्नुहोस्'}
               title={isListening ? 'रेकर्डिङ रोक्नुहोस्' : 'बोलेर प्रश्न सोध्नुहोस्'}
-              className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border transition disabled:cursor-not-allowed disabled:opacity-50 ${
-                isListening
-                  ? 'animate-pulse border-red-300 bg-red-50 text-red-700'
+              className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border transition disabled:cursor-not-allowed disabled:opacity-50 ${isListening
+                  ? 'animate-pulse border-red-400 bg-red-100 text-red-700 shadow-sm'
                   : 'border-slate-200 bg-white text-slate-600 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-800'
-              }`}
+                }`}
             >
               {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
             </button>
@@ -439,7 +663,7 @@ export default function ProcurementChatbot({ onNavigate }: ProcurementChatbotPro
             </button>
           </div>
           <div className="mt-2 flex flex-wrap items-center justify-between gap-2 px-1 text-[11px] text-slate-500">
-              <span>{isListening ? 'सुन्दैछु… बोलिसकेपछि प्रश्न आफैं पठाइनेछ।' : `${question.length}/1,600 · माइक्रोफोनबाट बोल्नुहोस् वा प्रश्न लेख्नुहोस्। जवाफ बोलेर सुनाइन्छ।`}</span>
+            <span>{isListening ? '🎙️ सुन्दैछु… बोल्दै गर्दा माथि बक्समा देखिनेछ; रोकिनासाथ पठाइनेछ।' : `${question.length}/1,600 · माइक थिचेर बोल्नुहोस् वा प्रश्न टाइप गर्नुहोस्।`}</span>
             <span>Google Gemini प्रयोग गरिन्छ</span>
           </div>
         </form>

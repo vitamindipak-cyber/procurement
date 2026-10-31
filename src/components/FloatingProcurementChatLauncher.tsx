@@ -120,8 +120,8 @@ export const FloatingProcurementChatLauncher: React.FC<{ onOpen: () => void }> =
     <button
       ref={buttonRef}
       type="button"
-      aria-label="खरिद स्रोत सहायक खोल्नुहोस्; तानेर स्थान सार्नुहोस्"
-      title="खरिद स्रोत सहायक — तानेर सार्नुहोस्"
+      aria-label="खरिद सहायक खोल्नुहोस्; तानेर स्थान सार्नुहोस्"
+      title="खरिद सहायक — तानेर सार्नुहोस्"
       onClick={() => {
         if (!suppressClickRef.current) onOpen();
       }}
@@ -130,12 +130,11 @@ export const FloatingProcurementChatLauncher: React.FC<{ onOpen: () => void }> =
       onPointerUp={handlePointerEnd}
       onPointerCancel={handlePointerEnd}
       style={position ? { left: position.left, top: position.top } : undefined}
-      className={`fixed z-40 inline-flex h-14 items-center gap-2 rounded-full border border-blue-200 bg-white px-4 text-blue-800 shadow-lg transition-shadow hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 touch-none ${
-        position ? '' : 'bottom-6 right-6'
-      } cursor-grab active:cursor-grabbing`}
+      className={`fixed z-40 inline-flex h-14 items-center gap-2 rounded-full border border-blue-200 bg-white px-4 text-blue-800 shadow-lg transition-shadow hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 touch-none ${position ? '' : 'bottom-6 right-6'
+        } cursor-grab active:cursor-grabbing`}
     >
       <Bot className="h-5 w-5 shrink-0" aria-hidden="true" />
-      <span className="text-sm font-bold">खरिद स्रोत सहायक</span>
+      <span className="text-sm font-bold">खरिद सहायक</span>
       <GripVertical className="h-4 w-4 text-slate-400" aria-hidden="true" />
     </button>
   );

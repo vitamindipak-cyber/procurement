@@ -5,9 +5,11 @@
 
 import React, { lazy, Suspense, useState, useEffect } from 'react';
 import { Sidebar } from './components/Sidebar';
-import { TopHeader } from './components/TopHeader';
+import { TopHeader, TAB_TITLES } from './components/TopHeader';
 import { DashboardView } from './components/DashboardView';
 import { FloatingProcurementChatLauncher } from './components/FloatingProcurementChatLauncher';
+import { MobileBottomNav } from './components/MobileBottomNav';
+import { ScrollToTop } from './components/ScrollToTop';
 import { ProcurementAdvisorWizard } from './components/ProcurementAdvisorWizard';
 import { ProcurementMethodsView } from './components/ProcurementMethodsView';
 import { MethodChecklistsView } from './components/MethodChecklistsView';
@@ -69,13 +71,88 @@ function ProcurementApp({
     }
     return 'entity';
   });
-  const [activeTab, setActiveTab] = useState<string>(() => {
+  const [activeTab, setActiveTabState] = useState<string>(() => {
     try {
+      const hash = window.location.hash.replace(/^#/, '');
+      if (hash && TAB_TITLES[hash]) return hash;
       const savedMode = localStorage.getItem('app_user_mode');
       if (savedMode === 'bidder') return 'bidder-hub';
-    } catch {}
+    } catch { }
     return 'dashboard';
   });
+
+  const [historyStack, setHistoryStack] = useState<string[]>([activeTab]);
+  const [historyIndex, setHistoryIndex] = useState<number>(0);
+  const [recentTabs, setRecentTabs] = useState<string[]>(() => {
+    try {
+      const saved = sessionStorage.getItem('recent_tabs');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch { }
+    return [activeTab];
+  });
+
+  const setActiveTab = (tabId: string, addToHistory = true) => {
+    if (!TAB_TITLES[tabId]) return;
+    setActiveTabState(tabId);
+    try {
+      window.location.hash = '#' + tabId;
+    } catch { }
+
+    if (addToHistory) {
+      setHistoryStack((prev) => {
+        const next = prev.slice(0, historyIndex + 1);
+        return [...next, tabId];
+      });
+      setHistoryIndex((prev) => prev + 1);
+    }
+
+    setRecentTabs((prev) => {
+      const updated = [tabId, ...prev.filter((id) => id !== tabId)].slice(0, 6);
+      try {
+        sessionStorage.setItem('recent_tabs', JSON.stringify(updated));
+      } catch { }
+      return updated;
+    });
+  };
+
+  const handleGoBack = () => {
+    if (historyIndex > 0) {
+      const prevTab = historyStack[historyIndex - 1];
+      setHistoryIndex((i) => i - 1);
+      setActiveTabState(prevTab);
+      try {
+        window.location.hash = '#' + prevTab;
+      } catch { }
+    }
+  };
+
+  const handleGoForward = () => {
+    if (historyIndex < historyStack.length - 1) {
+      const nextTab = historyStack[historyIndex + 1];
+      setHistoryIndex((i) => i + 1);
+      setActiveTabState(nextTab);
+      try {
+        window.location.hash = '#' + nextTab;
+      } catch { }
+    }
+  };
+
+  const canGoBack = historyIndex > 0;
+  const canGoForward = historyIndex < historyStack.length - 1;
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace(/^#/, '');
+      if (hash && TAB_TITLES[hash] && hash !== activeTab) {
+        setActiveTab(hash, false);
+      }
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, [activeTab]);
   const [isSidebarMobileOpen, setIsSidebarMobileOpen] = useState<boolean>(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(() => {
     try {
@@ -90,7 +167,7 @@ function ProcurementApp({
       const next = prev === 'entity' ? 'bidder' : 'entity';
       try {
         localStorage.setItem('app_user_mode', next);
-      } catch {}
+      } catch { }
       if (next === 'bidder') {
         setActiveTab('bidder-hub');
       } else {
@@ -189,6 +266,12 @@ function ProcurementApp({
       } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b' && !isInput) {
         e.preventDefault();
         handleToggleSidebarCollapse();
+      } else if (e.altKey && e.key === 'ArrowLeft' && !isInput) {
+        e.preventDefault();
+        handleGoBack();
+      } else if (e.altKey && e.key === 'ArrowRight' && !isInput) {
+        e.preventDefault();
+        handleGoForward();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -236,7 +319,7 @@ function ProcurementApp({
   };
 
   const handleSelectSearchResult = (
-    category: 'method' | 'stage' | 'checklist' | 'clause' | 'schedule' | 'dilemma' | 'glossary' | 'template', 
+    category: 'method' | 'stage' | 'checklist' | 'clause' | 'schedule' | 'dilemma' | 'glossary' | 'template' | 'restriction',
     id: string
   ) => {
     if (category === 'method') {
@@ -257,6 +340,8 @@ function ProcurementApp({
     } else if (category === 'template') {
       setSelectedTemplateId(id);
       setActiveTab('templates');
+    } else if (category === 'restriction') {
+      setActiveTab('law-corpus');
     }
   };
 
@@ -307,6 +392,9 @@ function ProcurementApp({
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
+      <a href="#main-content" className="skip-to-content">
+        मुख्य सामग्रीमा जानुहोस्
+      </a>
       {/* Sidebar Navigation */}
       <Sidebar
         activeTab={activeTab}
@@ -328,17 +416,21 @@ function ProcurementApp({
         {/* Top Header with Breadcrumbs & Actions */}
         <TopHeader
           activeTab={activeTab}
+          setActiveTab={setActiveTab}
           onToggleSidebarMobile={() => setIsSidebarMobileOpen(true)}
-          isSidebarCollapsed={isSidebarCollapsed}
-          onToggleSidebarCollapse={handleToggleSidebarCollapse}
           onOpenSearch={() => setIsSearchOpen(true)}
           onLogout={onLogout}
           userMode={userMode}
           onToggleUserMode={handleToggleUserMode}
+          canGoBack={canGoBack}
+          canGoForward={canGoForward}
+          onGoBack={handleGoBack}
+          onGoForward={handleGoForward}
+          recentTabs={recentTabs}
         />
 
         {/* Viewport Content */}
-        <main aria-label="पृष्ठको मुख्य सामग्री" className="flex-1 w-full p-4 sm:p-6 lg:p-8">
+        <main id="main-content" aria-label="पृष्ठको मुख्य सामग्री" className="flex-1 w-full p-4 sm:p-6 lg:p-8 pb-24 lg:pb-8">
           {authError && (
             <p role="alert" className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
               {authError}
@@ -369,6 +461,7 @@ function ProcurementApp({
                 onOpenNewProjectModal={() => setIsNewProjectOpen(true)}
                 onSelectMethod={navigateToMethodWithId}
                 onSelectStage={() => setActiveTab('stages')}
+                onNavigateToGuide={setActiveTab}
               />
             )
           )}
@@ -572,6 +665,17 @@ function ProcurementApp({
         onClose={() => setIsNewProjectOpen(false)}
         onAddProject={handleAddProject}
       />
+
+      {/* Mobile Bottom Navigation Bar */}
+      <MobileBottomNav
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        onOpenMobileMenu={() => setIsSidebarMobileOpen(true)}
+        userMode={userMode}
+      />
+
+      {/* Floating Scroll to Top button */}
+      <ScrollToTop />
     </div>
   );
 }
@@ -624,7 +728,13 @@ export default function App() {
       );
     }
     if (isAuthLoading) {
-      return <main role="status" className="flex min-h-screen items-center justify-center text-sm text-slate-600">लगइन जाँच हुँदैछ...</main>;
+      return (
+        <main role="status" className="flex min-h-screen flex-col items-center justify-center gap-3 bg-[#eef3f8] text-slate-700">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#163e68] text-lg font-bold text-white shadow-md">ख</div>
+          <p className="text-sm font-semibold">सार्वजनिक खरिद सहयोगी</p>
+          <p className="text-xs text-slate-500">जाँच हुँदैछ...</p>
+        </main>
+      );
     }
     return (
       <LoginPage

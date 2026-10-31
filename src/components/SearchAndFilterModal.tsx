@@ -24,8 +24,10 @@ import { ProcurementType } from '../types/procurement';
 import {
   HelpCircle,
   BookA,
-  FileText
+  FileText,
+  Ban
 } from 'lucide-react';
+import { PROHIBITIONS_DATA, ALL_LEGAL_EXCEPTIONS } from '../data/restrictionsExceptionsData';
 
 const SEARCH_TERM_ALIASES: Record<string, string[]> = {
   'कालोसूची': ['कालोसूची', 'blacklisting'],
@@ -67,7 +69,7 @@ const matchesSearch = (value: unknown, term: string): boolean => {
 interface SearchAndFilterModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelectResult: (category: 'method' | 'stage' | 'checklist' | 'clause' | 'schedule' | 'dilemma' | 'glossary' | 'template', id: string) => void;
+  onSelectResult: (category: 'method' | 'stage' | 'checklist' | 'clause' | 'schedule' | 'dilemma' | 'glossary' | 'template' | 'restriction', id: string) => void;
 }
 
 export const SearchAndFilterModal: React.FC<SearchAndFilterModalProps> = ({
@@ -211,6 +213,33 @@ export const SearchAndFilterModal: React.FC<SearchAndFilterModalProps> = ({
       })
       : [];
 
+    // 9. Filter Prohibitions & Exceptions (बन्देज तथा कानूनी अपवादहरू)
+    const allRestrictionsList = [
+      ...PROHIBITIONS_DATA.map((p) => ({
+        id: p.id,
+        kind: 'prohibition' as const,
+        title: `🚫 निषेधित कार्य (${p.category})`,
+        text: p.prohibitionText,
+        legalRef: p.legalReference,
+        explanation: p.impactExplanation,
+      })),
+      ...ALL_LEGAL_EXCEPTIONS.map((exc) => ({
+        id: exc.id,
+        kind: 'exception' as const,
+        title: `⚡ अपवाद: ${exc.subjectOrSection} (${exc.outcomeLabel})`,
+        text: exc.exceptionText,
+        legalRef: `${exc.groupTitleNepali} · ${exc.legalReference}`,
+        explanation: exc.baseRule,
+      })),
+    ];
+
+    const matchedRestrictions = (selectedContentType === 'all' || selectedContentType === 'clauses')
+      ? allRestrictionsList.filter((r) => {
+        if (!term) return true;
+        return matchesSearch(r, term);
+      })
+      : [];
+
     const totalCount =
       matchedMethods.length +
       matchedClauses.length +
@@ -219,7 +248,8 @@ export const SearchAndFilterModal: React.FC<SearchAndFilterModalProps> = ({
       matchedSchedules.length +
       matchedDilemmas.length +
       matchedGlossary.length +
-      matchedTemplates.length;
+      matchedTemplates.length +
+      matchedRestrictions.length;
 
     return {
       methods: matchedMethods,
@@ -230,6 +260,7 @@ export const SearchAndFilterModal: React.FC<SearchAndFilterModalProps> = ({
       dilemmas: matchedDilemmas,
       glossary: matchedGlossary,
       templates: matchedTemplates,
+      restrictions: matchedRestrictions,
       totalCount,
     };
   }, [searchTerm, selectedType, selectedThreshold, selectedStage, selectedContentType]);
@@ -689,6 +720,43 @@ export const SearchAndFilterModal: React.FC<SearchAndFilterModalProps> = ({
                         <div className="text-[11px] text-slate-500 mt-2 pt-1 border-t border-red-100 font-mono">
                           {tmpl.legalReference}
                         </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Group 9: Prohibitions & Exceptions (बन्देज तथा कानूनी अपवादहरू) */}
+              {filteredResults.restrictions.length > 0 && (
+                <div>
+                  <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2.5">
+                    <Ban className="w-4 h-4 text-red-600" />
+                    <span>बन्देज तथा कानूनी अपवादहरू ({filteredResults.restrictions.length})</span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    {filteredResults.restrictions.map((res) => (
+                      <div
+                        key={res.id}
+                        onClick={() => {
+                          onSelectResult('restriction', res.id);
+                          onClose();
+                        }}
+                        className="p-3 rounded-lg border border-red-200 hover:border-red-400 hover:bg-red-50/20 transition-all cursor-pointer group text-left space-y-1"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-sm ${
+                            res.kind === 'prohibition' ? 'text-red-800 bg-red-100' : 'text-blue-800 bg-blue-100'
+                          }`}>
+                            {res.kind === 'prohibition' ? 'निषेध' : 'अपवाद'}
+                          </span>
+                          <span className="text-[10px] text-slate-500 font-mono">
+                            {res.legalRef}
+                          </span>
+                        </div>
+                        <h4 className="text-xs font-bold text-slate-900 group-hover:text-red-700 transition-colors">
+                          {res.title}
+                        </h4>
+                        <p className="text-xs text-slate-600 line-clamp-2">{res.text}</p>
                       </div>
                     ))}
                   </div>

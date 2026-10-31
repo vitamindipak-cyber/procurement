@@ -16,11 +16,13 @@ import { SBD_DOCUMENTS_LIST } from '../data/sbdRepositoryData';
 import { EGP_GUIDELINE_SECTIONS } from '../data/egpGuidelines';
 import { AMENDMENT_16_COMPARISONS } from '../data/amendmentComparisonsData';
 import { ICB_FAQS } from '../data/icbProcurementData';
+import { PROHIBITIONS_DATA, ALL_LEGAL_EXCEPTIONS } from '../data/restrictionsExceptionsData';
 import { enrichedPpmoOpinions, enrichedPprcDecisions } from '../../ppmo_pprc/src/data/procurementGuideData';
 
 export type ProcurementKnowledgeKind =
   | 'ऐन'
   | 'नियमावली'
+  | 'बन्देज तथा अपवाद'
   | 'PPMO राय'
   | 'PPRC निर्णय'
   | 'SBD/DBD कागजात'
@@ -266,9 +268,37 @@ for (const faq of ICB_FAQS) {
   });
 }
 
+for (const prohib of PROHIBITIONS_DATA) {
+  add({
+    id: `prohib-${prohib.id}`,
+    kind: 'बन्देज तथा अपवाद',
+    title: `कानूनी निषेध: ${prohib.category}`,
+    reference: prohib.legalReference,
+    text: `${prohib.prohibitionText} वर्ग: ${prohib.category}. कानुनी सन्दर्भ: ${prohib.legalReference}. ${prohib.impactExplanation || ''}`,
+    route: 'law-corpus',
+  });
+}
+
+for (const exc of ALL_LEGAL_EXCEPTIONS) {
+  add({
+    id: `exception-${exc.id}`,
+    kind: 'बन्देज तथा अपवाद',
+    title: `कानूनी अपवाद: ${exc.subjectOrSection} (${exc.outcomeLabel})`,
+    reference: `${exc.groupTitleNepali} · ${exc.legalReference}`,
+    text: `${exc.subjectOrSection} — ${exc.baseRule || ''}. अपवाद/विशेष व्यवस्था: ${exc.exceptionText}. परिणाम: ${exc.outcome} (${exc.outcomeLabel}). सन्दर्भ: ${exc.legalReference}`,
+    route: 'law-corpus',
+  });
+}
+
 const toAsciiDigits = (value: string) => value.replace(/[०-९]/g, (digit) => String('०१२३४५६७८९'.indexOf(digit)));
-const normalize = (value: string) => toAsciiDigits(value).toLocaleLowerCase('ne-NP').normalize('NFKC').replace(/[^\p{L}\p{N}]+/gu, ' ').replace(/\s+/g, ' ').trim();
-const stopWords = new Set(['के', 'कसरी', 'किन', 'हो', 'हुन्छ', 'छ', 'मा', 'को', 'का', 'कि', 'र', 'वा', 'तथा', 'गर्न', 'गर्ने', 'बारे', 'सम्बन्धमा', 'कुन', 'the', 'a', 'an', 'is', 'are', 'what', 'how', 'does', 'do', 'for', 'of', 'in', 'on', 'and', 'or', 'to']);
+const normalize = (value: string) => toAsciiDigits(value).toLocaleLowerCase('ne-NP').normalize('NFKC').replace(/[^\p{L}\p{M}\p{N}]+/gu, ' ').replace(/\s+/g, ' ').trim();
+const stopWords = new Set([
+  'के', 'कसरी', 'किन', 'हो', 'हुन्छ', 'छ', 'छन्', 'मा', 'को', 'का', 'की', 'कि', 'र', 'वा', 'तथा',
+  'गर्न', 'गर्ने', 'गर्नुपर्ने', 'गर्नुपर्छ', 'गर्नुहोस्', 'बारे', 'बारेमा', 'सम्बन्धमा', 'सम्बन्धी',
+  'कुन', 'कस्तो', 'कति', 'कहाँ', 'भएको', 'भए', 'भएमा', 'गर्दा', 'सक्छ', 'सकिन्छ', 'मिल्छ', 'मिल्ने',
+  'चाहिन्छ', 'देखाउनुहोस्', 'बताउनुहोस्', 'दिनुहोस्', 'please', 'the', 'a', 'an', 'is', 'are', 'what',
+  'how', 'does', 'do', 'for', 'of', 'in', 'on', 'and', 'or', 'to',
+]);
 
 const aliases: Record<string, string[]> = {
   bid: ['बोलपत्र'], tender: ['बोलपत्र'], bidding: ['बोलपत्र'], procurement: ['खरिद'],
@@ -280,33 +310,59 @@ const aliases: Record<string, string[]> = {
   procurementact: ['सार्वजनिक खरिद ऐन'], procurementrules: ['सार्वजनिक खरिद नियमावली'],
 };
 
-const index = sources.map((source) => ({ source, normalized: normalize(`${source.title} ${source.reference} ${source.text}`) }));
+const index = sources.map((source) => ({
+  source,
+  title: normalize(source.title),
+  reference: normalize(source.reference),
+  text: normalize(source.text),
+}));
 
 export function searchProcurementKnowledge(query: string, limit = 6): ProcurementEvidence[] {
   const normalizedQuery = normalize(query).slice(0, 240);
-  const rawTerms = normalizedQuery.split(' ').filter((term) => term.length > 1 && !stopWords.has(term));
-  const expandedTerms = new Set(rawTerms);
+  const rawTerms = Array.from(new Set(normalizedQuery.split(' ').filter((term) => term.length > 1 && !stopWords.has(term))));
+  if (rawTerms.length === 0) return [];
+  const expandedTerms = new Set<string>();
   for (const [term, expansions] of Object.entries(aliases)) {
     if (normalizedQuery.includes(normalize(term))) expansions.forEach((value) => expandedTerms.add(normalize(value)));
   }
-  const terms = Array.from(expandedTerms);
-  if (terms.length === 0) return [];
 
   const referenceMatch = normalizedQuery.match(/(?:दफा|नियम|section|rule)\s*([0-9]+\s*[क-ज्ञ]?)/u)?.[1]?.replace(/\s/g, '');
-  const scored = index.map(({ source, normalized }) => {
+  const asksLegalBasis = Boolean(referenceMatch || /ऐन|नियमावली|दफा|नियम|कानून|संशोधन/u.test(normalizedQuery));
+  const asksProcurementMethod = /विधि|छनोट|सिफारिस|सोझै|सिलबन्दी|दरभाउपत्र|खुला बोलपत्र|सीमा/u.test(normalizedQuery);
+  const scored = index.map(({ source, title, reference, text }) => {
     let score = 0;
     let matches = 0;
-    for (const term of terms) {
-      if (normalized.includes(term)) {
-        score += term.length <= 2 ? 0.7 : 1.7;
+    for (const term of rawTerms) {
+      const root = term.replace(/(?:को|का|की|ले|बाट|लाई|सँग|हरू|हरु)$/u, '');
+      const forms = root.length > 1 && root !== term ? [term, root] : [term];
+      if (forms.some((form) => title.includes(form))) {
+        score += 5;
+        matches += 1;
+      } else if (forms.some((form) => reference.includes(form))) {
+        score += 4;
+        matches += 1;
+      } else if (forms.some((form) => text.includes(form))) {
+        score += 1.5;
         matches += 1;
       }
     }
-    if (referenceMatch && normalize(source.reference).includes(normalize(referenceMatch))) score += 7;
-    if (source.kind === 'ऐन' || source.kind === 'नियमावली') score *= 1.12;
-    if (source.kind === 'PPMO राय' || source.kind === 'PPRC निर्णय') score *= 1.06;
-    return { source, normalized, score: matches > 0 || referenceMatch ? score : 0 };
-  }).filter((item) => item.score >= 1.7);
+    for (const term of expandedTerms) {
+      if (title.includes(term)) score += 2;
+      else if (reference.includes(term)) score += 1.5;
+      else if (text.includes(term)) score += 0.75;
+    }
+    const hasReferenceMatch = Boolean(referenceMatch && reference.includes(normalize(referenceMatch)));
+    if (hasReferenceMatch) score += 12;
+    if (asksLegalBasis && (source.kind === 'ऐन' || source.kind === 'नियमावली')) score += 14;
+    else if (asksProcurementMethod && source.kind === 'खरिद विधि') score += 16;
+    else if (source.kind === 'ऐन' || source.kind === 'नियमावली') score += 2;
+    else if (source.kind === 'खरिद विधि' || source.kind === 'चेकलिस्ट') score += 3;
+    else if (source.kind === 'संशोधन तुलना') score += 2;
+    const coverage = matches / rawTerms.length;
+    return { source, score, coverage, hasReferenceMatch };
+  }).filter((item) => referenceMatch
+    ? item.hasReferenceMatch
+    : item.score >= 4 && item.coverage >= Math.min(0.5, 2 / rawTerms.length));
 
   scored.sort((left, right) => right.score - left.score);
   const seen = new Set<string>();
@@ -314,10 +370,12 @@ export function searchProcurementKnowledge(query: string, limit = 6): Procuremen
     if (seen.has(source.id)) return false;
     seen.add(source.id);
     return true;
-  }).slice(0, Math.min(Math.max(limit, 1), 8)).map(({ source, normalized, score }) => {
+  }).slice(0, Math.min(Math.max(limit, 1), 8)).map(({ source, score }) => {
     const maxChars = source.kind === 'ऐन' || source.kind === 'नियमावली' ? 1800 : 1400;
     let excerpt = source.text.slice(0, maxChars);
-    const bestTerm = terms.sort((a, b) => normalized.indexOf(a) - normalized.indexOf(b)).find((term) => normalized.includes(term));
+    const sourceText = normalize(source.text);
+    const orderedTerms = [...rawTerms].sort((a, b) => sourceText.indexOf(a) - sourceText.indexOf(b));
+    const bestTerm = orderedTerms.find((term) => sourceText.includes(term));
     if (source.text.length > maxChars && bestTerm) {
       const position = normalize(source.text).indexOf(bestTerm);
       if (position > Math.round(maxChars * 0.4)) {

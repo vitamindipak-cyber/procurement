@@ -18,6 +18,7 @@ import {
   ShieldCheck,
   Check
 } from 'lucide-react';
+import { ProcessGuideStrip } from './ProcessGuideStrip';
 import { TrackedProject, ProcurementType } from '../types/procurement';
 import { 
   PROCUREMENT_METHODS, 
@@ -36,6 +37,7 @@ interface DashboardViewProps {
   onOpenNewProjectModal: () => void;
   onSelectMethod: (methodId: string) => void;
   onSelectStage: (stageId: string) => void;
+  onNavigateToGuide?: (tabId: string) => void;
 }
 
 export const DashboardView: React.FC<DashboardViewProps> = ({
@@ -44,6 +46,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   onOpenNewProjectModal,
   onSelectMethod,
   onSelectStage,
+  onNavigateToGuide,
 }) => {
   const [selectedTypeFilter, setSelectedTypeFilter] = useState<string>('all');
   const [selectedProject, setSelectedProject] = useState<TrackedProject | null>(null);
@@ -104,16 +107,16 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   return (
     <div className="space-y-6">
       {/* Top Banner / Welcome with Quick Action */}
-      <div className="bg-gradient-to-r from-[#2563eb] via-[#1e4f91] to-[#173b63] text-white rounded-2xl p-6 sm:p-8 shadow-sm relative overflow-hidden">
-        <div className="relative z-10 max-w-[58%]">
+      <div className="bg-gradient-to-r from-[#163e68] via-[#1e4f91] to-[#173b63] text-white rounded-2xl p-6 sm:p-8 shadow-sm relative overflow-hidden">
+        <div className="relative z-10 max-w-full md:max-w-[62%]">
           <span className="text-blue-200 font-semibold text-xs tracking-wider uppercase block mb-1">
-            सार्वजनिक खरिद सहयोगी
+            सार्वजनिक निकाय · खरिद अधिकृत गाइड
           </span>
-          <h1 className="text-2xl sm:text-2xl font-extrabold tracking-tight">
-            खरिद प्रक्रिया गाइड ड्यासबोर्ड
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+            खरिद प्रक्रियाको पूर्ण ड्यासबोर्ड
           </h1>
-          <p className="mt-2 text-slate-300 text-sm sm:text-base leading-relaxed">
-            सार्वजनिक खरिद ऐन, २०६३ र सार्वजनिक खरिद नियमावली, २०६४ (१६औँ संशोधन) बमोजिम निर्माण, मालसामान वा सेवा खरिद गर्दा अपनाउनुपर्ने कानूनी प्रक्रिया, स्वीकृत गर्ने अधिकारी, आवश्यक कागजात र चेकलिस्ट।
+          <p className="mt-2 text-slate-200 text-sm sm:text-base leading-relaxed">
+            सार्वजनिक खरिद ऐन, २०६३ र नियमावली, २०६४ (१६औँ संशोधन) बमोजिम विधि छनोटदेखि मूल्याङ्कन, सम्झौता र फाइल अनुपालनसम्मको सरल मार्गदर्शन — आयोजना ट्र्याकिङसहित।
           </p>
 
           <div className="mt-5 flex items-center gap-3 flex-wrap">
@@ -131,7 +134,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
         </div>
 
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-[42%]">
+        <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[42%] md:block">
           <img
             src={dashboardImage}
             alt=""
@@ -142,6 +145,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           <div className="absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-[#1e4f91] via-[#1e4f91]/40 to-transparent" />
         </div>
       </div>
+
+      {onNavigateToGuide && (
+        <ProcessGuideStrip audience="entity" onSelect={onNavigateToGuide} />
+      )}
 
       {/* Metrics Row */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">

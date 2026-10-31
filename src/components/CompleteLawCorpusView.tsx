@@ -15,7 +15,8 @@ import {
   ExternalLink,
   AlertCircle,
   Eye,
-  CheckCheck
+  CheckCheck,
+  Ban,
 } from 'lucide-react';
 import { ACT_CHAPTERS, RULE_CHAPTERS, LawChapter } from '../data/completeLawData';
 import { RULES_BY_ACT_PROVISION, ACT_BY_RULE_PROVISION } from '../data/lawProvisionIndex';
@@ -38,6 +39,10 @@ import {
 import { PrecedentsSection } from './PrecedentsSection';
 import { getAmendmentComparisonForRule } from '../data/amendmentComparisonsData';
 import { AmendmentComparisonCard } from './AmendmentComparisonCard';
+import {
+  getProhibitionsForProvision,
+  getExceptionsForProvision,
+} from '../data/restrictionsExceptionsData';
 
 type LawType = 'act' | 'rules';
 type ViewMode = 'all' | 'guide' | 'bare-law';
@@ -286,21 +291,7 @@ export const CompleteLawCorpusView: React.FC = () => {
 
       {/* Main Law Switcher Tabs */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="flex flex-wrap gap-2" role="tablist" aria-label="कानूनी स्रोत छान्नुहोस्">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={activeLaw === 'rules'}
-            onClick={() => selectLaw('rules')}
-            className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${activeLaw === 'rules'
-                ? 'bg-blue-700 text-white shadow-md shadow-blue-700/20'
-                : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
-              }`}
-          >
-            <Sparkles className="w-4 h-4" />
-            <span>नियमावलीका नियम र सरल गाइड (१६औँ संशोधन)</span>
-            <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full font-mono">{RULE_PROVISIONS.length}</span>
-          </button>
+        <div className="flex flex-wrap gap-2" role="tablist" aria-label="कानूनी स्रोत छान्नुहोस्">          
           <button
             type="button"
             role="tab"
@@ -314,6 +305,20 @@ export const CompleteLawCorpusView: React.FC = () => {
             <Scale className="w-4 h-4" />
             <span>ऐनका सबै दफा र सरल गाइड</span>
             <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full font-mono">{ACT_PROVISIONS.length}</span>
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeLaw === 'rules'}
+            onClick={() => selectLaw('rules')}
+            className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${activeLaw === 'rules'
+                ? 'bg-blue-700 text-white shadow-md shadow-blue-700/20'
+                : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
+              }`}
+          >
+            <Sparkles className="w-4 h-4" />
+            <span>नियमावलीका नियम र सरल गाइड (१६औँ संशोधन)</span>
+            <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full font-mono">{RULE_PROVISIONS.length}</span>
           </button>
         </div>
 
@@ -622,6 +627,8 @@ export const CompleteLawCorpusView: React.FC = () => {
                   {ch.sections.map((sec: any) => {
                     const { opinions: secOpinions, decisions: secDecisions } = getPrecedentsForSection(sec.sectionNo, activeLaw);
                     const amendmentComp = activeLaw === 'rules' ? getAmendmentComparisonForRule(sec.sectionNo) : undefined;
+                    const secProhibitions = getProhibitionsForProvision(sec.sectionNo, activeLaw);
+                    const secExceptions = getExceptionsForProvision(sec.sectionNo, activeLaw);
                     return (
                       <div key={sec.sectionNo} className="p-5 sm:p-6 hover:bg-slate-50/50 transition-colors text-left space-y-3">
                         {/* Title & Section Tag */}
@@ -651,6 +658,16 @@ export const CompleteLawCorpusView: React.FC = () => {
                             {secDecisions.length > 0 && (
                               <span className="text-[11px] font-bold text-purple-900 bg-purple-50 border border-purple-200 px-2 py-0.5 rounded-md flex items-center gap-1">
                                 ⚖️ फैसला: {secDecisions.length}
+                              </span>
+                            )}
+                            {secProhibitions.length > 0 && (
+                              <span className="text-[11px] font-bold text-red-900 bg-red-50 border border-red-200 px-2 py-0.5 rounded-md flex items-center gap-1">
+                                🚫 बन्देज: {secProhibitions.length}
+                              </span>
+                            )}
+                            {secExceptions.length > 0 && (
+                              <span className="text-[11px] font-bold text-emerald-900 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md flex items-center gap-1">
+                                ⚡ अपवाद: {secExceptions.length}
                               </span>
                             )}
                           </div>
@@ -719,6 +736,57 @@ export const CompleteLawCorpusView: React.FC = () => {
                               <span className="font-bold text-emerald-900 block mb-0.5">व्यवहारिक सुझाव तथा लेखापरीक्षण/अख्तियार सतर्कता:</span>
                               <p className="leading-relaxed">{sec.practicalTip}</p>
                             </div>
+                          </div>
+                        )}
+
+                        {/* 5. Prohibitions & Exceptions Card */}
+                        {(secProhibitions.length > 0 || secExceptions.length > 0) && (
+                          <div className="p-4 bg-slate-900 text-white rounded-xl space-y-3 text-xs shadow-xs border border-slate-800">
+                            <div className="flex items-center justify-between gap-2 border-b border-slate-800 pb-2">
+                              <div className="flex items-center gap-1.5 font-bold text-amber-300">
+                                <Ban className="w-4 h-4 text-red-400" />
+                                <span>यस व्यवस्थासँग सम्बन्धित बन्देज तथा कानूनी अपवादहरू</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                {secProhibitions.length > 0 && (
+                                  <span className="bg-red-500/20 text-red-300 border border-red-500/40 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                                    {secProhibitions.length} निषेध
+                                  </span>
+                                )}
+                                {secExceptions.length > 0 && (
+                                  <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                                    {secExceptions.length} अपवाद
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+
+                            {secProhibitions.map((p) => (
+                              <div key={p.id} className="bg-red-950/40 border border-red-800/50 p-2.5 rounded-lg space-y-1">
+                                <div className="flex items-center justify-between text-[11px] font-bold text-red-300">
+                                  <span>🚫 निषेध: {p.category}</span>
+                                  <span className="font-mono text-slate-400">{p.legalReference}</span>
+                                </div>
+                                <p className="text-slate-100 leading-relaxed">{p.prohibitionText}</p>
+                                {p.impactExplanation && (
+                                  <p className="text-[11px] text-slate-300 italic">{p.impactExplanation}</p>
+                                )}
+                              </div>
+                            ))}
+
+                            {secExceptions.map((exc) => (
+                              <div key={exc.id} className="bg-slate-800/70 border border-slate-700 p-2.5 rounded-lg space-y-1">
+                                <div className="flex items-center justify-between text-[11px] font-bold">
+                                  <span className="text-amber-300">{exc.groupTitleNepali}: {exc.subjectOrSection}</span>
+                                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                                    exc.outcome === 'मिल्ने' ? 'bg-emerald-900/60 text-emerald-300 border border-emerald-700' : 'bg-red-900/60 text-red-300 border border-red-700'
+                                  }`}>
+                                    {exc.outcomeLabel}
+                                  </span>
+                                </div>
+                                <p className="text-slate-200 leading-relaxed">{exc.exceptionText}</p>
+                              </div>
+                            ))}
                           </div>
                         )}
 
