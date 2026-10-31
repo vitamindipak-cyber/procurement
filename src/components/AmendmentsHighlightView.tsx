@@ -1,4 +1,5 @@
 import React from 'react';
+import amendmentImage from '../../amendment.png';
 import { 
   Sparkles, 
   ShieldCheck, 
@@ -70,17 +71,40 @@ export const AmendmentsHighlightView: React.FC = () => {
   return (
     <div className="space-y-6 text-left">
       {/* View Header */}
-      <div className="bg-gradient-to-r from-red-900 via-slate-900 to-slate-900 text-white p-6 sm:p-8 rounded-2xl shadow-xs">
-        <div className="flex items-center gap-2 text-xs font-semibold text-red-400 uppercase tracking-wide mb-1">
-          <Sparkles className="w-4 h-4 text-red-400" />
-          <span>ऐन तथा नियमावलीका नयाँ प्रावधानहरू</span>
+      <div className="relative overflow-hidden bg-gradient-to-r from-red-900 via-slate-900 to-slate-900 text-white p-6 sm:p-8 rounded-2xl shadow-xs">
+        {/* Right side image with seamless left-edge blending into the banner */}
+        <div
+          className="pointer-events-none absolute inset-y-0 right-0 w-full sm:w-[48%] md:w-[42%] lg:w-[38%] overflow-hidden select-none"
+          style={{
+            maskImage:
+              'linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.2) 20%, rgba(0, 0, 0, 0.85) 55%, black 85%)',
+            WebkitMaskImage:
+              'linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.2) 20%, rgba(0, 0, 0, 0.85) 55%, black 85%)',
+          }}
+          aria-hidden="true"
+        >
+          <img
+            src={amendmentImage}
+            alt="१६औँ संशोधन"
+            className="h-full w-full object-cover object-right"
+          />
+          {/* Soft left-edge blend overlay matching banner gradient */}
+          <div className="absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-slate-900 via-slate-900/60 to-transparent pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-r from-red-950/30 via-slate-950/20 to-transparent pointer-events-none sm:hidden" />
         </div>
-        <h2 className="text-xl sm:text-3xl font-extrabold text-white">
-          सार्वजनिक खरिद १६औँ संशोधन तथा ऐनको दोस्रो संशोधनका मुख्य विशेषताहरू
-        </h2>
-        <p className="text-xs sm:text-sm text-slate-300 mt-2 max-w-3xl leading-relaxed">
-          सार्वजनिक खरिद ऐन र नियमावलीमा हालसालै भएका ऐतिहासिक संशोधनहरू—जसले न्यून बिडिङको समस्या, ठेक्का ओगट्ने प्रवृत्ति र प्रक्रियागत ढिलासुस्तीलाई अन्त्य गरी खरिद प्रक्रियालाई नतिजामुखी बनाएका छन्।
-        </p>
+
+        <div className="relative z-10 max-w-2xl">
+          <div className="flex items-center gap-2 text-xs font-semibold text-red-400 uppercase tracking-wide mb-1">
+            <Sparkles className="w-4 h-4 text-red-400" />
+            <span>ऐन तथा नियमावलीका नयाँ प्रावधानहरू</span>
+          </div>
+          <h2 className="text-xl sm:text-3xl font-extrabold text-white">
+            सार्वजनिक खरिद १६औँ संशोधन तथा ऐनको दोस्रो संशोधनका मुख्य विशेषताहरू
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-300 mt-2 leading-relaxed">
+            सार्वजनिक खरिद ऐन र नियमावलीमा हालसालै भएका ऐतिहासिक संशोधनहरू—जसले न्यून बिडिङको समस्या, ठेक्का ओगट्ने प्रवृत्ति र प्रक्रियागत ढिलासुस्तीलाई अन्त्य गरी खरिद प्रक्रियालाई नतिजामुखी बनाएका छन्।
+          </p>
+        </div>
       </div>
 
       {/* Highlights Grid */}
