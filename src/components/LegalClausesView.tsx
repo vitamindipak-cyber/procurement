@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
-import { BookOpen, Search, Filter, Scale, ExternalLink, X, FileText } from 'lucide-react';
+import { BookOpen, Search, Filter, Scale, ExternalLink, X, FileText, Ban } from 'lucide-react';
 import { KEY_LEGAL_CLAUSES } from '../data/procurementData';
 import { LegalClause } from '../types/procurement';
+import {
+  getProhibitionsForProvision,
+  getExceptionsForProvision,
+} from '../data/restrictionsExceptionsData';
 
 export const LegalClausesView: React.FC = () => {
   const [filterType, setFilterType] = useState<'all' | 'act' | 'rule'>('all');
@@ -122,49 +126,92 @@ export const LegalClausesView: React.FC = () => {
 
       {/* Clauses Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {filteredClauses.map((clause) => (
-          <div
-            key={clause.id}
-            className="bg-white rounded-xl border border-slate-200 p-5 shadow-xs hover:border-amber-400 hover:shadow-md transition-all text-left flex flex-col justify-between"
-          >
-            <div>
-              <div className="flex items-center justify-between gap-2 mb-2">
-                <span className="text-xs font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-sm">
-                  {clause.clauseNumber}
-                </span>
-                <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wider">
-                  {clause.lawType === 'act' ? 'सार्वजनिक खरिद ऐन, २०६३' : 'सार्वजनिक खरिद नियमावली, २०६४'}
-                </span>
-              </div>
+        {filteredClauses.map((clause) => {
+          const lawType: 'act' | 'rules' = clause.lawType === 'rule' ? 'rules' : 'act';
+          const secProhibitions = getProhibitionsForProvision(clause.clauseNumber, lawType);
+          const secExceptions = getExceptionsForProvision(clause.clauseNumber, lawType);
 
-              <h3 className="text-base font-bold text-slate-900 mb-2 leading-snug">
-                {clause.title}
-              </h3>
-
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                {clause.summary}
-              </p>
-            </div>
-
-            <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
-              <div className="flex items-center gap-1 flex-wrap">
-                {clause.tags.map((t) => (
-                  <span
-                    key={t}
-                    onClick={() => setSelectedTag(t)}
-                    className="text-[10px] text-slate-600 bg-slate-100 hover:bg-slate-200 px-1.5 py-0.5 rounded-sm cursor-pointer"
-                  >
-                    #{t}
+          return (
+            <div
+              key={clause.id}
+              className="bg-white rounded-xl border border-slate-200 p-5 shadow-xs hover:border-amber-400 hover:shadow-md transition-all text-left flex flex-col justify-between"
+            >
+              <div>
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <span className="text-xs font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-sm">
+                    {clause.clauseNumber}
                   </span>
-                ))}
+                  <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wider">
+                    {clause.lawType === 'act' ? 'सार्वजनिक खरिद ऐन, २०६३' : 'सार्वजनिक खरिद नियमावली, २०६४'}
+                  </span>
+                </div>
+
+                <h3 className="text-base font-bold text-slate-900 mb-2 leading-snug">
+                  {clause.title}
+                </h3>
+
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                  {clause.summary}
+                </p>
+
+                {/* Related Prohibitions from restrictions_exceptions.docx */}
+                {secProhibitions.length > 0 && (
+                  <div className="mt-3 p-2.5 bg-red-50/80 border border-red-200 rounded-lg text-xs space-y-1">
+                    <div className="flex items-center gap-1 font-bold text-red-800">
+                      <Ban className="w-3.5 h-3.5 text-red-600" />
+                      <span>यस दफामा कानूनले निषेध गरेका कुरा:</span>
+                    </div>
+                    {secProhibitions.map((p) => (
+                      <p key={p.id} className="text-red-950 leading-relaxed pl-3">
+                        • {p.prohibitionText}
+                      </p>
+                    ))}
+                  </div>
+                )}
+
+                {/* Related Exceptions from restrictions_exceptions.docx */}
+                {secExceptions.length > 0 && (
+                  <div className="mt-2.5 p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs space-y-1.5">
+                    <div className="flex items-center gap-1 font-bold text-slate-800">
+                      <Scale className="w-3.5 h-3.5 text-blue-600" />
+                      <span>कानूनी अपवाद र परन्तुक:</span>
+                    </div>
+                    {secExceptions.map((exc) => (
+                      <div key={exc.id} className="flex items-start justify-between gap-2 pl-3">
+                        <p className="text-slate-800 leading-relaxed">
+                          • <strong className="text-slate-900">{exc.subjectOrSection}:</strong> {exc.exceptionText}
+                        </p>
+                        <span className={`shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                          exc.outcome === 'मिल्ने' ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'
+                        }`}>
+                          {exc.outcomeLabel}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
-              <span className="text-[11px] text-amber-700 font-medium font-mono">
-                अनिवार्य / बाध्यकारी
-              </span>
+              <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+                <div className="flex items-center gap-1 flex-wrap">
+                  {clause.tags.map((t) => (
+                    <span
+                      key={t}
+                      onClick={() => setSelectedTag(t)}
+                      className="text-[10px] text-slate-600 bg-slate-100 hover:bg-slate-200 px-1.5 py-0.5 rounded-sm cursor-pointer"
+                    >
+                      #{t}
+                    </span>
+                  ))}
+                </div>
+
+                <span className="text-[11px] text-amber-700 font-medium font-mono">
+                  अनिवार्य / बाध्यकारी
+                </span>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

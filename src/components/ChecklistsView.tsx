@@ -10,9 +10,11 @@ import {
   Layers, 
   ArrowRight,
   Gavel,
-  Check
+  Check,
+  Ban
 } from 'lucide-react';
 import { COMPLIANCE_CHECKLIST_MASTER, PROCUREMENT_STAGES } from '../data/procurementData';
+import { PROHIBITIONS_DATA } from '../data/restrictionsExceptionsData';
 import { ProcurementType } from '../types/procurement';
 
 interface ChecklistsViewProps {
@@ -282,6 +284,38 @@ export const ChecklistsView: React.FC<ChecklistsViewProps> = ({
                   );
                 })}
               </div>
+
+              {/* Stage Prohibitions from restrictions_exceptions.docx */}
+              {(() => {
+                const stageCategoryMap: Record<number, string[]> = {
+                  1: ['प्रक्रिया सुरु र तयारी'],
+                  2: ['प्रक्रिया सुरु र तयारी', 'सहभागिताबाट वञ्चित गर्ने'],
+                  3: ['बोलपत्र, दरभाउपत्र र मूल्याङ्कन'],
+                  4: ['बोलपत्र, दरभाउपत्र र मूल्याङ्कन', 'परामर्श सेवा'],
+                  5: ['पुनरावलोकन', 'सोझै खरिद, घरजग्गा र उपभोक्ता समिति'],
+                  6: ['सम्झौता कार्यान्वयन', 'सोझै खरिद, घरजग्गा र उपभोक्ता समिति'],
+                  7: ['सम्झौता कार्यान्वयन'],
+                };
+                const stageProhibitions = PROHIBITIONS_DATA.filter((p) =>
+                  (stageCategoryMap[stg.stageNo] ?? []).includes(p.category)
+                ).slice(0, 3);
+
+                if (stageProhibitions.length === 0) return null;
+
+                return (
+                  <div className="p-3 bg-red-50/60 border-t border-red-100 text-xs space-y-1 text-left">
+                    <div className="flex items-center gap-1.5 font-bold text-[11px] text-red-800">
+                      <Ban className="w-3.5 h-3.5 text-red-600" />
+                      <span>यस चरणमा कानूनले निषेध गरेका मुख्य कार्यहरू:</span>
+                    </div>
+                    {stageProhibitions.map((p) => (
+                      <p key={p.id} className="text-red-950 text-[11px] leading-relaxed pl-3">
+                        • {p.prohibitionText} <span className="font-mono text-slate-500">({p.legalReference})</span>
+                      </p>
+                    ))}
+                  </div>
+                );
+              })()}
             </div>
           );
         })}

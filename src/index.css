@@ -11,11 +11,12 @@
 @layer base {
   :root {
     color-scheme: light;
-    --app-ink: #172b43;
-    --app-muted: #62748a;
-    --app-border: #dbe4ee;
-    --app-primary: #174b7b;
-    --app-canvas: #f3f7fb;
+    --app-ink: #12263a;
+    --app-muted: #5b6d82;
+    --app-border: #d5e0ec;
+    --app-primary: #163e68;
+    --app-accent: #0f766e;
+    --app-canvas: #eef3f8;
   }
 
   html {
@@ -26,7 +27,10 @@
   body {
     font-family: var(--font-sans);
     color: var(--app-ink);
-    background: var(--app-canvas);
+    background:
+      radial-gradient(1200px 420px at 0% -10%, rgb(22 62 104 / 7%), transparent 55%),
+      radial-gradient(900px 380px at 100% 0%, rgb(15 118 110 / 6%), transparent 50%),
+      var(--app-canvas);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
@@ -35,9 +39,25 @@
   button:not(:disabled) { cursor: pointer; }
   button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible,
   textarea:focus-visible, [tabindex]:focus-visible {
-    outline: 3px solid rgb(59 130 246 / 35%);
+    outline: 3px solid rgb(22 62 104 / 28%);
     outline-offset: 2px;
   }
+}
+
+.skip-to-content {
+  position: absolute;
+  left: 1rem;
+  top: -4rem;
+  z-index: 80;
+  border-radius: 0.75rem;
+  background: #163e68;
+  color: #fff;
+  padding: 0.55rem 0.9rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+.skip-to-content:focus {
+  top: 0.75rem;
 }
 
 /* Shared polish for the many feature views, including the bidder and legal guides. */
