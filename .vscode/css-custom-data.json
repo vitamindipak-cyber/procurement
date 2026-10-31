@@ -1,0 +1,21 @@
+{
+  "version": 1.1,
+  "atDirectives": [
+    {
+      "name": "@theme",
+      "description": "Tailwind CSS v4 theme customization block for defining fonts, colors, and design tokens."
+    },
+    {
+      "name": "@utility",
+      "description": "Tailwind CSS v4 utility definition block."
+    },
+    {
+      "name": "@custom-variant",
+      "description": "Tailwind CSS v4 custom variant definition block."
+    },
+    {
+      "name": "@source",
+      "description": "Tailwind CSS v4 source scanning directive."
+    }
+  ]
+}
