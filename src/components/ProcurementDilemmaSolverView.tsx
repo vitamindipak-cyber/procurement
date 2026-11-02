@@ -185,7 +185,7 @@ export const ProcurementDilemmaSolverView: React.FC = () => {
   const totalCount = VERY_SHORT_QA.length + SHORT_QA.length + LONG_QA.length + PROCUREMENT_DILEMMAS.length;
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto px-2 sm:px-4 pb-16">
+    <div className="w-full space-y-6 pb-12">
 
       {/* 1. HERO BANNER - Height reduced by 25% with right-side blended del_new.webp */}
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-blue-950 text-white shadow-xl border border-slate-800">
@@ -382,7 +382,7 @@ export const ProcurementDilemmaSolverView: React.FC = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5">
             {filteredTopics.map((topic: HandbookTopic) => (
               <div
                 key={topic.id}
@@ -606,7 +606,7 @@ export const ProcurementDilemmaSolverView: React.FC = () => {
             </span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4">
             {filteredLevelA.map((item: VeryShortQA) => (
               <div
                 key={item.id}
