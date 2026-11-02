@@ -1,19 +1,19 @@
 import React, { useState, useMemo } from 'react';
-import { 
-  Search, BookOpen, AlertTriangle, ShieldCheck, Scale, FileText, CheckCircle2, 
-  HelpCircle, Copy, Check, ChevronDown, ChevronUp, Clock, Filter, 
+import {
+  Search, BookOpen, AlertTriangle, ShieldCheck, Scale, FileText, CheckCircle2,
+  HelpCircle, Copy, Check, ChevronDown, ChevronUp, Clock, Filter,
   Info, ArrowRight, Award, FileSpreadsheet, GitCompare, Bookmark,
   Layers, CheckSquare, BarChart3
 } from 'lucide-react';
-import { 
+import {
   HANDBOOK_TOPICS,
-  VERY_SHORT_QA, 
-  SHORT_QA, 
-  LONG_QA, 
-  COMPARATIVE_ANALYSES, 
-  MASTER_TIMELINES_TABLE, 
-  MASTER_FINANCIAL_TABLE, 
-  MASTER_PERCENTAGES_TABLE, 
+  VERY_SHORT_QA,
+  SHORT_QA,
+  LONG_QA,
+  COMPARATIVE_ANALYSES,
+  MASTER_TIMELINES_TABLE,
+  MASTER_FINANCIAL_TABLE,
+  MASTER_PERCENTAGES_TABLE,
   MASTER_AUTHORITIES_TABLE,
   HandbookTopic,
   VeryShortQA,
@@ -22,10 +22,11 @@ import {
   ComparativeAnalysis,
   MasterFactRow
 } from '../data/procurementHandbookData';
-import { 
-  PROCUREMENT_DILEMMAS, 
-  ProcurementDilemma 
+import {
+  PROCUREMENT_DILEMMAS,
+  ProcurementDilemma
 } from '../data/procurementDilemmasData';
+import delNewImage from '../../del_new.webp';
 
 type MainTab = 'all' | 'level-a' | 'level-b' | 'level-c' | 'case-studies' | 'comparative' | 'fact-tables' | 'topics-directory';
 type FactSubTab = 'timelines' | 'limits' | 'percentages' | 'authorities';
@@ -66,7 +67,7 @@ export const ProcurementDilemmaSolverView: React.FC = () => {
   const filteredLevelA = useMemo(() => {
     return VERY_SHORT_QA.filter((item: VeryShortQA) => {
       const q = searchQuery.toLowerCase();
-      const matchesSearch = searchQuery === '' || 
+      const matchesSearch = searchQuery === '' ||
         item.question.toLowerCase().includes(q) ||
         item.answer.toLowerCase().includes(q) ||
         item.actRef.toLowerCase().includes(q) ||
@@ -85,7 +86,7 @@ export const ProcurementDilemmaSolverView: React.FC = () => {
   const filteredLevelB = useMemo(() => {
     return SHORT_QA.filter((item: ShortQA) => {
       const q = searchQuery.toLowerCase();
-      const matchesSearch = searchQuery === '' || 
+      const matchesSearch = searchQuery === '' ||
         item.question.toLowerCase().includes(q) ||
         item.purposeAndSignificance.toLowerCase().includes(q) ||
         item.legalBasis.toLowerCase().includes(q) ||
@@ -105,7 +106,7 @@ export const ProcurementDilemmaSolverView: React.FC = () => {
   const filteredLevelC = useMemo(() => {
     return LONG_QA.filter((item: LongQA) => {
       const q = searchQuery.toLowerCase();
-      const matchesSearch = searchQuery === '' || 
+      const matchesSearch = searchQuery === '' ||
         item.question.toLowerCase().includes(q) ||
         item.introduction.toLowerCase().includes(q) ||
         item.legalGrounding.act.toLowerCase().includes(q) ||
@@ -131,7 +132,7 @@ export const ProcurementDilemmaSolverView: React.FC = () => {
         item.verdict.toLowerCase().includes(q) ||
         item.ppmoPprcPrecedent.toLowerCase().includes(q) ||
         item.legalClauses.some((clause: string) => clause.toLowerCase().includes(q));
-      
+
       return matchesSearch;
     });
   }, [searchQuery]);
@@ -185,44 +186,58 @@ export const ProcurementDilemmaSolverView: React.FC = () => {
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto px-2 sm:px-4 pb-16">
-      
-      {/* 1. HERO BANNER */}
+
+      {/* 1. HERO BANNER - Height reduced by 25% with right-side blended del_new.webp */}
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-blue-950 text-white shadow-xl border border-slate-800">
         <div className="absolute inset-0 bg-radial-gradient from-transparent via-slate-950/40 to-slate-950/80 pointer-events-none" />
-        <div className="relative p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="space-y-3 z-10 max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold uppercase tracking-wider backdrop-blur-sm">
+
+        {/* Right side del_new.webp seamlessly blended on the left with banner colors */}
+        <div
+          className="pointer-events-none absolute inset-y-0 right-0 w-full sm:w-[50%] md:w-[44%] lg:w-[38%] overflow-hidden select-none"
+          style={{
+            maskImage:
+              "linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.15) 15%, rgba(0, 0, 0, 0.85) 50%, black 85%)",
+            WebkitMaskImage:
+              "linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.15) 15%, rgba(0, 0, 0, 0.85) 50%, black 85%)",
+          }}
+          aria-hidden="true"
+        >
+          <img
+            src={delNewImage}
+            alt="सार्वजनिक खरिद समस्या समाधान"
+            className="h-full w-full object-cover object-right"
+          />
+          {/* Soft left-edge blend overlay matching banner's indigo/blue/slate gradient */}
+          <div className="absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-indigo-950 via-indigo-950/70 to-transparent pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/40 via-transparent to-transparent pointer-events-none sm:hidden" />
+        </div>
+
+        {/* Banner Content (25% reduced height: py-4 sm:py-5 px-5 sm:px-7) */}
+        <div className="relative py-4 sm:py-5 px-5 sm:px-7 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="space-y-2 z-10 max-w-2xl lg:max-w-3xl">
+            <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold uppercase tracking-wider backdrop-blur-sm">
               <Scale className="w-3.5 h-3.5" />
-              एकीकृत सार्वजनिक खरिद कानूनी प्रश्नोत्तर सङ्ग्रह
+              सार्वजनिक खरिद प्रश्नोत्तर सङ्ग्रह
             </div>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white leading-tight">
-              सार्वजनिक खरिद वृहत् कानूनी प्रश्नोत्तर तथा समस्या समाधान हब
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-white leading-tight">
+              सार्वजनिक खरिद कानूनी प्रश्नोत्तर तथा समस्या समाधान
             </h1>
-            <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
-              सार्वजनिक खरिद ऐन, २०६३ (संशोधनसहित), खरिद नियमावली, २०६४ (१६औं संशोधनसहित), PPMO राय, PPRC पुनरावलोकन नजिरहरू तथा ५४ विषयगत क्षेत्रको पूर्ण एकीकृत कानूनी मार्गदर्शक।
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-xl lg:max-w-2xl">
+              सार्वजनिक खरिद ऐन, २०६३ (संशोधनसहित), खरिद नियमावली, २०६४ (१६औं संशोधनसहित), PPMO राय, PPRC पुनरावलोकन नजिरहरू तथा विषयगत क्षेत्र।
             </p>
-            <div className="flex flex-wrap items-center gap-2 pt-2 text-xs text-slate-300">
-              <span className="px-2.5 py-1 bg-slate-800/80 rounded-lg border border-slate-700 flex items-center gap-1.5">
+            <div className="flex flex-wrap items-center gap-2 pt-1 text-[11px] sm:text-xs text-slate-300">
+              <span className="px-2.5 py-0.5 bg-slate-800/80 rounded-lg border border-slate-700 flex items-center gap-1.5">
                 <BookOpen className="w-3.5 h-3.5 text-blue-400" /> ५४ विषयगत क्षेत्र
               </span>
-              <span className="px-2.5 py-1 bg-slate-800/80 rounded-lg border border-slate-700 flex items-center gap-1.5">
+              <span className="px-2.5 py-0.5 bg-slate-800/80 rounded-lg border border-slate-700 flex items-center gap-1.5">
                 <Award className="w-3.5 h-3.5 text-emerald-400" /> १६औं संशोधन २०८१ एकीकृत
               </span>
-              <span className="px-2.5 py-1 bg-slate-800/80 rounded-lg border border-slate-700 flex items-center gap-1.5">
+              <span className="px-2.5 py-0.5 bg-slate-800/80 rounded-lg border border-slate-700 flex items-center gap-1.5">
                 <ShieldCheck className="w-3.5 h-3.5 text-amber-400" /> ३ तहका प्रश्नोत्तर + व्यवहारिक केस
               </span>
-              <span className="px-2.5 py-1 bg-slate-800/80 rounded-lg border border-slate-700 flex items-center gap-1.5">
+              <span className="px-2.5 py-0.5 bg-slate-800/80 rounded-lg border border-slate-700 flex items-center gap-1.5">
                 <FileSpreadsheet className="w-3.5 h-3.5 text-purple-400" /> तथ्य सारणी तथा म्याट्रिक्स
               </span>
-            </div>
-          </div>
-          
-          <div className="hidden md:flex flex-col items-center justify-center p-4 bg-white/5 backdrop-blur-md rounded-xl border border-white/10 text-center min-w-[200px]">
-            <div className="text-3xl font-black text-blue-400">{totalCount}+</div>
-            <div className="text-xs text-slate-300 font-medium">प्रश्नोत्तर तथा केस स्टडी</div>
-            <div className="mt-3 pt-3 border-t border-white/10 text-[11px] text-slate-400 flex flex-col gap-1">
-              <span>ऐन २०६३ + नियमावली २०६४</span>
-              <span className="text-emerald-300">१६औं संशोधन (२०८१/११/२१)</span>
             </div>
           </div>
         </div>
@@ -241,7 +256,7 @@ export const ProcurementDilemmaSolverView: React.FC = () => {
               className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-300 text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-slate-50/50"
             />
             {searchQuery && (
-              <button 
+              <button
                 onClick={() => setSearchQuery('')}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600 bg-slate-200 rounded px-1.5 py-0.5"
               >
@@ -249,7 +264,7 @@ export const ProcurementDilemmaSolverView: React.FC = () => {
               </button>
             )}
           </div>
-          
+
           <div className="w-full md:w-72">
             <div className="relative">
               <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
@@ -275,7 +290,7 @@ export const ProcurementDilemmaSolverView: React.FC = () => {
             <span className="font-semibold">
               चयनित विषय #{HANDBOOK_TOPICS.find((t: HandbookTopic) => t.id === selectedTopicId)?.number}: {HANDBOOK_TOPICS.find((t: HandbookTopic) => t.id === selectedTopicId)?.title}
             </span>
-            <button 
+            <button
               onClick={() => setSelectedTopicId(null)}
               className="underline text-blue-600 hover:text-blue-800 ml-2"
             >
@@ -289,72 +304,64 @@ export const ProcurementDilemmaSolverView: React.FC = () => {
       <div className="flex overflow-x-auto no-scrollbar gap-1.5 p-1.5 bg-slate-100 rounded-xl border border-slate-200 text-xs sm:text-sm font-medium">
         <button
           onClick={() => setActiveTab('all')}
-          className={`px-3 py-2 rounded-lg whitespace-nowrap transition flex items-center gap-1.5 ${
-            activeTab === 'all' ? 'bg-white text-blue-900 shadow-xs font-bold' : 'text-slate-600 hover:text-slate-900'
-          }`}
+          className={`px-3 py-2 rounded-lg whitespace-nowrap transition flex items-center gap-1.5 ${activeTab === 'all' ? 'bg-white text-blue-900 shadow-xs font-bold' : 'text-slate-600 hover:text-slate-900'
+            }`}
         >
           <Layers className="w-4 h-4 text-blue-600" /> सबै (All)
         </button>
 
         <button
           onClick={() => setActiveTab('level-a')}
-          className={`px-3 py-2 rounded-lg whitespace-nowrap transition flex items-center gap-1.5 ${
-            activeTab === 'level-a' ? 'bg-white text-emerald-900 shadow-xs font-bold' : 'text-slate-600 hover:text-slate-900'
-          }`}
+          className={`px-3 py-2 rounded-lg whitespace-nowrap transition flex items-center gap-1.5 ${activeTab === 'level-a' ? 'bg-white text-emerald-900 shadow-xs font-bold' : 'text-slate-600 hover:text-slate-900'
+            }`}
         >
           <Clock className="w-4 h-4 text-emerald-600" /> तह १: अति छोटो ({filteredLevelA.length})
         </button>
 
         <button
           onClick={() => setActiveTab('level-b')}
-          className={`px-3 py-2 rounded-lg whitespace-nowrap transition flex items-center gap-1.5 ${
-            activeTab === 'level-b' ? 'bg-white text-indigo-900 shadow-xs font-bold' : 'text-slate-600 hover:text-slate-900'
-          }`}
+          className={`px-3 py-2 rounded-lg whitespace-nowrap transition flex items-center gap-1.5 ${activeTab === 'level-b' ? 'bg-white text-indigo-900 shadow-xs font-bold' : 'text-slate-600 hover:text-slate-900'
+            }`}
         >
           <FileText className="w-4 h-4 text-indigo-600" /> तह २: प्रक्रियागत ({filteredLevelB.length})
         </button>
 
         <button
           onClick={() => setActiveTab('level-c')}
-          className={`px-3 py-2 rounded-lg whitespace-nowrap transition flex items-center gap-1.5 ${
-            activeTab === 'level-c' ? 'bg-white text-purple-900 shadow-xs font-bold' : 'text-slate-600 hover:text-slate-900'
-          }`}
+          className={`px-3 py-2 rounded-lg whitespace-nowrap transition flex items-center gap-1.5 ${activeTab === 'level-c' ? 'bg-white text-purple-900 shadow-xs font-bold' : 'text-slate-600 hover:text-slate-900'
+            }`}
         >
           <Scale className="w-4 h-4 text-purple-600" /> तह ३: लामो ९-चरण ({filteredLevelC.length})
         </button>
 
         <button
           onClick={() => setActiveTab('case-studies')}
-          className={`px-3 py-2 rounded-lg whitespace-nowrap transition flex items-center gap-1.5 ${
-            activeTab === 'case-studies' ? 'bg-white text-amber-900 shadow-xs font-bold' : 'text-slate-600 hover:text-slate-900'
-          }`}
+          className={`px-3 py-2 rounded-lg whitespace-nowrap transition flex items-center gap-1.5 ${activeTab === 'case-studies' ? 'bg-white text-amber-900 shadow-xs font-bold' : 'text-slate-600 hover:text-slate-900'
+            }`}
         >
           <AlertTriangle className="w-4 h-4 text-amber-600" /> व्यवहारिक केस / अन्योल ({filteredDilemmas.length})
         </button>
 
         <button
           onClick={() => setActiveTab('comparative')}
-          className={`px-3 py-2 rounded-lg whitespace-nowrap transition flex items-center gap-1.5 ${
-            activeTab === 'comparative' ? 'bg-white text-rose-900 shadow-xs font-bold' : 'text-slate-600 hover:text-slate-900'
-          }`}
+          className={`px-3 py-2 rounded-lg whitespace-nowrap transition flex items-center gap-1.5 ${activeTab === 'comparative' ? 'bg-white text-rose-900 shadow-xs font-bold' : 'text-slate-600 hover:text-slate-900'
+            }`}
         >
           <GitCompare className="w-4 h-4 text-rose-600" /> तुलनात्मक विश्लेषण ({COMPARATIVE_ANALYSES.length})
         </button>
 
         <button
           onClick={() => setActiveTab('fact-tables')}
-          className={`px-3 py-2 rounded-lg whitespace-nowrap transition flex items-center gap-1.5 ${
-            activeTab === 'fact-tables' ? 'bg-white text-cyan-900 shadow-xs font-bold' : 'text-slate-600 hover:text-slate-900'
-          }`}
+          className={`px-3 py-2 rounded-lg whitespace-nowrap transition flex items-center gap-1.5 ${activeTab === 'fact-tables' ? 'bg-white text-cyan-900 shadow-xs font-bold' : 'text-slate-600 hover:text-slate-900'
+            }`}
         >
           <BarChart3 className="w-4 h-4 text-cyan-600" /> तथ्य सारणी
         </button>
 
         <button
           onClick={() => setActiveTab('topics-directory')}
-          className={`px-3 py-2 rounded-lg whitespace-nowrap transition flex items-center gap-1.5 ${
-            activeTab === 'topics-directory' ? 'bg-white text-slate-900 shadow-xs font-bold' : 'text-slate-600 hover:text-slate-900'
-          }`}
+          className={`px-3 py-2 rounded-lg whitespace-nowrap transition flex items-center gap-1.5 ${activeTab === 'topics-directory' ? 'bg-white text-slate-900 shadow-xs font-bold' : 'text-slate-600 hover:text-slate-900'
+            }`}
         >
           <Bookmark className="w-4 h-4 text-slate-700" /> ५४ विषय सूची
         </button>
@@ -377,17 +384,16 @@ export const ProcurementDilemmaSolverView: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {filteredTopics.map((topic: HandbookTopic) => (
-              <div 
+              <div
                 key={topic.id}
                 onClick={() => {
                   setSelectedTopicId(topic.id);
                   setActiveTab('all');
                 }}
-                className={`p-4 rounded-xl border transition cursor-pointer text-left ${
-                  selectedTopicId === topic.id 
-                    ? 'border-blue-600 bg-blue-50/80 shadow-md ring-2 ring-blue-500' 
-                    : 'border-slate-200 bg-white hover:border-blue-300 hover:shadow-xs'
-                }`}
+                className={`p-4 rounded-xl border transition cursor-pointer text-left ${selectedTopicId === topic.id
+                  ? 'border-blue-600 bg-blue-50/80 shadow-md ring-2 ring-blue-500'
+                  : 'border-slate-200 bg-white hover:border-blue-300 hover:shadow-xs'
+                  }`}
               >
                 <div className="flex items-start justify-between gap-2">
                   <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-mono text-[11px] font-bold">
@@ -405,11 +411,11 @@ export const ProcurementDilemmaSolverView: React.FC = () => {
                 </p>
                 <div className="mt-3 pt-2 border-t border-slate-100 flex flex-col gap-1 text-[11px] text-slate-600">
                   <div className="flex items-center gap-1.5">
-                    <span className="font-semibold text-slate-700">ऐन:</span> 
+                    <span className="font-semibold text-slate-700">ऐन:</span>
                     <span className="text-slate-800 truncate">{topic.actSections}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <span className="font-semibold text-slate-700">नियमावली:</span> 
+                    <span className="font-semibold text-slate-700">नियमावली:</span>
                     <span className="text-slate-800 truncate">{topic.ruleSections}</span>
                   </div>
                 </div>
@@ -429,33 +435,29 @@ export const ProcurementDilemmaSolverView: React.FC = () => {
           <div className="flex overflow-x-auto gap-2 border-b border-slate-200 pb-2 text-xs font-semibold">
             <button
               onClick={() => setFactSubTab('timelines')}
-              className={`px-3 py-1.5 rounded-lg transition ${
-                factSubTab === 'timelines' ? 'bg-cyan-600 text-white shadow-xs' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-              }`}
+              className={`px-3 py-1.5 rounded-lg transition ${factSubTab === 'timelines' ? 'bg-cyan-600 text-white shadow-xs' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                }`}
             >
               १. समयसीमा तथा म्यादहरू ({filteredTimelines.length})
             </button>
             <button
               onClick={() => setFactSubTab('limits')}
-              className={`px-3 py-1.5 rounded-lg transition ${
-                factSubTab === 'limits' ? 'bg-cyan-600 text-white shadow-xs' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-              }`}
+              className={`px-3 py-1.5 rounded-lg transition ${factSubTab === 'limits' ? 'bg-cyan-600 text-white shadow-xs' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                }`}
             >
               २. आर्थिक सीमा तथा थ्रेसहोल्ड ({filteredLimits.length})
             </button>
             <button
               onClick={() => setFactSubTab('percentages')}
-              className={`px-3 py-1.5 rounded-lg transition ${
-                factSubTab === 'percentages' ? 'bg-cyan-600 text-white shadow-xs' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-              }`}
+              className={`px-3 py-1.5 rounded-lg transition ${factSubTab === 'percentages' ? 'bg-cyan-600 text-white shadow-xs' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                }`}
             >
               ३. प्रतिशत (जमानत/पेश्की/भेरिएसन/LD) ({filteredPercentages.length})
             </button>
             <button
               onClick={() => setFactSubTab('authorities')}
-              className={`px-3 py-1.5 rounded-lg transition ${
-                factSubTab === 'authorities' ? 'bg-cyan-600 text-white shadow-xs' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-              }`}
+              className={`px-3 py-1.5 rounded-lg transition ${factSubTab === 'authorities' ? 'bg-cyan-600 text-white shadow-xs' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                }`}
             >
               ४. स्वीकृति अधिकार तथा पदाधिकारी ({filteredAuthorities.length})
             </button>
@@ -606,7 +608,7 @@ export const ProcurementDilemmaSolverView: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {filteredLevelA.map((item: VeryShortQA) => (
-              <div 
+              <div
                 key={item.id}
                 className="bg-white rounded-xl border border-slate-200 shadow-xs hover:border-emerald-300 transition p-4 flex flex-col justify-between"
               >
@@ -674,11 +676,11 @@ export const ProcurementDilemmaSolverView: React.FC = () => {
             {filteredLevelB.map((item: ShortQA) => {
               const isExpanded = expandedItems[item.id] ?? true;
               return (
-                <div 
+                <div
                   key={item.id}
                   className="bg-white rounded-xl border border-slate-200 shadow-xs hover:border-indigo-300 transition overflow-hidden"
                 >
-                  <div 
+                  <div
                     onClick={() => toggleExpand(item.id)}
                     className="p-4 bg-slate-50/70 cursor-pointer flex items-start justify-between gap-3 border-b border-slate-100"
                   >
@@ -702,7 +704,7 @@ export const ProcurementDilemmaSolverView: React.FC = () => {
 
                   {isExpanded && (
                     <div className="p-5 space-y-4 text-xs sm:text-sm text-slate-800">
-                      
+
                       {/* Purpose & Significance */}
                       <div className="p-3 bg-blue-50/50 rounded-lg border border-blue-100 text-xs text-blue-950">
                         <span className="font-bold">उद्देश्य तथा कानूनी महत्त्व: </span>
@@ -778,11 +780,11 @@ export const ProcurementDilemmaSolverView: React.FC = () => {
             {filteredLevelC.map((item: LongQA) => {
               const isExpanded = expandedItems[item.id] ?? true;
               return (
-                <div 
+                <div
                   key={item.id}
                   className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden"
                 >
-                  <div 
+                  <div
                     onClick={() => toggleExpand(item.id)}
                     className="p-5 bg-gradient-to-r from-purple-900 to-indigo-950 text-white cursor-pointer flex items-start justify-between gap-4"
                   >
@@ -806,7 +808,7 @@ export const ProcurementDilemmaSolverView: React.FC = () => {
 
                   {isExpanded && (
                     <div className="p-5 sm:p-6 space-y-6 text-xs sm:text-sm text-slate-800">
-                      
+
                       {/* Step 1: Introduction */}
                       <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
                         <h4 className="font-bold text-xs text-purple-900 uppercase tracking-wider mb-2 flex items-center gap-1.5">
@@ -967,11 +969,11 @@ export const ProcurementDilemmaSolverView: React.FC = () => {
             {filteredDilemmas.map((item: ProcurementDilemma) => {
               const isExpanded = expandedItems[item.id] ?? true;
               return (
-                <div 
+                <div
                   key={item.id}
                   className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden"
                 >
-                  <div 
+                  <div
                     onClick={() => toggleExpand(item.id)}
                     className="p-4 bg-amber-50/50 cursor-pointer flex items-start justify-between gap-3 border-b border-amber-100"
                   >
@@ -995,7 +997,7 @@ export const ProcurementDilemmaSolverView: React.FC = () => {
 
                   {isExpanded && (
                     <div className="p-5 sm:p-6 space-y-4 text-xs sm:text-sm text-slate-800">
-                      
+
                       {/* Scenario */}
                       <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
                         <h4 className="font-bold text-xs text-slate-700 uppercase tracking-wider mb-1 flex items-center gap-1.5">
