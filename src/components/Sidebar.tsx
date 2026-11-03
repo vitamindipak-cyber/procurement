@@ -1,20 +1,20 @@
 import React, { useState, useMemo } from 'react';
-import { 
+import {
   Briefcase,
   Building2,
   HardHat,
-  Sparkles, 
-  Layers, 
-  FileCheck2, 
-  ClipboardList, 
-  BookOpen, 
-  ShieldCheck, 
-  FileText, 
-  Calculator, 
-  Scale, 
+  Sparkles,
+  Layers,
+  FileCheck2,
+  ClipboardList,
+  BookOpen,
+  ShieldCheck,
+  FileText,
+  Calculator,
+  Scale,
   MessageSquareText,
-  Search, 
-  PlusCircle, 
+  Search,
+  PlusCircle,
   X,
   ChevronRight,
   ChevronLeft,
@@ -76,7 +76,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       groupTitle: 'उपकरण',
       items: [
         { id: 'procurement-chat', label: 'खरिद AI सहायक', icon: Bot },
-        { id: 'dilemma-solver', label: 'समस्या समाधान', icon: HelpCircle },
+        { id: 'dilemma-solver', label: 'FAQ', icon: HelpCircle },
         { id: 'timeline-calculator', label: 'कानूनी म्याद क्याल्कुलेटर', icon: Clock },
         { id: 'calculator', label: 'थ्रेसहोल्ड क्याल्कुलेटर', icon: Calculator },
       ],
@@ -110,7 +110,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {
         groupTitle: 'निकाय गृह र सल्लाह',
         items: [
-          { id: 'dashboard', label: 'निकाय ड्यासबोर्ड', icon: Briefcase },
+          { id: 'dashboard', label: 'सार्वजनिक निकाय ड्यासबोर्ड', icon: Briefcase },
           { id: 'advisor', label: 'खरिद सल्लाहकार', icon: Sparkles },
           { id: 'workflow-wizard', label: 'चरणबद्ध गाइड', icon: ClipboardList },
           { id: 'bidder-hub', label: 'बोलपत्रदाता कर्नर हेर्नुहोस्', icon: HardHat },
@@ -169,7 +169,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     <>
       {/* Mobile Backdrop overlay */}
       {isOpenMobile && (
-        <div 
+        <div
           onClick={onCloseMobile}
           className="fixed inset-0 z-40 bg-slate-900/60 backdrop-blur-xs lg:hidden transition-opacity"
         />
@@ -177,11 +177,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Sidebar Container */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 ${
-          isCollapsed ? 'lg:w-20' : 'lg:w-72'
-        } w-72 bg-[#173b63] text-blue-50 border-r border-[#31577b] flex flex-col justify-between transition-all duration-200 ease-in-out lg:translate-x-0 ${
-          isOpenMobile ? 'translate-x-0 shadow-2xl' : '-translate-x-full'
-        }`}
+        className={`fixed top-0 bottom-0 left-0 z-50 ${isCollapsed ? 'lg:w-20' : 'lg:w-72'
+          } w-72 bg-[#173b63] text-blue-50 border-r border-[#31577b] flex flex-col justify-between transition-all duration-200 ease-in-out lg:translate-x-0 ${isOpenMobile ? 'translate-x-0 shadow-2xl' : '-translate-x-full'
+          }`}
       >
         {/* Top: Branding & Close button for mobile / Collapse button for desktop */}
         <div className="shrink-0">
@@ -257,11 +255,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   type="button"
                   onClick={onToggleUserMode}
                   title={userMode === 'bidder' ? 'सार्वजनिक निकाय मोडमा जानुहोस्' : 'बोलपत्रदाता मोडमा जानुहोस्'}
-                  className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-xs transition-colors shadow-2xs cursor-pointer ${
-                    userMode === 'bidder'
-                      ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                      : 'bg-blue-800 hover:bg-blue-700 text-blue-100'
-                  }`}
+                  className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-xs transition-colors shadow-2xs cursor-pointer ${userMode === 'bidder'
+                    ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                    : 'bg-blue-800 hover:bg-blue-700 text-blue-100'
+                    }`}
                 >
                   {userMode === 'bidder' ? <HardHat className="h-4 w-4" /> : <Building2 className="h-4 w-4" />}
                 </button>
@@ -270,11 +267,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <button
                     type="button"
                     onClick={() => { if (userMode !== 'entity') onToggleUserMode(); }}
-                    className={`flex-1 py-1.5 px-2 rounded-lg font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                      userMode === 'entity'
-                        ? 'bg-blue-700 text-white shadow-2xs'
-                        : 'text-blue-200 hover:text-white'
-                    }`}
+                    className={`flex-1 py-1.5 px-2 rounded-lg font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${userMode === 'entity'
+                      ? 'bg-blue-700 text-white shadow-2xs'
+                      : 'text-blue-200 hover:text-white'
+                      }`}
                   >
                     <Building2 className="h-3.5 w-3.5" />
                     <span>सार्वजनिक निकाय</span>
@@ -282,11 +278,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <button
                     type="button"
                     onClick={() => { if (userMode !== 'bidder') onToggleUserMode(); }}
-                    className={`flex-1 py-1.5 px-2 rounded-lg font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                      userMode === 'bidder'
-                        ? 'bg-emerald-600 text-white shadow-2xs'
-                        : 'text-blue-200 hover:text-white'
-                    }`}
+                    className={`flex-1 py-1.5 px-2 rounded-lg font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${userMode === 'bidder'
+                      ? 'bg-emerald-600 text-white shadow-2xs'
+                      : 'text-blue-200 hover:text-white'
+                      }`}
                   >
                     <HardHat className="h-3.5 w-3.5" />
                     <span>बोलपत्रदाता</span>
@@ -297,26 +292,26 @@ export const Sidebar: React.FC<SidebarProps> = ({
           )}
 
           {userMode === 'entity' && (
-          <div className={`p-2.5 border-b border-[#31577b] bg-[#173b63] ${isCollapsed ? 'flex justify-center' : ''}`}>
-            {isCollapsed ? (
-              <button
-                onClick={() => { onOpenNewProject(); onCloseMobile(); }}
-                title="नयाँ खरिद आयोजना थप्नुहोस्"
-                aria-label="नयाँ खरिद आयोजना थप्नुहोस्"
-                className="w-10 h-10 bg-blue-700 hover:bg-blue-800 text-white rounded-lg flex items-center justify-center shadow-xs transition-colors"
-              >
-                <PlusCircle className="w-5 h-5" />
-              </button>
-            ) : (
-              <button
-                onClick={() => { onOpenNewProject(); onCloseMobile(); }}
-                className="w-full py-2 px-3 bg-blue-700 hover:bg-blue-800 text-white rounded-lg font-semibold text-xs flex items-center justify-center gap-2 shadow-xs transition-colors"
-              >
-                <PlusCircle className="w-4 h-4" />
-                <span>नयाँ खरिद आयोजना थप्नुहोस्</span>
-              </button>
-            )}
-          </div>
+            <div className={`p-2.5 border-b border-[#31577b] bg-[#173b63] ${isCollapsed ? 'flex justify-center' : ''}`}>
+              {isCollapsed ? (
+                <button
+                  onClick={() => { onOpenNewProject(); onCloseMobile(); }}
+                  title="नयाँ खरिद आयोजना थप्नुहोस्"
+                  aria-label="नयाँ खरिद आयोजना थप्नुहोस्"
+                  className="w-10 h-10 bg-blue-700 hover:bg-blue-800 text-white rounded-lg flex items-center justify-center shadow-xs transition-colors"
+                >
+                  <PlusCircle className="w-5 h-5" />
+                </button>
+              ) : (
+                <button
+                  onClick={() => { onOpenNewProject(); onCloseMobile(); }}
+                  className="w-full py-2 px-3 bg-blue-700 hover:bg-blue-800 text-white rounded-lg font-semibold text-xs flex items-center justify-center gap-2 shadow-xs transition-colors"
+                >
+                  <PlusCircle className="w-4 h-4" />
+                  <span>नयाँ खरिद आयोजना थप्नुहोस्</span>
+                </button>
+              )}
+            </div>
           )}
 
           {/* Live In-Sidebar Filter Search */}
@@ -372,9 +367,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     >
                       <span>{group.groupTitle} ({group.items.length})</span>
                       <ChevronDown
-                        className={`w-3.5 h-3.5 text-blue-300/60 group-hover:text-white transition-transform duration-200 ${
-                          isGroupCollapsed ? '-rotate-90' : 'rotate-0'
-                        }`}
+                        className={`w-3.5 h-3.5 text-blue-300/60 group-hover:text-white transition-transform duration-200 ${isGroupCollapsed ? '-rotate-90' : 'rotate-0'
+                          }`}
                       />
                     </button>
                   ) : (
@@ -392,19 +386,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             title={item.label}
                             aria-label={item.label}
                             aria-current={isActive ? 'page' : undefined}
-                            className={`w-full flex items-center rounded-lg transition-all group cursor-pointer ${
-                              isCollapsed
-                                ? `justify-center p-2.5 ${
-                                    isActive
-                                      ? 'bg-blue-100 text-blue-950 font-bold shadow-2xs'
-                                      : 'text-blue-100 hover:text-white hover:bg-white/10'
-                                  }`
-                                : `justify-start px-3 py-2 ${
-                                    isActive
-                                      ? 'bg-blue-100 text-blue-950 font-bold border-l-4 border-blue-600 shadow-2xs'
-                                      : 'text-blue-100 hover:text-white hover:bg-white/10'
-                                  }`
-                            }`}
+                            className={`w-full flex items-center rounded-lg transition-all group cursor-pointer ${isCollapsed
+                              ? `justify-center p-2.5 ${isActive
+                                ? 'bg-blue-100 text-blue-950 font-bold shadow-2xs'
+                                : 'text-blue-100 hover:text-white hover:bg-white/10'
+                              }`
+                              : `justify-start px-3 py-2 ${isActive
+                                ? 'bg-blue-100 text-blue-950 font-bold border-l-4 border-blue-600 shadow-2xs'
+                                : 'text-blue-100 hover:text-white hover:bg-white/10'
+                              }`
+                              }`}
                           >
                             {isCollapsed ? (
                               <Icon className={`w-5 h-5 shrink-0 transition-colors ${isActive ? 'text-blue-700' : 'text-blue-300 group-hover:text-white'}`} />
