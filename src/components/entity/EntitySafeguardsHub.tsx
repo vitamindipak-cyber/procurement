@@ -3,7 +3,6 @@ import {
   ShieldAlert,
   ShieldCheck,
   Scale,
-  Building2,
   Gavel,
   CheckCircle2,
   AlertTriangle,
@@ -53,7 +52,7 @@ export const EntitySafeguardsHub: React.FC<EntitySafeguardsHubProps> = ({
   useEffect(() => {
     try {
       localStorage.setItem('pe_decision_audit_questions', JSON.stringify(checkedQuestions));
-    } catch {}
+    } catch { }
   }, [checkedQuestions]);
 
   const handleToggleQuestion = (id: string) => {
@@ -101,15 +100,6 @@ export const EntitySafeguardsHub: React.FC<EntitySafeguardsHubProps> = ({
       {/* Top Banner */}
       <div className="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white rounded-2xl py-2.5 sm:py-3.5 px-4 sm:px-6 shadow-sm relative overflow-hidden">
         <div className="relative z-10 space-y-1.5">
-          <div className="flex flex-wrap items-center gap-2 text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-blue-200">
-            <span className="flex items-center gap-1 bg-blue-800/80 px-2 py-0.5 rounded-md border border-blue-600/40">
-              <Building2 className="w-3.5 h-3.5 text-blue-300" />
-              सार्वजनिक निकाय विशेष मार्गदर्शन
-            </span>
-            <span>·</span>
-            <span className="text-amber-300 font-mono">guide.docx अध्ययनमा आधारित</span>
-          </div>
-
           <h2 className="text-lg sm:text-xl lg:text-2xl font-extrabold tracking-tight">
             सार्वजनिक खरिद प्रक्रियामा सार्वजनिक निकायले अपनाउनुपर्ने सावधानीहरू
           </h2>
@@ -133,7 +123,7 @@ export const EntitySafeguardsHub: React.FC<EntitySafeguardsHubProps> = ({
             </div>
 
             <div className="bg-white/10 rounded-xl py-1.5 px-2.5 border border-white/15 backdrop-blur-xs">
-              <span className="text-blue-200 block text-[10px] sm:text-[11px]">निकायका बदर भएका निर्णय</span>
+              <span className="text-blue-200 block text-[10px] sm:text-[11px]">सार्वजनिक निकायका बदर भएका निर्णय</span>
               <span className="text-base sm:text-lg font-extrabold font-mono text-rose-300">१०८ निर्णय</span>
               <span className="text-[10px] text-rose-200 block mt-0.5">नियमविपरीत शर्त/रद्दका कारण</span>
             </div>
@@ -152,11 +142,10 @@ export const EntitySafeguardsHub: React.FC<EntitySafeguardsHubProps> = ({
         <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
           <button
             onClick={() => setActiveTab('safeguards')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-              activeTab === 'safeguards'
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${activeTab === 'safeguards'
                 ? 'bg-blue-700 text-white shadow-xs'
                 : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-            }`}
+              }`}
           >
             <ShieldAlert className="w-4 h-4" />
             <span>चरणगत विस्तृत सावधानीहरू ({ENTITY_SAFEGUARDS.length})</span>
@@ -164,11 +153,10 @@ export const EntitySafeguardsHub: React.FC<EntitySafeguardsHubProps> = ({
 
           <button
             onClick={() => setActiveTab('twelve-questions')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-              activeTab === 'twelve-questions'
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${activeTab === 'twelve-questions'
                 ? 'bg-blue-700 text-white shadow-xs'
                 : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-            }`}
+              }`}
           >
             <CheckCircle2 className="w-4 h-4" />
             <span>निर्णयपूर्व सोध्नुपर्ने १२ अनिवार्य प्रश्न</span>
@@ -179,11 +167,10 @@ export const EntitySafeguardsHub: React.FC<EntitySafeguardsHubProps> = ({
 
           <button
             onClick={() => setActiveTab('patterns')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-              activeTab === 'patterns'
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${activeTab === 'patterns'
                 ? 'bg-blue-700 text-white shadow-xs'
                 : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-            }`}
+              }`}
           >
             <Gavel className="w-4 h-4" />
             <span>PPRC निर्णय नजिर ढाँचा (१०८ बदर / १०१ खारेज)</span>
@@ -191,11 +178,10 @@ export const EntitySafeguardsHub: React.FC<EntitySafeguardsHubProps> = ({
 
           <button
             onClick={() => setActiveTab('principles')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-              activeTab === 'principles'
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${activeTab === 'principles'
                 ? 'bg-blue-700 text-white shadow-xs'
                 : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-            }`}
+              }`}
           >
             <Sparkles className="w-4 h-4" />
             <span>४ आधारभूत कानूनी सिद्धान्त</span>
@@ -228,11 +214,10 @@ export const EntitySafeguardsHub: React.FC<EntitySafeguardsHubProps> = ({
                 <button
                   key={stg.id}
                   onClick={() => setSelectedStageFilter(stg.id)}
-                  className={`px-2.5 py-1 rounded-lg font-semibold transition-all ${
-                    selectedStageFilter === stg.id
+                  className={`px-2.5 py-1 rounded-lg font-semibold transition-all ${selectedStageFilter === stg.id
                       ? 'bg-blue-700 text-white shadow-2xs'
                       : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-100'
-                  }`}
+                    }`}
                 >
                   {stg.label}
                 </button>
@@ -287,11 +272,10 @@ export const EntitySafeguardsHub: React.FC<EntitySafeguardsHubProps> = ({
                         return (
                           <span
                             key={idx}
-                            className={`px-2 py-0.5 rounded text-[11px] font-mono font-bold border ${
-                              isPprc
+                            className={`px-2 py-0.5 rounded text-[11px] font-mono font-bold border ${isPprc
                                 ? 'bg-purple-50 text-purple-800 border-purple-200'
                                 : 'bg-blue-50 text-blue-800 border-blue-200'
-                            }`}
+                              }`}
                             title={isPprc ? 'PPRC पुनरावलोकन निर्णय' : 'PPMO राय/परामर्श'}
                           >
                             [{ref}]
@@ -379,9 +363,8 @@ export const EntitySafeguardsHub: React.FC<EntitySafeguardsHubProps> = ({
               </div>
               <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden border border-slate-200">
                 <div
-                  className={`h-full transition-all duration-300 ${
-                    verifiedPercent === 100 ? 'bg-emerald-600' : 'bg-blue-600'
-                  }`}
+                  className={`h-full transition-all duration-300 ${verifiedPercent === 100 ? 'bg-emerald-600' : 'bg-blue-600'
+                    }`}
                   style={{ width: `${verifiedPercent}%` }}
                 />
               </div>
@@ -403,18 +386,16 @@ export const EntitySafeguardsHub: React.FC<EntitySafeguardsHubProps> = ({
                 <div
                   key={q.id}
                   onClick={() => handleToggleQuestion(q.id)}
-                  className={`p-4 rounded-xl border cursor-pointer transition-all flex items-start gap-3.5 select-none ${
-                    isChecked
+                  className={`p-4 rounded-xl border cursor-pointer transition-all flex items-start gap-3.5 select-none ${isChecked
                       ? 'bg-emerald-50/70 border-emerald-300 shadow-2xs'
                       : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50'
-                  }`}
+                    }`}
                 >
                   <div
-                    className={`w-5 h-5 rounded-md border flex items-center justify-center shrink-0 mt-0.5 transition-colors ${
-                      isChecked
+                    className={`w-5 h-5 rounded-md border flex items-center justify-center shrink-0 mt-0.5 transition-colors ${isChecked
                         ? 'bg-emerald-600 border-emerald-600 text-white'
                         : 'border-slate-300 bg-white'
-                    }`}
+                      }`}
                   >
                     {isChecked && <Check className="w-3.5 h-3.5" />}
                   </div>
@@ -422,9 +403,8 @@ export const EntitySafeguardsHub: React.FC<EntitySafeguardsHubProps> = ({
                   <div className="flex-1 space-y-1">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <h4
-                        className={`text-xs sm:text-sm font-bold ${
-                          isChecked ? 'text-emerald-950 font-semibold' : 'text-slate-900'
-                        }`}
+                        className={`text-xs sm:text-sm font-bold ${isChecked ? 'text-emerald-950 font-semibold' : 'text-slate-900'
+                          }`}
                       >
                         {q.questionNumber}. {q.questionText}
                       </h4>
@@ -464,9 +444,8 @@ export const EntitySafeguardsHub: React.FC<EntitySafeguardsHubProps> = ({
               return (
                 <div
                   key={pat.id}
-                  className={`bg-white rounded-2xl border p-5 space-y-3 shadow-2xs ${
-                    isQuashed ? 'border-rose-200' : 'border-slate-200'
-                  }`}
+                  className={`bg-white rounded-2xl border p-5 space-y-3 shadow-2xs ${isQuashed ? 'border-rose-200' : 'border-slate-200'
+                    }`}
                 >
                   <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-2.5">
                     <div className="flex items-center gap-2">
@@ -479,11 +458,10 @@ export const EntitySafeguardsHub: React.FC<EntitySafeguardsHubProps> = ({
                     </div>
 
                     <span
-                      className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold ${
-                        isQuashed
+                      className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold ${isQuashed
                           ? 'bg-rose-100 text-rose-800 border border-rose-200'
                           : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-                      }`}
+                        }`}
                     >
                       {isQuashed ? 'निकायको निर्णय बदर' : 'निवेदन खारेज / कानुनसम्मत'}
                     </span>
