@@ -238,11 +238,10 @@ export const StagesGuideView: React.FC<StagesGuideViewProps> = ({
             const el = document.getElementById('stage-subtabs-container');
             if (el) el.scrollIntoView({ behavior: 'smooth' });
           }}
-          className={`px-4 py-2.5 rounded-xl font-extrabold text-xs transition-all shadow-sm flex items-center gap-2 shrink-0 ${
-            activeSubTab === 'safeguards'
-              ? 'bg-amber-400 text-slate-950 ring-2 ring-white scale-102'
-              : 'bg-white text-blue-950 hover:bg-amber-100 hover:scale-102'
-          }`}
+          className={`px-4 py-2.5 rounded-xl font-extrabold text-xs transition-all shadow-sm flex items-center gap-2 shrink-0 ${activeSubTab === 'safeguards'
+            ? 'bg-amber-400 text-slate-950 ring-2 ring-white scale-102'
+            : 'bg-white text-blue-950 hover:bg-amber-100 hover:scale-102'
+            }`}
         >
           <ShieldAlert className="w-4 h-4 text-blue-900" />
           <span>{activeSubTab === 'safeguards' ? '✓ उप-ट्याब ८ सक्रिय छ' : 'उप-ट्याब ८ हेर्नुहोस् →'}</span>
@@ -261,8 +260,8 @@ export const StagesGuideView: React.FC<StagesGuideViewProps> = ({
                 setSearchQuery('');
               }}
               className={`p-3 rounded-xl border text-left transition-all relative ${isActive
-                  ? 'bg-blue-700 text-white border-blue-700 shadow-sm ring-2 ring-red-400/30'
-                  : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
+                ? 'bg-blue-700 text-white border-blue-700 shadow-sm ring-2 ring-red-400/30'
+                : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
                 }`}
             >
               <div className="flex items-center justify-between text-[11px] mb-1">
@@ -348,14 +347,13 @@ export const StagesGuideView: React.FC<StagesGuideViewProps> = ({
             )}
             <button
               onClick={() => setActiveSubTab('safeguards')}
-              className={`inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1 rounded-md border transition-all shadow-2xs shrink-0 ${
-                activeSubTab === 'safeguards'
-                  ? 'bg-blue-700 text-white border-blue-800'
-                  : 'bg-white text-blue-800 border-blue-300 hover:bg-blue-50'
-              }`}
+              className={`inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1 rounded-md border transition-all shadow-2xs shrink-0 ${activeSubTab === 'safeguards'
+                ? 'bg-blue-700 text-white border-blue-800'
+                : 'bg-white text-blue-800 border-blue-300 hover:bg-blue-50'
+                }`}
             >
               <ShieldAlert className="w-3.5 h-3.5 text-amber-500" />
-              <span>८. PPMO/PPRC सावधानी (guide.docx)</span>
+              <span>८. PPMO/PPRC सावधानी</span>
             </button>
           </div>
         </div>
@@ -366,8 +364,8 @@ export const StagesGuideView: React.FC<StagesGuideViewProps> = ({
             <button
               onClick={() => setActiveSubTab('overview')}
               className={`px-3.5 py-2 text-xs font-bold rounded-t-xl transition-all border-b-2 flex items-center gap-1.5 ${activeSubTab === 'overview'
-                  ? 'border-blue-700 text-red-700 bg-red-50/50'
-                  : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                ? 'border-blue-700 text-red-700 bg-red-50/50'
+                : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                 }`}
             >
               <ClipboardList className="w-3.5 h-3.5" />
@@ -377,8 +375,8 @@ export const StagesGuideView: React.FC<StagesGuideViewProps> = ({
             <button
               onClick={() => setActiveSubTab('statutory')}
               className={`px-3.5 py-2 text-xs font-bold rounded-t-xl transition-all border-b-2 flex items-center gap-1.5 ${activeSubTab === 'statutory'
-                  ? 'border-blue-700 text-red-700 bg-red-50/50'
-                  : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                ? 'border-blue-700 text-red-700 bg-red-50/50'
+                : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                 }`}
             >
               <Scale className="w-3.5 h-3.5" />
@@ -393,8 +391,8 @@ export const StagesGuideView: React.FC<StagesGuideViewProps> = ({
             <button
               onClick={() => setActiveSubTab('ppmo')}
               className={`px-3.5 py-2 text-xs font-bold rounded-t-xl transition-all border-b-2 flex items-center gap-1.5 ${activeSubTab === 'ppmo'
-                  ? 'border-blue-700 text-red-700 bg-red-50/50'
-                  : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                ? 'border-blue-700 text-red-700 bg-red-50/50'
+                : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                 }`}
             >
               <Building2 className="w-3.5 h-3.5" />
@@ -409,8 +407,8 @@ export const StagesGuideView: React.FC<StagesGuideViewProps> = ({
             <button
               onClick={() => setActiveSubTab('pprc')}
               className={`px-3.5 py-2 text-xs font-bold rounded-t-xl transition-all border-b-2 flex items-center gap-1.5 ${activeSubTab === 'pprc'
-                  ? 'border-blue-700 text-red-700 bg-red-50/50'
-                  : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                ? 'border-blue-700 text-red-700 bg-red-50/50'
+                : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                 }`}
             >
               <Gavel className="w-3.5 h-3.5" />
@@ -425,8 +423,8 @@ export const StagesGuideView: React.FC<StagesGuideViewProps> = ({
             <button
               onClick={() => setActiveSubTab('audit')}
               className={`px-3.5 py-2 text-xs font-bold rounded-t-xl transition-all border-b-2 flex items-center gap-1.5 ${activeSubTab === 'audit'
-                  ? 'border-blue-700 text-red-700 bg-red-50/50'
-                  : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                ? 'border-blue-700 text-red-700 bg-red-50/50'
+                : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                 }`}
             >
               <AlertTriangle className="w-3.5 h-3.5" />
@@ -441,8 +439,8 @@ export const StagesGuideView: React.FC<StagesGuideViewProps> = ({
             <button
               onClick={() => setActiveSubTab('checklist')}
               className={`px-3.5 py-2 text-xs font-bold rounded-t-xl transition-all border-b-2 flex items-center gap-1.5 ${activeSubTab === 'checklist'
-                  ? 'border-blue-700 text-red-700 bg-red-50/50'
-                  : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                ? 'border-blue-700 text-red-700 bg-red-50/50'
+                : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                 }`}
             >
               <FileCheck className="w-3.5 h-3.5" />
@@ -458,8 +456,8 @@ export const StagesGuideView: React.FC<StagesGuideViewProps> = ({
             <button
               onClick={() => setActiveSubTab('dos-donts')}
               className={`px-3.5 py-2 text-xs font-bold rounded-t-xl transition-all border-b-2 flex items-center gap-1.5 ${activeSubTab === 'dos-donts'
-                  ? 'border-blue-700 text-red-700 bg-red-50/50'
-                  : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                ? 'border-blue-700 text-red-700 bg-red-50/50'
+                : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                 }`}
             >
               <Sparkles className="w-3.5 h-3.5" />
@@ -469,15 +467,12 @@ export const StagesGuideView: React.FC<StagesGuideViewProps> = ({
             <button
               onClick={() => setActiveSubTab('safeguards')}
               className={`px-3.5 py-2 text-xs font-bold rounded-t-xl transition-all border-b-2 flex items-center gap-1.5 ${activeSubTab === 'safeguards'
-                  ? 'border-amber-500 text-blue-950 bg-amber-50 font-black shadow-xs ring-1 ring-amber-300'
-                  : 'border-blue-400 text-blue-900 bg-blue-50/80 hover:text-blue-950 hover:bg-blue-100'
+                ? 'border-amber-500 text-blue-950 bg-amber-50 font-black shadow-xs ring-1 ring-amber-300'
+                : 'border-blue-400 text-blue-900 bg-blue-50/80 hover:text-blue-950 hover:bg-blue-100'
                 }`}
             >
               <ShieldAlert className="w-4 h-4 text-amber-600 shrink-0" />
-              <span>८. PPMO/PPRC सावधानी (guide.docx)</span>
-              <span className="px-1.5 py-0.2 bg-amber-300 text-amber-950 rounded-full text-[10px] font-black animate-pulse">
-                नयाँ
-              </span>
+              <span>८. PPMO/PPRC सावधानी</span>
             </button>
           </div>
 
@@ -816,10 +811,10 @@ export const StagesGuideView: React.FC<StagesGuideViewProps> = ({
                         </h4>
                         <span
                           className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase ${audit.authority === 'CIAA'
-                              ? 'bg-red-100 text-red-800 border border-red-200'
-                              : audit.authority === 'OAG'
-                                ? 'bg-blue-100 text-blue-800 border border-blue-200'
-                                : 'bg-purple-100 text-purple-800 border border-purple-200'
+                            ? 'bg-red-100 text-red-800 border border-red-200'
+                            : audit.authority === 'OAG'
+                              ? 'bg-blue-100 text-blue-800 border border-blue-200'
+                              : 'bg-purple-100 text-purple-800 border border-purple-200'
                             }`}
                         >
                           {audit.authority === 'BOTH' ? 'अख्तियार + महालेखा' : audit.authority === 'CIAA' ? 'अख्तियार (CIAA)' : 'महालेखा (OAG)'}
@@ -910,14 +905,14 @@ export const StagesGuideView: React.FC<StagesGuideViewProps> = ({
                       key={item.id}
                       onClick={() => handleToggleChecklist(item.id)}
                       className={`p-3.5 rounded-xl border cursor-pointer transition-all flex items-start gap-3 select-none ${isChecked
-                          ? 'bg-emerald-50/70 border-emerald-300 shadow-2xs'
-                          : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                        ? 'bg-emerald-50/70 border-emerald-300 shadow-2xs'
+                        : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50'
                         }`}
                     >
                       <div
                         className={`w-5 h-5 rounded-md border flex items-center justify-center shrink-0 mt-0.5 transition-colors ${isChecked
-                            ? 'bg-emerald-600 border-emerald-600 text-white'
-                            : 'border-slate-300 bg-white'
+                          ? 'bg-emerald-600 border-emerald-600 text-white'
+                          : 'border-slate-300 bg-white'
                           }`}
                       >
                         {isChecked && <Check className="w-3.5 h-3.5" />}

@@ -20,15 +20,15 @@ export interface IcbStage {
   legalBasisRule: string;
   legalRuleSection?: string;
   sbdClauses: string;
-  
+
   // Public Entity View
   entityDuties: string[];
   entityChecklist: string[];
-  
+
   // Bidder View
   bidderDuties: string[];
   bidderChecklist: string[];
-  
+
   requiredDocuments: string[];
   criticalMistakesAndRisks: string[];
   ppmoOpinionsAndPprcRulings: {
@@ -189,7 +189,7 @@ export const ICB_LC_GUIDE = {
     'खरिद इकाइ, आर्थिक प्रशासन, प्राविधिक शाखा, स्टोर/भन्सार सम्पर्क व्यक्ति र बैंकबीच जिम्मेवारी तोकी shipment, expiry, presentation र फर्छ्यौट मिति अनुगमन गर्नुहोस्।',
   ],
   caution:
-    'कानुनी नोट: lc_guide.docx मा उद्धृत नियम ११३(७)–(८), नियम १२२/१२३ तथा NRB फाराम/प्रक्रियालाई वेब एपमा अन्तिम कानुनी निष्कर्षका रूपमा नलिनुहोस्। LC खोल्नुअघि नेपाल कानून आयोग/PPMO को हाल लागू संशोधित पाठ, नेपाल राष्ट्र बैंकको पछिल्लो एकीकृत परिपत्र, स्वीकृत SBD/सम्झौता र सम्बन्धित बैंकको लिखित शर्तसँग पुनःजाँच गर्नुहोस्।',
+    'नोट: वेब एपमा उद्धृत नियम ११३(७)–(८), नियम १२२/१२३ तथा NRB फाराम/प्रक्रियालाई अन्तिम कानुनी निष्कर्षका रूपमा नलिनुहोस्। LC खोल्नुअघि नेपाल कानून आयोग/PPMO को हाल लागू संशोधित पाठ, नेपाल राष्ट्र बैंकको पछिल्लो एकीकृत परिपत्र, स्वीकृत SBD/सम्झौता र सम्बन्धित बैंकको लिखित शर्तसँग पुनःजाँच गर्नुहोस्।',
 } as const;
 
 export const ICB_WORKFLOW_STAGES: IcbStage[] = [
