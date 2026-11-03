@@ -10,29 +10,40 @@ import { DashboardView } from './components/DashboardView';
 import { FloatingProcurementChatLauncher } from './components/FloatingProcurementChatLauncher';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { ScrollToTop } from './components/ScrollToTop';
-import { ProcurementAdvisorWizard } from './components/ProcurementAdvisorWizard';
-import { ProcurementMethodsView } from './components/ProcurementMethodsView';
-import { MethodChecklistsView } from './components/MethodChecklistsView';
-import { CompleteLawCorpusView } from './components/CompleteLawCorpusView';
-import { AmendmentsHighlightView } from './components/AmendmentsHighlightView';
-import { StagesGuideView } from './components/StagesGuideView';
-import { EgpGuidelinesView } from './components/EgpGuidelinesView';
-import { ChecklistsView } from './components/ChecklistsView';
-import { TemplatesView } from './components/TemplatesView';
-import { CalculatorView } from './components/CalculatorView';
-import { LegalClausesView } from './components/LegalClausesView';
-import { SchedulesView } from './components/SchedulesView';
-import { ProcurementGlossaryView } from './components/ProcurementGlossaryView';
-import { ProcurementDilemmaSolverView } from './components/ProcurementDilemmaSolverView';
-import { ProcurementWorkflowWizard } from './components/ProcurementWorkflowWizard';
-import { SearchAndFilterModal } from './components/SearchAndFilterModal';
-import { NewProjectModal } from './components/NewProjectModal';
 import { LoginPage } from './components/LoginPage';
-import { UserManagementView } from './components/UserManagementView';
-import { BidderPortalView } from './components/BidderPortalView';
-import { BiddingFormsGenerator } from './components/BiddingFormsGenerator';
-import { IcbProcurementHub } from './components/IcbProcurementHub';
-import { BidEvaluationGuideView } from './components/BidEvaluationGuideView';
+
+// Code-split dynamic lazy loading for lightweight instant page loads
+const ProcurementAdvisorWizard = lazy(() => import('./components/ProcurementAdvisorWizard').then(m => ({ default: m.ProcurementAdvisorWizard })));
+const ProcurementMethodsView = lazy(() => import('./components/ProcurementMethodsView').then(m => ({ default: m.ProcurementMethodsView })));
+const MethodChecklistsView = lazy(() => import('./components/MethodChecklistsView').then(m => ({ default: m.MethodChecklistsView })));
+const CompleteLawCorpusView = lazy(() => import('./components/CompleteLawCorpusView').then(m => ({ default: m.CompleteLawCorpusView })));
+const AmendmentsHighlightView = lazy(() => import('./components/AmendmentsHighlightView').then(m => ({ default: m.AmendmentsHighlightView })));
+const StagesGuideView = lazy(() => import('./components/StagesGuideView').then(m => ({ default: m.StagesGuideView })));
+const EgpGuidelinesView = lazy(() => import('./components/EgpGuidelinesView').then(m => ({ default: m.EgpGuidelinesView })));
+const ChecklistsView = lazy(() => import('./components/ChecklistsView').then(m => ({ default: m.ChecklistsView })));
+const TemplatesView = lazy(() => import('./components/TemplatesView').then(m => ({ default: m.TemplatesView })));
+const CalculatorView = lazy(() => import('./components/CalculatorView').then(m => ({ default: m.CalculatorView })));
+const LegalClausesView = lazy(() => import('./components/LegalClausesView').then(m => ({ default: m.LegalClausesView })));
+const SchedulesView = lazy(() => import('./components/SchedulesView').then(m => ({ default: m.SchedulesView })));
+const ProcurementGlossaryView = lazy(() => import('./components/ProcurementGlossaryView').then(m => ({ default: m.ProcurementGlossaryView })));
+const ProcurementDilemmaSolverView = lazy(() => import('./components/ProcurementDilemmaSolverView').then(m => ({ default: m.ProcurementDilemmaSolverView })));
+const ProcurementWorkflowWizard = lazy(() => import('./components/ProcurementWorkflowWizard').then(m => ({ default: m.ProcurementWorkflowWizard })));
+const SearchAndFilterModal = lazy(() => import('./components/SearchAndFilterModal').then(m => ({ default: m.SearchAndFilterModal })));
+const NewProjectModal = lazy(() => import('./components/NewProjectModal').then(m => ({ default: m.NewProjectModal })));
+const UserManagementView = lazy(() => import('./components/UserManagementView').then(m => ({ default: m.UserManagementView })));
+const BidderPortalView = lazy(() => import('./components/BidderPortalView').then(m => ({ default: m.BidderPortalView })));
+const BiddingFormsGenerator = lazy(() => import('./components/BiddingFormsGenerator').then(m => ({ default: m.BiddingFormsGenerator })));
+const IcbProcurementHub = lazy(() => import('./components/IcbProcurementHub').then(m => ({ default: m.IcbProcurementHub })));
+const BidEvaluationGuideView = lazy(() => import('./components/BidEvaluationGuideView').then(m => ({ default: m.BidEvaluationGuideView })));
+
+function ViewLoadingFallback() {
+  return (
+    <div className="flex flex-col items-center justify-center py-24 px-4 space-y-3" role="status" aria-live="polite">
+      <div className="w-8 h-8 border-3 border-blue-600 border-t-transparent rounded-full animate-spin" />
+      <p className="text-xs font-semibold text-slate-500">सामग्री लोड हुँदैछ, कृपया प्रतीक्षा गर्नुहोस्...</p>
+    </div>
+  );
+}
 import { TrackedProject } from './types/procurement';
 import { AppUser, ManagedUserInput } from './types/auth';
 import {
@@ -447,6 +458,7 @@ function ProcurementApp({
             <p role="status" className="mb-4 text-sm text-slate-600">आयोजना विवरण लोड हुँदैछ...</p>
           )}
 
+          <Suspense fallback={<ViewLoadingFallback />}>
           {activeTab === 'dashboard' && (
             userMode === 'bidder' ? (
               <BidderPortalView
@@ -605,16 +617,13 @@ function ProcurementApp({
           )}
 
           {activeTab === 'procurement-chat' && (
-            <Suspense fallback={<div role="status" className="py-8 text-center text-sm text-slate-500">खरिद ज्ञान-स्रोत लोड हुँदैछ...</div>}>
-              <ProcurementChatbot onNavigate={setActiveTab} />
-            </Suspense>
+            <ProcurementChatbot onNavigate={setActiveTab} />
           )}
 
           {activeTab === 'ppmo-pprc' && (
-            <Suspense fallback={<div role="status" className="py-8 text-center text-sm text-slate-500">PPMO राय र PPRC निर्णय लोड हुँदैछ...</div>}>
-              <PpmoPprcGuide embedded />
-            </Suspense>
+            <PpmoPprcGuide embedded />
           )}
+          </Suspense>
         </main>
 
         {/* Footer */}
@@ -653,18 +662,24 @@ function ProcurementApp({
       </div>
 
       {/* Universal Search & Multi-facet Filter Modal */}
-      <SearchAndFilterModal
-        isOpen={isSearchOpen}
-        onClose={() => setIsSearchOpen(false)}
-        onSelectResult={handleSelectSearchResult}
-      />
+      <Suspense fallback={null}>
+        {isSearchOpen && (
+          <SearchAndFilterModal
+            isOpen={isSearchOpen}
+            onClose={() => setIsSearchOpen(false)}
+            onSelectResult={handleSelectSearchResult}
+          />
+        )}
 
-      {/* Add New Procurement Project Modal */}
-      <NewProjectModal
-        isOpen={isNewProjectOpen}
-        onClose={() => setIsNewProjectOpen(false)}
-        onAddProject={handleAddProject}
-      />
+        {/* Add New Procurement Project Modal */}
+        {isNewProjectOpen && (
+          <NewProjectModal
+            isOpen={isNewProjectOpen}
+            onClose={() => setIsNewProjectOpen(false)}
+            onAddProject={handleAddProject}
+          />
+        )}
+      </Suspense>
 
       {/* Mobile Bottom Navigation Bar */}
       <MobileBottomNav
