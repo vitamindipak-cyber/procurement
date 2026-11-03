@@ -99,10 +99,10 @@ export const EntitySafeguardsHub: React.FC<EntitySafeguardsHubProps> = ({
   return (
     <div className="space-y-6">
       {/* Top Banner */}
-      <div className="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white rounded-2xl p-6 sm:p-8 shadow-sm relative overflow-hidden">
-        <div className="relative z-10 space-y-4">
+      <div className="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white rounded-2xl py-4 sm:py-5 px-5 sm:px-7 shadow-sm relative overflow-hidden">
+        <div className="relative z-10 space-y-2.5">
           <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-wider text-blue-200">
-            <span className="flex items-center gap-1 bg-blue-800/80 px-2.5 py-1 rounded-md border border-blue-600/40">
+            <span className="flex items-center gap-1 bg-blue-800/80 px-2.5 py-0.5 rounded-md border border-blue-600/40">
               <Building2 className="w-3.5 h-3.5 text-blue-300" />
               सार्वजनिक निकाय विशेष मार्गदर्शन
             </span>
@@ -119,26 +119,26 @@ export const EntitySafeguardsHub: React.FC<EntitySafeguardsHubProps> = ({
           </p>
 
           {/* Key Metrics Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 text-xs">
-            <div className="bg-white/10 rounded-xl p-3 border border-white/15 backdrop-blur-xs">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1 text-xs">
+            <div className="bg-white/10 rounded-xl p-2 sm:p-2.5 border border-white/15 backdrop-blur-xs">
               <span className="text-blue-200 block text-[11px]">अध्ययन गरिएका PPMO राय</span>
               <span className="text-lg sm:text-xl font-extrabold font-mono text-white">१,२९५ वटा</span>
               <span className="text-[10px] text-blue-300 block mt-0.5">निर्माण ३८२ | माल ३५१ | सेवा ११६</span>
             </div>
 
-            <div className="bg-white/10 rounded-xl p-3 border border-white/15 backdrop-blur-xs">
+            <div className="bg-white/10 rounded-xl p-2 sm:p-2.5 border border-white/15 backdrop-blur-xs">
               <span className="text-blue-200 block text-[11px]">PPRC पुनरावलोकन निर्णय</span>
               <span className="text-lg sm:text-xl font-extrabold font-mono text-amber-300">२२१ वटा</span>
               <span className="text-[10px] text-amber-200 block mt-0.5">मुख्यतः २०७५ देखि २०८१ सम्म</span>
             </div>
 
-            <div className="bg-white/10 rounded-xl p-3 border border-white/15 backdrop-blur-xs">
+            <div className="bg-white/10 rounded-xl p-2 sm:p-2.5 border border-white/15 backdrop-blur-xs">
               <span className="text-blue-200 block text-[11px]">निकायका बदर भएका निर्णय</span>
               <span className="text-lg sm:text-xl font-extrabold font-mono text-rose-300">१०८ निर्णय</span>
               <span className="text-[10px] text-rose-200 block mt-0.5">नियमविपरीत शर्त/रद्दका कारण</span>
             </div>
 
-            <div className="bg-white/10 rounded-xl p-3 border border-white/15 backdrop-blur-xs">
+            <div className="bg-white/10 rounded-xl p-2 sm:p-2.5 border border-white/15 backdrop-blur-xs">
               <span className="text-blue-200 block text-[11px]">बोलपत्रदाताका खारेज निवेदन</span>
               <span className="text-lg sm:text-xl font-extrabold font-mono text-emerald-300">१०१ निवेदन</span>
               <span className="text-[10px] text-emerald-200 block mt-0.5">३६ मा धरौटी जफत</span>
