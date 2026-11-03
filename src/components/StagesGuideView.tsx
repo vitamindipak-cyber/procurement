@@ -171,7 +171,7 @@ export const StagesGuideView: React.FC<StagesGuideViewProps> = ({
   return (
     <div className="space-y-6">
       {/* View Header */}
-      <div className="bg-gradient-to-r from-[#2563eb] via-[#1e4f91] to-[#173b63] text-white rounded-2xl p-4 sm:p-8 shadow-sm relative overflow-hidden">
+      <div className="bg-gradient-to-r from-[#2563eb] via-[#1e4f91] to-[#173b63] text-white rounded-2xl py-3 sm:py-5 px-4 sm:px-7 shadow-sm relative overflow-hidden">
         <div className="absolute right-0 top-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
         <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[45%] lg:block">
           <img
@@ -185,15 +185,6 @@ export const StagesGuideView: React.FC<StagesGuideViewProps> = ({
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-2 lg:max-w-[58%]">
-            {/* <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-500/20 border border-blue-400/30 text-blue-200 text-xs font-semibold rounded-full backdrop-blur-xs">
-                <ShieldCheck className="w-3.5 h-3.5 text-blue-300" />
-                सार्वजनिक निकाय विशेष मार्गदर्शन (Procuring Entity Guide)
-              </span>
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 bg-blue-500/20 text-blue-300 text-[11px] rounded-md font-mono border border-blue-400/30">
-                PPA २०६३ + १६औँ नियमावली + PPMO राय + PPRC नजिर
-              </span>
-            </div> */}
             <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-white">
               सार्वजनिक खरिदका ७ प्रक्रियागत चरण र सार्वजनिक निकायले पुर्‍याउनुपर्ने सजगता
             </h1>
@@ -201,34 +192,23 @@ export const StagesGuideView: React.FC<StagesGuideViewProps> = ({
               सार्वजनिक निकायले खरिद प्रक्रिया सुरु गर्नु पूर्वतयारीदेखि बोलपत्र आह्वान, मूल्यांकन, आशयको सूचना, पुनरावलोकन, रनिङ बिल भुक्तानी, म्याद थप र अन्तिम फरफारकसम्म कानूनी जोखिम, PPMO राय तथा PPRC का स्थापित नजिरहरूको विस्तृत मार्गचित्र।
             </p>
           </div>
-
-          {/* <div className="flex items-center gap-2 self-start md:self-auto shrink-0 no-print">
-            <button
-              onClick={() => window.print()}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-medium border border-white/20 transition-all backdrop-blur-xs"
-              title="यो मार्गदर्शन प्रिन्ट गर्नुहोस्"
-            >
-              <Printer className="w-4 h-4" />
-              <span>प्रिन्ट / PDF</span>
-            </button>
-          </div> */}
         </div>
 
         {/* Global Key Highlights Banner */}
-        <div className="relative z-10 mt-6 pt-5 border-t border-white/10 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-          <div className="bg-white/5 border border-white/10 p-2.5 rounded-xl">
+        <div className="relative z-10 mt-4 pt-3.5 border-t border-white/10 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+          <div className="bg-white/5 border border-white/10 p-2 rounded-xl">
             <span className="text-slate-400 block text-[10px]">ऐन तथा नियमावली:</span>
             <span className="text-white font-bold">PPA २०६३ & PPR २०६४</span>
           </div>
-          <div className="bg-white/5 border border-white/10 p-2.5 rounded-xl">
+          <div className="bg-white/5 border border-white/10 p-2 rounded-xl">
             <span className="text-slate-400 block text-[10px]">नवीनतम संशोधन:</span>
             <span className="text-amber-300 font-bold">१६औँ संशोधन (२०८१)</span>
           </div>
-          <div className="bg-white/5 border border-white/10 p-2.5 rounded-xl">
+          <div className="bg-white/5 border border-white/10 p-2 rounded-xl">
             <span className="text-slate-400 block text-[10px]">अख्तियार र महालेखा:</span>
             <span className="text-emerald-300 font-bold">बेरुजु र जोखिम रोकथाम</span>
           </div>
-          <div className="bg-white/5 border border-white/10 p-2.5 rounded-xl">
+          <div className="bg-white/5 border border-white/10 p-2 rounded-xl">
             <span className="text-slate-400 block text-[10px]">डिजिटल चेकलिस्ट:</span>
             <span className="text-blue-300 font-bold">हरेक चरणको अनिवार्य रुजु</span>
           </div>
