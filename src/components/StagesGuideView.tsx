@@ -171,7 +171,7 @@ export const StagesGuideView: React.FC<StagesGuideViewProps> = ({
   return (
     <div className="space-y-6">
       {/* View Header */}
-      <div className="bg-gradient-to-r from-[#2563eb] via-[#1e4f91] to-[#173b63] text-white rounded-2xl py-3 sm:py-5 px-4 sm:px-7 shadow-sm relative overflow-hidden">
+      <div className="bg-gradient-to-r from-[#2563eb] via-[#1e4f91] to-[#173b63] text-white rounded-2xl py-2 sm:py-3.5 px-4 sm:px-6 shadow-sm relative overflow-hidden">
         <div className="absolute right-0 top-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
         <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[45%] lg:block">
           <img
@@ -183,34 +183,34 @@ export const StagesGuideView: React.FC<StagesGuideViewProps> = ({
           <div className="absolute inset-0 bg-gradient-to-r from-[#1e4f91] via-[#1e4f91]/55 to-[#173b63]/35" />
         </div>
 
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="space-y-2 lg:max-w-[58%]">
-            <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-white">
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div className="space-y-1 lg:max-w-[58%]">
+            <h1 className="text-lg sm:text-xl font-extrabold tracking-tight text-white">
               सार्वजनिक खरिदका ७ प्रक्रियागत चरण र सार्वजनिक निकायले पुर्‍याउनुपर्ने सजगता
             </h1>
-            <p className="text-xs sm:text-sm text-slate-300 max-w-3xl leading-relaxed">
+            <p className="text-xs text-slate-300 max-w-3xl leading-normal">
               सार्वजनिक निकायले खरिद प्रक्रिया सुरु गर्नु पूर्वतयारीदेखि बोलपत्र आह्वान, मूल्यांकन, आशयको सूचना, पुनरावलोकन, रनिङ बिल भुक्तानी, म्याद थप र अन्तिम फरफारकसम्म कानूनी जोखिम, PPMO राय तथा PPRC का स्थापित नजिरहरूको विस्तृत मार्गचित्र।
             </p>
           </div>
         </div>
 
         {/* Global Key Highlights Banner */}
-        <div className="relative z-10 mt-4 pt-3.5 border-t border-white/10 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-          <div className="bg-white/5 border border-white/10 p-2 rounded-xl">
+        <div className="relative z-10 mt-2.5 pt-2 border-t border-white/10 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+          <div className="bg-white/5 border border-white/10 py-1.5 px-2.5 rounded-lg">
             <span className="text-slate-400 block text-[10px]">ऐन तथा नियमावली:</span>
-            <span className="text-white font-bold">PPA २०६३ & PPR २०६४</span>
+            <span className="text-white font-bold text-[11px] sm:text-xs">PPA २०६३ & PPR २०६४</span>
           </div>
-          <div className="bg-white/5 border border-white/10 p-2 rounded-xl">
+          <div className="bg-white/5 border border-white/10 py-1.5 px-2.5 rounded-lg">
             <span className="text-slate-400 block text-[10px]">नवीनतम संशोधन:</span>
-            <span className="text-amber-300 font-bold">१६औँ संशोधन (२०८१)</span>
+            <span className="text-amber-300 font-bold text-[11px] sm:text-xs">१६औँ संशोधन (२०८१)</span>
           </div>
-          <div className="bg-white/5 border border-white/10 p-2 rounded-xl">
+          <div className="bg-white/5 border border-white/10 py-1.5 px-2.5 rounded-lg">
             <span className="text-slate-400 block text-[10px]">अख्तियार र महालेखा:</span>
-            <span className="text-emerald-300 font-bold">बेरुजु र जोखिम रोकथाम</span>
+            <span className="text-emerald-300 font-bold text-[11px] sm:text-xs">बेरुजु र जोखिम रोकथाम</span>
           </div>
-          <div className="bg-white/5 border border-white/10 p-2 rounded-xl">
+          <div className="bg-white/5 border border-white/10 py-1.5 px-2.5 rounded-lg">
             <span className="text-slate-400 block text-[10px]">डिजिटल चेकलिस्ट:</span>
-            <span className="text-blue-300 font-bold">हरेक चरणको अनिवार्य रुजु</span>
+            <span className="text-blue-300 font-bold text-[11px] sm:text-xs">हरेक चरणको अनिवार्य रुजु</span>
           </div>
         </div>
       </div>

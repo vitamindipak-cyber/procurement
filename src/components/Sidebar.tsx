@@ -108,12 +108,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
     return [
       {
-        groupTitle: 'निकाय गृह र सल्लाह',
+        groupTitle: 'खरिद सल्लाह',
         items: [
           { id: 'dashboard', label: 'सार्वजनिक निकाय ड्यासबोर्ड', icon: Briefcase },
+          { id: 'bidder-hub', label: 'बोलपत्रदाता कर्नर', icon: HardHat },
           { id: 'advisor', label: 'खरिद सल्लाहकार', icon: Sparkles },
           { id: 'workflow-wizard', label: 'चरणबद्ध गाइड', icon: ClipboardList },
-          { id: 'bidder-hub', label: 'बोलपत्रदाता कर्नर हेर्नुहोस्', icon: HardHat },
           ...(userRole === 'admin'
             ? [{ id: 'user-management', label: 'प्रयोगकर्ता व्यवस्थापन', icon: Users }]
             : []),
