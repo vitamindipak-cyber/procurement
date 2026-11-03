@@ -75,7 +75,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     const toolsGroup = {
       groupTitle: 'उपकरण',
       items: [
-        { id: 'procurement-chat', label: 'खरिद AI सहायक', icon: Bot },
+        // { id: 'procurement-chat', label: 'खरिद AI सहायक', icon: Bot },
         { id: 'dilemma-solver', label: 'FAQ', icon: HelpCircle },
         { id: 'timeline-calculator', label: 'कानूनी म्याद क्याल्कुलेटर', icon: Clock },
         { id: 'calculator', label: 'थ्रेसहोल्ड क्याल्कुलेटर', icon: Calculator },
