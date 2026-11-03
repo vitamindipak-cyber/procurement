@@ -47,6 +47,7 @@ import {
   IcbStage,
   IncotermRule,
 } from '../data/icbProcurementData';
+import lcBannerImage from '../../lc-banner.png';
 
 interface IcbProcurementHubProps {
   initialUserMode?: 'entity' | 'bidder';
@@ -830,13 +831,37 @@ export const IcbProcurementHub: React.FC<IcbProcurementHubProps> = ({
 
       {activeTab === 'lc' && (
         <div className="space-y-6">
-          <section className="rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-950 via-[#132c4b] to-slate-900 p-5 sm:p-7 text-white shadow-sm">
-            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-blue-200">
-              <FileCheck2 className="h-4 w-4" />
-              <span>Goods ICB • Letter of Credit (LC/प्रतीतपत्र)</span>
+          <section className="relative overflow-hidden rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-950 via-[#132c4b] to-slate-900 p-5 sm:p-7 text-white shadow-sm">
+            {/* Right side lc-banner.png seamlessly blended on the left with banner colors */}
+            <div
+              className="pointer-events-none absolute inset-y-0 right-0 w-full sm:w-[50%] md:w-[44%] lg:w-[38%] overflow-hidden select-none"
+              style={{
+                maskImage:
+                  'linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.15) 15%, rgba(0, 0, 0, 0.85) 50%, black 85%)',
+                WebkitMaskImage:
+                  'linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.15) 15%, rgba(0, 0, 0, 0.85) 50%, black 85%)',
+              }}
+              aria-hidden="true"
+            >
+              <img
+                src={lcBannerImage}
+                alt="LC भुक्तानी, आयात र प्रतीतिपत्र"
+                className="h-full w-full object-cover object-right"
+              />
+              {/* Soft left-edge blend overlay matching banner's #132c4b / blue-950 / slate-900 gradient */}
+              <div className="absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-[#132c4b] via-[#132c4b]/70 to-transparent pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-950/40 via-transparent to-transparent pointer-events-none sm:hidden" />
             </div>
-            <h2 className="mt-2 text-xl font-bold sm:text-2xl">LC भुक्तानी, आयात र कागजात मिलान</h2>
-            <p className="mt-2 max-w-4xl text-sm leading-relaxed text-blue-100">{ICB_LC_GUIDE.overview}</p>
+
+            {/* Banner text content */}
+            <div className="relative z-10 max-w-2xl lg:max-w-3xl">
+              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-blue-200">
+                <FileCheck2 className="h-4 w-4" />
+                <span>Goods ICB • Letter of Credit (LC/प्रतीतपत्र)</span>
+              </div>
+              <h2 className="mt-2 text-xl font-bold sm:text-2xl text-white">LC भुक्तानी, आयात र कागजात मिलान</h2>
+              <p className="mt-2 text-sm leading-relaxed text-blue-100 max-w-xl lg:max-w-2xl">{ICB_LC_GUIDE.overview}</p>
+            </div>
           </section>
 
           <section className="space-y-3">
