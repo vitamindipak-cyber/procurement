@@ -13,7 +13,6 @@ import {
   Calculator,
   Scale,
   MessageSquareText,
-  Search,
   PlusCircle,
   X,
   ChevronRight,
@@ -57,7 +56,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
   userMode = 'entity',
   onToggleUserMode,
 }) => {
-  const [filterQuery, setFilterQuery] = useState('');
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
 
   const navGroups = useMemo(() => {
@@ -143,22 +141,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
       [groupTitle]: !prev[groupTitle],
     }));
   };
-
-  const filteredNavGroups = useMemo(() => {
-    const q = filterQuery.trim().toLocaleLowerCase('ne-NP');
-    if (!q) return navGroups;
-
-    return navGroups.map((group) => {
-      const matchedItems = group.items.filter((item) =>
-        item.label.toLocaleLowerCase('ne-NP').includes(q) ||
-        item.id.toLocaleLowerCase().includes(q)
-      );
-      return {
-        ...group,
-        items: matchedItems,
-      };
-    }).filter((group) => group.items.length > 0);
-  }, [navGroups, filterQuery]);
 
   const handleNavClick = (id: string) => {
     setActiveTab(id);
@@ -314,49 +296,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </div>
           )}
 
-          {/* Live In-Sidebar Filter Search */}
-          {!isCollapsed && (
-            <div className="p-2.5 border-b border-[#31577b]/50 bg-[#163a62]">
-              <div className="relative flex items-center">
-                <Search className="w-3.5 h-3.5 absolute left-2.5 text-blue-200/70 pointer-events-none" />
-                <input
-                  type="text"
-                  value={filterQuery}
-                  onChange={(e) => setFilterQuery(e.target.value)}
-                  placeholder="मेनूमा तुरुन्त खोज्नुहोस्..."
-                  className="w-full pl-8 pr-7 py-1.5 text-xs bg-white/10 hover:bg-white/15 focus:bg-white/20 text-white placeholder:text-blue-200/60 rounded-lg border border-white/15 outline-none transition-colors"
-                />
-                {filterQuery && (
-                  <button
-                    type="button"
-                    onClick={() => setFilterQuery('')}
-                    className="absolute right-2 text-blue-200 hover:text-white p-0.5"
-                    title="खाली गर्नुहोस्"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Middle: Scrollable Navigation Groups */}
         <div className={`flex-1 overflow-y-auto py-3 space-y-3 text-left ${isCollapsed ? 'px-2' : 'px-3'}`}>
-          {filteredNavGroups.length === 0 ? (
-            <div className="py-6 text-center text-blue-200/70 space-y-2">
-              <p className="text-sm">'{filterQuery}' फेला परेन</p>
-              <button
-                type="button"
-                onClick={() => setFilterQuery('')}
-                className="text-xs text-blue-300 underline hover:text-white"
-              >
-                सबै मेनु देखाउनुहोस्
-              </button>
-            </div>
-          ) : (
-            filteredNavGroups.map((group, gIdx) => {
-              const isGroupCollapsed = !filterQuery && Boolean(collapsedGroups[group.groupTitle]);
+          {navGroups.map((group, gIdx) => {
+              const isGroupCollapsed = Boolean(collapsedGroups[group.groupTitle]);
               return (
                 <div key={gIdx} className="space-y-1">
                   {!isCollapsed ? (
@@ -412,8 +357,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   )}
                 </div>
               );
-            })
-          )}
+            })}
         </div>
 
         {/* Bottom Sidebar Footer */}

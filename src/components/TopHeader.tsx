@@ -209,7 +209,11 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
           </button>
 
           <button
-            onClick={onLogout}
+            onClick={() => {
+              if (window.confirm('के तपाईं लगआउट गर्न चाहनुहुन्छ?')) {
+                onLogout();
+              }
+            }}
             className="p-1.5 sm:p-2 text-blue-100 hover:text-white hover:bg-white/10 rounded-lg transition-colors shrink-0"
             title="लगआउट"
             aria-label="लगआउट"
