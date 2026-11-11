@@ -107,7 +107,7 @@ export const PROHIBITIONS_DATA: ProhibitionItem[] = [
   {
     id: 'prohib-9',
     category: 'बोलपत्र, दरभाउपत्र र मूल्याङ्कन',
-    prohibitionText: 'सारभूत रूपमा अप्रतिक्रियाग्राही (Substantially Non-responsive) बोलपत्र मूल्याङ्कनमा समावेश गरिँदैन।',
+    prohibitionText: 'सारभूत रूपमा अप्रभावग्राही (Substantially Non-responsive) बोलपत्र मूल्याङ्कनमा समावेश गरिँदैन।',
     legalReference: 'सार्वजनिक खरिद ऐन, २०६३ दफा २५',
     lawType: 'act',
     severity: 'strict_prohibition',
@@ -116,7 +116,7 @@ export const PROHIBITIONS_DATA: ProhibitionItem[] = [
   {
     id: 'prohib-10',
     category: 'बोलपत्र, दरभाउपत्र र मूल्याङ्कन',
-    prohibitionText: 'केही वा एउटा मात्र बोलपत्र सारभूत रूपमा अप्रतिक्रियाग्राही भएको कारणले मात्र सबै बोलपत्र अस्वीकृत वा पुनः आह्वान गर्न सकिँदैन।',
+    prohibitionText: 'केही वा एउटा मात्र बोलपत्र सारभूत रूपमा अप्रभावग्राही भएको कारणले मात्र सबै बोलपत्र अस्वीकृत वा पुनः आह्वान गर्न सकिँदैन।',
     legalReference: 'सार्वजनिक खरिद ऐन, २०६३ दफा २६',
     lawType: 'act',
     severity: 'strict_prohibition',
@@ -183,7 +183,7 @@ export const PROHIBITIONS_DATA: ProhibitionItem[] = [
     legalReference: 'सार्वजनिक खरिद नियमावली, २०६४ नियम ६१',
     lawType: 'rules',
     severity: 'strict_prohibition',
-    impactExplanation: 'आफ्नो अनुकूलका अतिरिक्त शर्तहरू राखेमा बोलपत्र अप्रतिक्रियाग्राही हुने जोखिम हुन्छ।',
+    impactExplanation: 'आफ्नो अनुकूलका अतिरिक्त शर्तहरू राखेमा बोलपत्र अप्रभावग्राही हुने जोखिम हुन्छ।',
   },
   {
     id: 'prohib-18',
@@ -737,7 +737,7 @@ export const ACT_NON_OBSTANTE_EXCEPTIONS: ExceptionItem[] = [
     subjectOrSection: 'दफा २५(२) — बोलपत्र अस्वीकृत वा पुनः आह्वान',
     legalReference: 'सार्वजनिक खरिद ऐन, २०६३ दफा २५(२)',
     baseRule: 'बोलपत्र अस्वीकृत वा पुनः आह्वान गर्न सकिने।',
-    exceptionText: 'केही वा एउटा मात्र बोलपत्र सारभूत रूपमा अप्रतिक्रियाग्राही भएको कारणले मात्र सबै बोलपत्र अस्वीकृत वा पुनः आह्वान गर्न सकिँदैन।',
+    exceptionText: 'केही वा एउटा मात्र बोलपत्र सारभूत रूपमा अप्रभावग्राही भएको कारणले मात्र सबै बोलपत्र अस्वीकृत वा पुनः आह्वान गर्न सकिँदैन।',
     outcome: 'नमिल्ने',
     outcomeLabel: 'यस्तो कारणले पुनः आह्वान गर्न नमिल्ने',
   },

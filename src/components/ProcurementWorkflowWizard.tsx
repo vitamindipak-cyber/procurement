@@ -347,7 +347,7 @@ export const ProcurementWorkflowWizard: React.FC<ProcurementWorkflowWizardProps>
           </button>
         </div>
 
-        {/* Grid of All 13 Presets */}
+        {/* Grid of All 18 Presets */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 max-h-[340px] overflow-y-auto pr-1">
           {filteredPresets.map((preset) => {
             const isSelected = preset.id === selectedPresetId;
