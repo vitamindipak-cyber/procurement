@@ -1,16 +1,117 @@
-:root{--ui-ink:#162b45;--ui-muted:#64748b;--ui-line:#e3eaf2;--ui-brand:#173f68;--ui-accent:#bd3443;--ui-surface:#fff;--ui-soft:#f4f7fb;--ui-radius:18px}
-html{scroll-behavior:smooth}body{background:#f4f7fb!important;color:var(--ui-ink);font-family:"Mukta","Plus Jakarta Sans",system-ui,sans-serif;letter-spacing:.005em}#root{min-height:100vh}button,a,[role=button]{-webkit-tap-highlight-color:transparent}button{transition:background-color .18s ease,border-color .18s ease,color .18s ease,box-shadow .18s ease,transform .18s ease}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #4c83bd88!important;outline-offset:2px}input,select,textarea{border-color:#d7e0eb!important;border-radius:11px!important;min-height:42px}input:focus,select:focus,textarea:focus{border-color:#477bab!important;box-shadow:0 0 0 3px #477bab20!important}a{transition:color .18s ease}
-/* Refined surfaces and readable content panels */
-[class*=rounded-xl][class*=border], [class*=rounded-2xl][class*=border], [class*=rounded-3xl][class*=border]{border-color:var(--ui-line)}
-[class*=shadow-sm]{box-shadow:0 2px 8px #18375208,0 10px 26px #18375206!important}
-[class*=shadow-md]{box-shadow:0 8px 24px #18375212!important}
-/* Buttons retain their existing colors while gaining consistent shape */
-button[class*=rounded]{border-radius:11px; font-weight:600}
-button[class*=bg-\[\#163e68\]],button[class*=bg-blue-6],button[class*=bg-red-6]{box-shadow:0 4px 12px #163e6820}
-/* Tables and dense data views */
-table{border-collapse:separate;border-spacing:0;width:100%}thead th{background:#f5f8fc;color:#42556b;font-weight:700}th,td{border-color:#e7edf4!important}tbody tr:hover{background:#f8fafc}
-/* Clearer scrollbars in long guides and panels */
-*{scrollbar-color:#cbd6e2 transparent;scrollbar-width:thin}*::-webkit-scrollbar{width:9px;height:9px}*::-webkit-scrollbar-thumb{background:#cbd6e2;border:2px solid transparent;background-clip:padding-box;border-radius:99px}
-::selection{background:#dce9f7;color:#173f68}
-@media(max-width:768px){body{font-size:15px}button{min-height:40px}input,select,textarea{font-size:16px!important}table{display:block;overflow-x:auto;white-space:nowrap} [class*=p-8]{padding:1.25rem} [class*=p-6]{padding:1rem}}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}}
+/*
+ * modern-ui.css — Global polish layer for Public Procurement App
+ * Loaded directly from index.html (before the React bundle)
+ */
+
+/* ─── Reset & base ─────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  --ui-radius-sm:  8px;
+  --ui-radius:    12px;
+  --ui-radius-lg: 18px;
+  --ui-shadow-xs: 0 1px 3px rgba(14 30 52 / .05), 0 4px 10px rgba(14 30 52 / .04);
+  --ui-shadow-sm: 0 2px 6px rgba(14 30 52 / .07), 0 10px 24px rgba(14 30 52 / .05);
+  --ui-shadow-md: 0 8px 28px rgba(14 30 52 / .10);
+  --ui-shadow-lg: 0 20px 56px rgba(14 30 52 / .14);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: "Mukta", "Plus Jakarta Sans", system-ui, sans-serif;
+  letter-spacing: .004em;
+  line-height: 1.6;
+}
+
+/* ─── Focus ring ──────────────────────────────────────────────────────── */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2.5px solid rgba(26 75 130 / .50) !important;
+  outline-offset: 2px;
+}
+
+/* ─── Form controls ───────────────────────────────────────────────────── */
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+  border-radius: var(--ui-radius-sm) !important;
+  border-color: #d2dce9 !important;
+  min-height: 40px;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+input:not([type="checkbox"]):not([type="radio"]):focus,
+select:focus,
+textarea:focus {
+  border-color: #3b7dd8 !important;
+  box-shadow: 0 0 0 3px rgba(59 125 216 / .18) !important;
+  outline: none !important;
+}
+
+/* ─── Buttons ─────────────────────────────────────────────────────────── */
+button { transition: background-color .15s ease, border-color .15s ease, color .15s ease, box-shadow .15s ease, transform .12s ease; }
+button[class*="rounded"] { font-weight: 600; }
+
+/* ─── Card borders & shadows ──────────────────────────────────────────── */
+[class*="rounded-xl"][class*="border"],
+[class*="rounded-2xl"][class*="border"],
+[class*="rounded-3xl"][class*="border"] {
+  border-color: #dce4ef;
+}
+[class*="shadow-sm"] { box-shadow: var(--ui-shadow-xs) !important; }
+[class*="shadow-md"] { box-shadow: var(--ui-shadow-sm) !important; }
+
+/* ─── Tables ──────────────────────────────────────────────────────────── */
+table { border-collapse: separate; border-spacing: 0; width: 100%; }
+thead th {
+  background: #f4f7fc;
+  color: #3d526b;
+  font-weight: 700;
+  font-size: .78rem;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+}
+th, td { border-color: #e6edf5 !important; }
+tbody tr { transition: background .12s ease; }
+tbody tr:hover { background: #f7fafd; }
+
+/* ─── Scrollbar ───────────────────────────────────────────────────────── */
+* {
+  scrollbar-color: #c8d5e4 transparent;
+  scrollbar-width: thin;
+}
+*::-webkit-scrollbar { width: 6px; height: 6px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb {
+  background: #c8d5e4;
+  border-radius: 99px;
+  border: 1px solid transparent;
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-thumb:hover { background: #9fb3c8; }
+
+/* ─── Selection ───────────────────────────────────────────────────────── */
+::selection { background: #cfe4fb; color: #0b2341; }
+
+/* ─── Reduced motion ──────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* ─── Mobile ──────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  body { font-size: 15px; }
+  button { min-height: 40px; }
+  input:not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea { font-size: 16px !important; }
+  table { display: block; overflow-x: auto; white-space: nowrap; }
+}

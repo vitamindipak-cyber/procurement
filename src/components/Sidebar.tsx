@@ -62,21 +62,20 @@ export const Sidebar: React.FC<SidebarProps> = ({
     const lawGroup = {
       groupTitle: 'कानूनी संग्रह',
       items: [
-        { id: 'law-corpus', label: 'ऐन/नियमका व्यवस्थाहरू', icon: BookOpen },
-        { id: 'amendments', label: '१६औँ संशोधनका विशेषता', icon: ShieldCheck },
-        { id: 'glossary', label: 'शब्दावली कोष', icon: BookA },
-        { id: 'clauses', label: 'महत्वपूर्ण दफाहरू', icon: BookOpen },
-        { id: 'schedules', label: 'अनुसूचीहरू (१–८)', icon: Scale },
-        { id: 'ppmo-pprc', label: 'PPMO राय र PPRC निर्णय', icon: MessageSquareText },
+        { id: 'law-corpus',  label: 'ऐन/नियमका व्यवस्थाहरू',       icon: BookOpen },
+        { id: 'amendments',  label: '१६औँ संशोधनका विशेषता',         icon: ShieldCheck },
+        { id: 'glossary',    label: 'शब्दावली कोष',                  icon: BookA },
+        { id: 'clauses',     label: 'महत्वपूर्ण दफाहरू',              icon: BookOpen },
+        { id: 'schedules',   label: 'अनुसूचीहरू (१–८)',               icon: Scale },
+        { id: 'ppmo-pprc',   label: 'PPMO राय र PPRC निर्णय',         icon: MessageSquareText },
       ],
     };
     const toolsGroup = {
       groupTitle: 'उपकरण',
       items: [
-        // { id: 'procurement-chat', label: 'खरिद AI सहायक', icon: Bot },
-        { id: 'dilemma-solver', label: 'FAQ', icon: HelpCircle },
-        { id: 'timeline-calculator', label: 'कानूनी म्याद क्याल्कुलेटर', icon: Clock },
-        { id: 'calculator', label: 'थ्रेसहोल्ड क्याल्कुलेटर', icon: Calculator },
+        { id: 'dilemma-solver',       label: 'FAQ',                       icon: HelpCircle },
+        { id: 'timeline-calculator',  label: 'कानूनी म्याद क्याल्कुलेटर',  icon: Clock },
+        { id: 'calculator',           label: 'थ्रेसहोल्ड क्याल्कुलेटर',    icon: Calculator },
       ],
     };
 
@@ -85,18 +84,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {
           groupTitle: 'बोलपत्रदाता कर्नर',
           items: [
-            { id: 'bidder-hub', label: 'बोलपत्रदाता गृहपृष्ठ', icon: HardHat },
-            { id: 'bidding-forms', label: 'बोलपत्र फाराम जेनेरेटर', icon: FileText },
-            { id: 'icb-guide', label: 'अन्तर्राष्ट्रिय बोलपत्र (ICB)', icon: Globe },
-            { id: 'egp-guidelines', label: 'e-GP निर्देशिका, २०८०', icon: FileCheck },
+            { id: 'bidder-hub',      label: 'बोलपत्रदाता गृहपृष्ठ',          icon: HardHat },
+            { id: 'bidding-forms',   label: 'बोलपत्र फाराम जेनेरेटर',        icon: FileText },
+            { id: 'icb-guide',       label: 'अन्तर्राष्ट्रिय बोलपत्र (ICB)', icon: Globe },
+            { id: 'egp-guidelines',  label: 'e-GP निर्देशिका, २०८०',         icon: FileCheck },
           ],
         },
         {
           groupTitle: 'बुझ्नुपर्ने प्रक्रिया',
           items: [
-            { id: 'methods', label: 'खरिद विधिहरू', icon: Layers },
-            { id: 'bid-evaluation', label: 'बोलपत्र मूल्याङ्कन गाइड', icon: Gavel },
-            { id: 'templates', label: 'कागजात ढाँचाहरू', icon: FileText },
+            { id: 'methods',       label: 'खरिद विधिहरू',         icon: Layers },
+            { id: 'bid-evaluation',label: 'बोलपत्र मूल्याङ्कन गाइड', icon: Gavel },
+            { id: 'templates',     label: 'कागजात ढाँचाहरू',       icon: FileText },
           ],
         },
         lawGroup,
@@ -108,10 +107,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {
         groupTitle: 'खरिद सल्लाह',
         items: [
-          { id: 'dashboard', label: 'सार्वजनिक निकाय ड्यासबोर्ड', icon: Briefcase },
-          { id: 'bidder-hub', label: 'बोलपत्रदाता कर्नर', icon: HardHat },
-          { id: 'advisor', label: 'खरिद सल्लाहकार', icon: Sparkles },
-          { id: 'workflow-wizard', label: 'चरणबद्ध गाइड', icon: ClipboardList },
+          { id: 'dashboard',        label: 'सार्वजनिक निकाय ड्यासबोर्ड', icon: Briefcase },
+          { id: 'bidder-hub',       label: 'बोलपत्रदाता कर्नर',           icon: HardHat },
+          { id: 'advisor',          label: 'खरिद सल्लाहकार',              icon: Sparkles },
+          { id: 'workflow-wizard',  label: 'चरणबद्ध गाइड',                icon: ClipboardList },
           ...(userRole === 'admin'
             ? [{ id: 'user-management', label: 'प्रयोगकर्ता व्यवस्थापन', icon: Users }]
             : []),
@@ -120,14 +119,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {
         groupTitle: 'खरिद विधि तथा अनुपालन',
         items: [
-          { id: 'methods', label: 'खरिद विधिहरू', icon: Layers },
-          { id: 'icb-guide', label: 'अन्तर्राष्ट्रिय बोलपत्र (ICB)', icon: Globe },
-          { id: 'method-checklists', label: 'विधिगत चेकलिस्ट', icon: FileCheck2 },
-          { id: 'bid-evaluation', label: 'बोलपत्र मूल्याङ्कन गाइड', icon: Gavel },
-          { id: 'stages', label: 'प्रक्रियागत ७ चरणहरू', icon: ClipboardList },
-          { id: 'egp-guidelines', label: 'e-GP निर्देशिका, २०८०', icon: FileCheck },
-          { id: 'checklists', label: 'एकीकृत चेकलिस्ट', icon: ShieldCheck },
-          { id: 'templates', label: 'कागजात ढाँचाहरू', icon: FileText },
+          { id: 'methods',           label: 'खरिद विधिहरू',                icon: Layers },
+          { id: 'icb-guide',         label: 'अन्तर्राष्ट्रिय बोलपत्र (ICB)', icon: Globe },
+          { id: 'method-checklists', label: 'विधिगत चेकलिस्ट',             icon: FileCheck2 },
+          { id: 'bid-evaluation',    label: 'बोलपत्र मूल्याङ्कन गाइड',      icon: Gavel },
+          { id: 'stages',            label: 'प्रक्रियागत ७ चरणहरू',          icon: ClipboardList },
+          { id: 'egp-guidelines',    label: 'e-GP निर्देशिका, २०८०',         icon: FileCheck },
+          { id: 'checklists',        label: 'एकीकृत चेकलिस्ट',              icon: ShieldCheck },
+          { id: 'templates',         label: 'कागजात ढाँचाहरू',              icon: FileText },
         ],
       },
       lawGroup,
@@ -136,10 +135,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   }, [userMode, userRole]);
 
   const toggleGroupCollapse = (groupTitle: string) => {
-    setCollapsedGroups((prev) => ({
-      ...prev,
-      [groupTitle]: !prev[groupTitle],
-    }));
+    setCollapsedGroups((prev) => ({ ...prev, [groupTitle]: !prev[groupTitle] }));
   };
 
   const handleNavClick = (id: string) => {
@@ -147,43 +143,67 @@ export const Sidebar: React.FC<SidebarProps> = ({
     onCloseMobile();
   };
 
+  /* ─────────────────────────────────────────────────────────────────────
+     Colour tokens derived from CSS variables defined in index.css
+     ──────────────────────────────────────────────────────────────────── */
+  const SB = {
+    bg:       'bg-[#111c2e]',
+    bgMid:    'bg-[#162035]',
+    bgDeep:   'bg-[#0d1726]',
+    border:   'border-[#1f2f47]',
+    text:     'text-[#c8d8ed]',
+    muted:    'text-[#718aab]',
+    activeText: 'text-white',
+    activeBg:   'bg-[#1e3a5c]',
+    hoverBg:    'hover:bg-white/[0.06]',
+  };
+
   return (
     <>
-      {/* Mobile Backdrop overlay */}
+      {/* Mobile backdrop */}
       {isOpenMobile && (
         <div
           onClick={onCloseMobile}
-          className="fixed inset-0 z-40 bg-slate-900/60 backdrop-blur-xs lg:hidden transition-opacity"
+          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
+          aria-hidden="true"
         />
       )}
 
-      {/* Sidebar Container */}
+      {/* ── Sidebar ───────────────────────────────────────────────────── */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 ${isCollapsed ? 'lg:w-20' : 'lg:w-72'
-          } w-72 bg-[#173b63] text-blue-50 border-r border-[#31577b] flex flex-col justify-between transition-all duration-200 ease-in-out lg:translate-x-0 ${isOpenMobile ? 'translate-x-0 shadow-2xl' : '-translate-x-full'
-          }`}
+        className={[
+          'fixed top-0 bottom-0 left-0 z-50 flex flex-col',
+          isCollapsed ? 'lg:w-[68px]' : 'lg:w-72',
+          'w-72',
+          SB.bg,
+          SB.border, 'border-r',
+          'transition-all duration-200 ease-in-out',
+          'lg:translate-x-0',
+          isOpenMobile ? 'translate-x-0 shadow-2xl' : '-translate-x-full',
+        ].join(' ')}
       >
-        {/* Top: Branding & Close button for mobile / Collapse button for desktop */}
-        <div className="shrink-0">
-          <div className={`p-4 border-b border-[#31577b] flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} bg-[#214f83]`}>
+
+        {/* ── Brand header ─────────────────────────────────────────────── */}
+        <div className={`shrink-0 ${SB.bgMid} ${SB.border} border-b`}>
+          <div className={`flex items-center ${isCollapsed ? 'justify-center p-3' : 'justify-between px-4 py-3.5'}`}>
             {isCollapsed ? (
               <div className="flex flex-col items-center gap-2">
                 <button
                   onClick={() => handleNavClick(userMode === 'bidder' ? 'bidder-hub' : 'dashboard')}
-                  title="सार्वजनिक खरिद सहयोगी - गृहपृष्ठ"
+                  title="गृहपृष्ठ"
                   aria-label="गृहपृष्ठमा जानुहोस्"
-                  className="w-10 h-10 rounded-lg bg-blue-700 text-white flex items-center justify-center font-bold text-lg shadow-sm hover:bg-blue-800 transition-colors"
+                  className="w-9 h-9 rounded-xl bg-[#1a4b82] text-white flex items-center justify-center font-bold text-base shadow-sm hover:bg-[#15396a] transition-colors"
                 >
                   ख
                 </button>
                 {onToggleCollapse && (
                   <button
                     onClick={onToggleCollapse}
-                    title="साइडबार खोल्नुहोस् (Expand)"
+                    title="Expand sidebar"
                     aria-label="साइडबार खोल्नुहोस्"
-                    className="hidden lg:flex p-1.5 text-blue-200 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                    className={`hidden lg:flex p-1.5 ${SB.muted} hover:text-white ${SB.hoverBg} rounded-lg transition-colors`}
                   >
-                    <ChevronRight className="w-5 h-5" />
+                    <ChevronRight className="w-4 h-4" />
                   </button>
                 )}
               </div>
@@ -191,81 +211,85 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <>
                 <button
                   onClick={() => handleNavClick(userMode === 'bidder' ? 'bidder-hub' : 'dashboard')}
-                  className="flex items-center gap-2.5 text-left group focus:outline-hidden min-w-0"
+                  className="flex items-center gap-3 text-left group focus:outline-none min-w-0"
                 >
-                  <div className="w-9 h-9 rounded-lg bg-blue-700 text-white flex items-center justify-center font-bold text-lg shadow-sm group-hover:bg-blue-800 transition-colors shrink-0">
+                  <div className="w-9 h-9 rounded-xl bg-[#1a4b82] text-white flex items-center justify-center font-bold text-base shadow-sm group-hover:bg-[#15396a] transition-colors shrink-0">
                     ख
                   </div>
                   <div className="flex flex-col min-w-0">
-                    <span className="text-base font-bold tracking-tight text-white group-hover:text-blue-100 transition-colors truncate">
+                    <span className="text-sm font-bold tracking-tight text-white group-hover:text-blue-100 transition-colors truncate leading-tight">
                       सार्वजनिक खरिद सहयोगी
                     </span>
-                    <span className="text-[11px] font-medium text-blue-100/80 truncate">
-                      सार्वजनिक खरिद ऐन २०६३ र नियमावली २०६४
+                    <span className="text-[10px] text-[#718aab] truncate mt-0.5">
+                      ऐन २०६३ · नियमावली २०६४
                     </span>
                   </div>
                 </button>
 
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 shrink-0">
                   {onToggleCollapse && (
                     <button
                       onClick={onToggleCollapse}
-                      title="साइडबार संकुचित गर्नुहोस् (Collapse)"
+                      title="Collapse sidebar"
                       aria-label="साइडबार संकुचित गर्नुहोस्"
-                      className="hidden lg:flex p-1.5 text-blue-200 hover:text-white hover:bg-white/10 rounded-lg transition-colors shrink-0"
+                      className={`hidden lg:flex p-1.5 ${SB.muted} hover:text-white ${SB.hoverBg} rounded-lg transition-colors`}
                     >
-                      <ChevronLeft className="w-5 h-5" />
+                      <ChevronLeft className="w-4 h-4" />
                     </button>
                   )}
                   <button
                     onClick={onCloseMobile}
-                    className="p-1.5 text-blue-200 hover:text-white hover:bg-white/10 rounded-lg lg:hidden transition-colors shrink-0"
+                    className={`p-1.5 ${SB.muted} hover:text-white ${SB.hoverBg} rounded-lg lg:hidden transition-colors`}
                     title="बन्द गर्नुहोस्"
+                    aria-label="Sidebar बन्द"
                   >
-                    <X className="w-5 h-5" />
+                    <X className="w-4.5 h-4.5" />
                   </button>
                 </div>
               </>
             )}
           </div>
 
-          {/* Mode Switcher inside Sidebar */}
+          {/* ── Mode switcher ──────────────────────────────────────────── */}
           {onToggleUserMode && (
-            <div className={`p-2.5 border-b border-[#31577b] bg-[#1a426e] ${isCollapsed ? 'flex justify-center' : ''}`}>
+            <div className={`px-3 pb-3 ${isCollapsed ? 'flex justify-center' : ''}`}>
               {isCollapsed ? (
                 <button
                   type="button"
                   onClick={onToggleUserMode}
-                  title={userMode === 'bidder' ? 'सार्वजनिक निकाय मोडमा जानुहोस्' : 'बोलपत्रदाता मोडमा जानुहोस्'}
-                  className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-xs transition-colors shadow-2xs cursor-pointer ${userMode === 'bidder'
-                    ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                    : 'bg-blue-800 hover:bg-blue-700 text-blue-100'
-                    }`}
+                  title={userMode === 'bidder' ? 'सार्वजनिक निकाय मोड' : 'बोलपत्रदाता मोड'}
+                  className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors shadow-sm cursor-pointer ${
+                    userMode === 'bidder'
+                      ? 'bg-teal-700 hover:bg-teal-600 text-white'
+                      : 'bg-[#1a3250] hover:bg-[#1f3c60] text-[#c8d8ed]'
+                  }`}
                 >
-                  {userMode === 'bidder' ? <HardHat className="h-4 w-4" /> : <Building2 className="h-4 w-4" />}
+                  {userMode === 'bidder' ? <HardHat className="w-4 h-4" /> : <Building2 className="w-4 h-4" />}
                 </button>
               ) : (
-                <div className="flex items-center bg-[#143355] p-1 rounded-xl border border-white/10 text-xs">
+                <div className="flex rounded-xl bg-[#0d1726] border border-[#1f2f47] p-0.5">
                   <button
                     type="button"
                     onClick={() => { if (userMode !== 'entity') onToggleUserMode(); }}
-                    className={`flex-1 py-1.5 px-2 rounded-lg font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${userMode === 'entity'
-                      ? 'bg-blue-700 text-white shadow-2xs'
-                      : 'text-blue-200 hover:text-white'
-                      }`}
+                    className={`flex-1 py-1.5 px-2 rounded-[10px] text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                      userMode === 'entity'
+                        ? 'bg-[#1a4b82] text-white shadow-sm'
+                        : 'text-[#718aab] hover:text-[#c8d8ed]'
+                    }`}
                   >
-                    <Building2 className="h-3.5 w-3.5" />
+                    <Building2 className="w-3.5 h-3.5" />
                     <span>सार्वजनिक निकाय</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => { if (userMode !== 'bidder') onToggleUserMode(); }}
-                    className={`flex-1 py-1.5 px-2 rounded-lg font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${userMode === 'bidder'
-                      ? 'bg-emerald-600 text-white shadow-2xs'
-                      : 'text-blue-200 hover:text-white'
-                      }`}
+                    className={`flex-1 py-1.5 px-2 rounded-[10px] text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                      userMode === 'bidder'
+                        ? 'bg-teal-700 text-white shadow-sm'
+                        : 'text-[#718aab] hover:text-[#c8d8ed]'
+                    }`}
                   >
-                    <HardHat className="h-3.5 w-3.5" />
+                    <HardHat className="w-3.5 h-3.5" />
                     <span>बोलपत्रदाता</span>
                   </button>
                 </div>
@@ -273,21 +297,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </div>
           )}
 
+          {/* ── Add project button ─────────────────────────────────────── */}
           {userMode === 'entity' && (
-            <div className={`p-2.5 border-b border-[#31577b] bg-[#173b63] ${isCollapsed ? 'flex justify-center' : ''}`}>
+            <div className={`px-3 pb-3 ${isCollapsed ? 'flex justify-center' : ''}`}>
               {isCollapsed ? (
                 <button
                   onClick={() => { onOpenNewProject(); onCloseMobile(); }}
-                  title="नयाँ खरिद आयोजना थप्नुहोस्"
+                  title="नयाँ खरिद आयोजना"
                   aria-label="नयाँ खरिद आयोजना थप्नुहोस्"
-                  className="w-10 h-10 bg-blue-700 hover:bg-blue-800 text-white rounded-lg flex items-center justify-center shadow-xs transition-colors"
+                  className="w-9 h-9 bg-[#1a4b82] hover:bg-[#15396a] text-white rounded-xl flex items-center justify-center transition-colors shadow-sm"
                 >
-                  <PlusCircle className="w-5 h-5" />
+                  <PlusCircle className="w-4.5 h-4.5" />
                 </button>
               ) : (
                 <button
                   onClick={() => { onOpenNewProject(); onCloseMobile(); }}
-                  className="w-full py-2 px-3 bg-blue-700 hover:bg-blue-800 text-white rounded-lg font-semibold text-xs flex items-center justify-center gap-2 shadow-xs transition-colors"
+                  className="w-full py-2 px-3 bg-[#1a4b82] hover:bg-[#15396a] text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-colors shadow-sm"
                 >
                   <PlusCircle className="w-4 h-4" />
                   <span>नयाँ खरिद आयोजना थप्नुहोस्</span>
@@ -295,90 +320,103 @@ export const Sidebar: React.FC<SidebarProps> = ({
               )}
             </div>
           )}
-
         </div>
 
-        {/* Middle: Scrollable Navigation Groups */}
-        <div className={`flex-1 overflow-y-auto py-3 space-y-3 text-left ${isCollapsed ? 'px-2' : 'px-3'}`}>
+        {/* ── Scrollable nav ─────────────────────────────────────────────── */}
+        <div className={`flex-1 overflow-y-auto py-3 space-y-1 ${isCollapsed ? 'px-2' : 'px-2.5'}`}>
           {navGroups.map((group, gIdx) => {
-              const isGroupCollapsed = Boolean(collapsedGroups[group.groupTitle]);
-              return (
-                <div key={gIdx} className="space-y-1">
-                  {!isCollapsed ? (
-                    <button
-                      type="button"
-                      onClick={() => toggleGroupCollapse(group.groupTitle)}
-                      className="w-full flex items-center justify-between px-2 py-1 text-xs font-bold text-blue-200/80 uppercase tracking-wider hover:text-white transition-colors cursor-pointer group"
-                    >
-                      <span>{group.groupTitle} ({group.items.length})</span>
-                      <ChevronDown
-                        className={`w-3.5 h-3.5 text-blue-300/60 group-hover:text-white transition-transform duration-200 ${isGroupCollapsed ? '-rotate-90' : 'rotate-0'
-                          }`}
-                      />
-                    </button>
-                  ) : (
-                    gIdx > 0 && <div className="h-px bg-white/10 my-2 mx-1" />
-                  )}
-                  {!isGroupCollapsed && (
-                    <div className="space-y-0.5">
-                      {group.items.map((item) => {
-                        const Icon = item.icon;
-                        const isActive = activeTab === item.id;
-                        return (
-                          <button
-                            key={item.id}
-                            onClick={() => handleNavClick(item.id)}
-                            title={item.label}
-                            aria-label={item.label}
-                            aria-current={isActive ? 'page' : undefined}
-                            className={`w-full flex items-center rounded-lg transition-all group cursor-pointer ${isCollapsed
-                              ? `justify-center p-2.5 ${isActive
-                                ? 'bg-blue-100 text-blue-950 font-bold shadow-2xs'
-                                : 'text-blue-100 hover:text-white hover:bg-white/10'
-                              }`
-                              : `justify-start px-3 py-2 ${isActive
-                                ? 'bg-blue-100 text-blue-950 font-bold border-l-4 border-blue-600 shadow-2xs'
-                                : 'text-blue-100 hover:text-white hover:bg-white/10'
-                              }`
-                              }`}
-                          >
-                            {isCollapsed ? (
-                              <Icon className={`w-5 h-5 shrink-0 transition-colors ${isActive ? 'text-blue-700' : 'text-blue-300 group-hover:text-white'}`} />
-                            ) : (
-                              <div className="flex items-center gap-2.5 min-w-0">
-                                <Icon className={`w-4.5 h-4.5 shrink-0 transition-colors ${isActive ? 'text-blue-700' : 'text-blue-300 group-hover:text-white'}`} />
-                                <span className="truncate text-sm font-medium">{item.label}</span>
-                              </div>
-                            )}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+            const isGroupCollapsed = Boolean(collapsedGroups[group.groupTitle]);
+            return (
+              <div key={gIdx}>
+                {/* Group label */}
+                {!isCollapsed ? (
+                  <button
+                    type="button"
+                    onClick={() => toggleGroupCollapse(group.groupTitle)}
+                    className={`w-full flex items-center justify-between px-2 py-1.5 mt-2 mb-0.5 text-[10px] font-bold uppercase tracking-widest ${SB.muted} hover:text-[#c8d8ed] transition-colors cursor-pointer group`}
+                  >
+                    <span>{group.groupTitle}</span>
+                    <ChevronDown
+                      className={`w-3 h-3 transition-transform duration-200 ${isGroupCollapsed ? '-rotate-90' : 'rotate-0'}`}
+                    />
+                  </button>
+                ) : (
+                  gIdx > 0 && <div className="h-px bg-white/[.07] my-2 mx-1" />
+                )}
+
+                {/* Nav items */}
+                {!isGroupCollapsed && (
+                  <div className="space-y-0.5">
+                    {group.items.map((item) => {
+                      const Icon = item.icon;
+                      const isActive = activeTab === item.id;
+                      return (
+                        <button
+                          key={item.id}
+                          onClick={() => handleNavClick(item.id)}
+                          title={item.label}
+                          aria-label={item.label}
+                          aria-current={isActive ? 'page' : undefined}
+                          className={[
+                            'w-full flex items-center rounded-xl transition-all group cursor-pointer',
+                            isCollapsed
+                              ? `justify-center p-2.5 ${
+                                  isActive
+                                    ? 'bg-[#1e3a5c] text-white'
+                                    : `${SB.text} ${SB.hoverBg} hover:text-white`
+                                }`
+                              : `justify-start gap-2.5 px-3 py-2 ${
+                                  isActive
+                                    ? 'bg-[#1e3a5c] text-white'
+                                    : `${SB.text} ${SB.hoverBg} hover:text-white`
+                                }`,
+                          ].join(' ')}
+                        >
+                          {/* Active left accent bar */}
+                          {!isCollapsed && isActive && (
+                            <span className="absolute left-0 w-0.5 h-6 bg-[#4d9ef5] rounded-r-full" aria-hidden="true" />
+                          )}
+
+                          <Icon
+                            className={`shrink-0 transition-colors ${
+                              isCollapsed ? 'w-5 h-5' : 'w-4 h-4'
+                            } ${
+                              isActive
+                                ? 'text-[#4d9ef5]'
+                                : `text-[#4a6a8a] group-hover:text-[#8ab4d8]`
+                            }`}
+                          />
+                          {!isCollapsed && (
+                            <span className={`text-[13px] leading-snug truncate ${isActive ? 'font-semibold' : 'font-medium'}`}>
+                              {item.label}
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
 
-        {/* Bottom Sidebar Footer */}
-        {isCollapsed ? (
-          <div className="p-3 border-t border-[#31577b] bg-[#143553] flex justify-center shrink-0">
+        {/* ── Footer badge ──────────────────────────────────────────────── */}
+        <div className={`shrink-0 ${SB.bgDeep} ${SB.border} border-t ${isCollapsed ? 'flex justify-center p-3' : 'px-4 py-3'}`}>
+          {isCollapsed ? (
             <span
-              title="१६औँ संशोधन समावेश — सार्वजनिक खरिदका लागि सहयोगी प्रणाली"
-              className="w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-emerald-400/30"
+              title="१६औँ संशोधन समावेश"
+              className="w-2.5 h-2.5 rounded-full bg-teal-500 ring-2 ring-teal-500/25"
             />
-          </div>
-        ) : (
-          <div className="p-3 border-t border-[#31577b] bg-[#143553] text-[11px] text-blue-200 space-y-1 shrink-0">
-            <div className="flex items-center gap-1.5 font-semibold text-blue-100">
-              <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-              <span>१६औँ संशोधन समावेश</span>
+          ) : (
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-teal-500 shrink-0" />
+              <span className="text-[11px] text-[#718aab] leading-tight">
+                १६औँ संशोधन समावेश
+              </span>
             </div>
-            <p className="text-[10px] text-blue-200/80 leading-tight">
-              सार्वजनिक खरिदका लागि सहयोगी प्रणाली
-            </p>
-          </div>
-        )}
+          )}
+        </div>
       </aside>
     </>
   );

@@ -402,7 +402,7 @@ function ProcurementApp({
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
+    <div className="min-h-screen bg-[#f0f4fa] text-slate-900 font-sans">
       <a href="#main-content" className="skip-to-content">
         मुख्य सामग्रीमा जानुहोस्
       </a>
@@ -627,35 +627,34 @@ function ProcurementApp({
         </main>
 
         {/* Footer */}
-        <footer className="bg-white border-t border-slate-200 mt-auto py-6 px-4 sm:px-8 no-print text-left">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-slate-500">
-            <div className="flex items-center gap-2">
-              <div className="w-5 h-5 rounded-md bg-blue-700 text-white flex items-center justify-center font-bold text-[10px]">
+        <footer className="mt-auto py-5 px-4 sm:px-8 no-print border-t border-slate-200/80 bg-white/70 backdrop-blur-sm">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-3 text-[11px] text-slate-400">
+            <div className="flex items-center gap-2.5">
+              <div className="w-6 h-6 rounded-lg bg-[#1a4b82] text-white flex items-center justify-center font-bold text-[10px] shrink-0">
                 ख
               </div>
-              <span className="font-semibold text-slate-800">सार्वजनिक खरिद सहयोगी</span>
-              <span>·</span>
-              <span className="text-[11px] text-slate-500">
-                सार्वजनिक खरिद ऐन २०६३ (दोस्रो संशोधनसहित) र नियमावली २०६४ (१६औँ संशोधन) मा आधारित
-              </span>
+              <span className="font-semibold text-slate-700">सार्वजनिक खरिद सहयोगी</span>
+              <span className="text-slate-300 hidden sm:inline">·</span>
+              <span className="hidden sm:inline">ऐन २०६३ · नियमावली २०६४ (१६औँ संशोधन)</span>
             </div>
 
             <div className="flex items-center gap-3 text-[11px]">
-              <button onClick={() => setActiveTab('advisor')} className="hover:text-red-700 transition-colors">
-                खरिद सल्लाहकार
-              </button>
-              <span>·</span>
-              <button onClick={() => setActiveTab('law-corpus')} className="hover:text-red-700 transition-colors">
-                ऐन/नियम संग्रह
-              </button>
-              <span>·</span>
-              <button onClick={() => setActiveTab('templates')} className="hover:text-red-700 transition-colors">
-                कागजात ढाँचा
-              </button>
-              <span>·</span>
-              <button onClick={() => setActiveTab('calculator')} className="hover:text-red-700 transition-colors">
-                क्याल्कुलेटर
-              </button>
+              {[
+                ['advisor', 'खरिद सल्लाहकार'],
+                ['law-corpus', 'ऐन/नियम'],
+                ['templates', 'कागजात ढाँचा'],
+                ['calculator', 'क्याल्कुलेटर'],
+              ].map(([tab, label]) => (
+                <React.Fragment key={tab}>
+                  <button
+                    onClick={() => setActiveTab(tab)}
+                    className="text-slate-400 hover:text-[#1a4b82] transition-colors font-medium"
+                  >
+                    {label}
+                  </button>
+                  <span className="text-slate-200 last:hidden">·</span>
+                </React.Fragment>
+              ))}
             </div>
           </div>
         </footer>
@@ -731,12 +730,13 @@ export default function App() {
   if (!currentUser) {
     if (!isSupabaseConfigured) {
       return (
-        <main className="flex min-h-screen items-center justify-center bg-slate-50 p-6">
-          <section className="max-w-xl rounded-xl border border-amber-200 bg-white p-6 shadow-sm">
-            <h1 className="text-xl font-bold text-slate-900">Supabase configuration आवश्यक छ</h1>
-            <p className="mt-2 text-sm leading-relaxed text-slate-700">
-              Build गर्दा <code>VITE_SUPABASE_URL</code> र <code>VITE_SUPABASE_PUBLISHABLE_KEY</code> उपलब्ध गराउनुहोस्।
-              Database schema र पहिलो admin setup का लागि <code>supabase/SETUP.md</code> हेर्नुहोस्।
+        <main className="flex min-h-screen items-center justify-center bg-[#f0f4fa] p-6">
+          <section className="max-w-xl rounded-2xl border border-amber-200 bg-white p-7 shadow-sm">
+            <h1 className="text-lg font-bold text-slate-900">Supabase configuration आवश्यक छ</h1>
+            <p className="mt-2.5 text-sm leading-relaxed text-slate-600">
+              Build गर्दा <code className="bg-slate-100 px-1.5 py-0.5 rounded text-xs font-mono">VITE_SUPABASE_URL</code> र{' '}
+              <code className="bg-slate-100 px-1.5 py-0.5 rounded text-xs font-mono">VITE_SUPABASE_PUBLISHABLE_KEY</code> उपलब्ध गराउनुहोस्।
+              Database schema र पहिलो admin setup का लागि <code className="bg-slate-100 px-1.5 py-0.5 rounded text-xs font-mono">supabase/SETUP.md</code> हेर्नुहोस्।
             </p>
           </section>
         </main>
@@ -744,10 +744,13 @@ export default function App() {
     }
     if (isAuthLoading) {
       return (
-        <main role="status" className="flex min-h-screen flex-col items-center justify-center gap-3 bg-[#eef3f8] text-slate-700">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#163e68] text-lg font-bold text-white shadow-md">ख</div>
-          <p className="text-sm font-semibold">सार्वजनिक खरिद सहयोगी</p>
-          <p className="text-xs text-slate-500">जाँच हुँदैछ...</p>
+        <main role="status" className="flex min-h-screen flex-col items-center justify-center gap-4 bg-[#f0f4fa]">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#1a4b82] text-xl font-bold text-white shadow-lg">ख</div>
+          <div className="text-center">
+            <p className="text-sm font-bold text-slate-800">सार्वजनिक खरिद सहयोगी</p>
+            <p className="text-xs text-slate-400 mt-1">लोड हुँदैछ...</p>
+          </div>
+          <div className="w-6 h-6 border-2 border-[#1a4b82]/20 border-t-[#1a4b82] rounded-full animate-spin" />
         </main>
       );
     }
