@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import {
   BookOpen,
   Search,
@@ -35,6 +35,8 @@ import {
   OPINIONS_BY_RULE,
   DECISIONS_BY_ACT,
   DECISIONS_BY_RULE,
+  ALL_PPMO_OPINIONS,
+  ALL_PPRC_DECISIONS,
 } from '../data/legalPrecedents';
 import { PrecedentsSection } from './PrecedentsSection';
 import { getAmendmentComparisonForRule } from '../data/amendmentComparisonsData';
@@ -43,9 +45,21 @@ import {
   getProhibitionsForProvision,
   getExceptionsForProvision,
 } from '../data/restrictionsExceptionsData';
+import { matchesSearchText, normalizeSearchText, SearchHighlight } from '../utils/searchText';
 
 type LawType = 'act' | 'rules';
 type ViewMode = 'all' | 'guide' | 'bare-law';
+type PrecedentTab = 'opinions' | 'decisions';
+
+interface LawSearchResult {
+  id: string;
+  type: 'ऐन' | 'नियम' | 'PPMO राय' | 'PPRC निर्णय';
+  title: string;
+  detail: string;
+  lawType: LawType;
+  provisionNumber: string;
+  precedentTab?: PrecedentTab;
+}
 
 const normalizeProvisionNumber = (number: string) =>
   number.replace(/[०-९]/g, (digit) => String('०१२३४५६७८९'.indexOf(digit)));
@@ -119,7 +133,9 @@ export const CompleteLawCorpusView: React.FC = () => {
   const [activeLaw, setActiveLaw] = useState<LawType>('rules'); // Default to rules as user requested
   const [viewMode, setViewMode] = useState<ViewMode>('all');
   const [selectedSourceNumber, setSelectedSourceNumber] = useState<string>(RULE_PROVISIONS[0].number);
+  const [searchPrecedentTab, setSearchPrecedentTab] = useState<PrecedentTab | null>(null);
   const provisionViewRef = useRef<HTMLDivElement>(null);
+  const precedentViewRef = useRef<HTMLDivElement>(null);
   const guideViewRef = useRef<HTMLDivElement>(null);
 
   const currentChapters = activeLaw === 'act' ? ACT_CHAPTERS : RULE_CHAPTERS;
@@ -164,6 +180,7 @@ export const CompleteLawCorpusView: React.FC = () => {
   const filteredProvisions = provisions.filter((provision) => {
     if (!searchQuery.trim()) return true;
     const query = normalizeProvisionNumber(searchQuery.trim().replace(/^(दफा|नियम)\s*/, ''));
+    if (!/^[0-9]+[क-ह]?$/u.test(query)) return true;
     return normalizeProvisionNumber(provision.number).includes(query);
   });
 
@@ -172,10 +189,12 @@ export const CompleteLawCorpusView: React.FC = () => {
     setSelectedChapterId('all');
     setActiveTag('all');
     setSelectedSourceNumber((law === 'act' ? ACT_PROVISIONS : RULE_PROVISIONS)[0].number);
+    setSearchPrecedentTab(null);
   };
 
   const openRuleProvision = (number: string) => {
     setActiveLaw('rules');
+    setSearchPrecedentTab(null);
     setSelectedSourceNumber(number);
     setViewMode('all');
     provisionViewRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -183,6 +202,7 @@ export const CompleteLawCorpusView: React.FC = () => {
 
   const openActProvision = (number: string) => {
     setActiveLaw('act');
+    setSearchPrecedentTab(null);
     setSelectedSourceNumber(number);
     setViewMode('all');
     provisionViewRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -191,10 +211,139 @@ export const CompleteLawCorpusView: React.FC = () => {
   const openBareLawProvision = (sectionNo: string) => {
     const match = sectionNo.match(/[०-९0-9]+[क-ह]?/);
     if (match) {
+      setSearchPrecedentTab(null);
       setSelectedSourceNumber(match[0]);
       setViewMode('all');
       provisionViewRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+  };
+
+  const searchResults = useMemo(() => {
+    if (!normalizeSearchText(searchQuery)) return { provisions: [], precedents: [] };
+
+    const matches = (text: string) => matchesSearchText(text, searchQuery);
+    const findProvisionNumber = (lawType: LawType, candidates: string[]) => {
+      const available = lawType === 'act' ? ACT_PROVISIONS : RULE_PROVISIONS;
+      return candidates.find((candidate) =>
+        available.some((provision) =>
+          normalizeProvisionNumber(provision.number) === normalizeProvisionNumber(candidate)
+        )
+      );
+    };
+
+    const provisionsFound: LawSearchResult[] = [
+      ...Object.entries(ACT_PROVISION_TEXT)
+        .filter(([, text]) => matches(text))
+        .map(([number, text]) => ({
+          id: `act-${number}`,
+          type: 'ऐन' as const,
+          title: ACT_CHAPTERS.flatMap((chapter) => chapter.sections)
+            .find((section) => doesSectionMatchProvision(section.sectionNo, number))?.title || text.split('\n')[0],
+          detail: text.split('\n')[0],
+          lawType: 'act' as const,
+          provisionNumber: number,
+        })),
+      ...Object.entries(RULE_PROVISION_TEXT)
+        .filter(([, text]) => matches(text))
+        .map(([number, text]) => ({
+          id: `rule-${number}`,
+          type: 'नियम' as const,
+          title: RULE_CHAPTERS.flatMap((chapter) => chapter.sections)
+            .find((section) => doesSectionMatchProvision(section.sectionNo, number))?.title || text.split('\n')[0],
+          detail: text.split('\n')[0],
+          lawType: 'rules' as const,
+          provisionNumber: number,
+        })),
+    ];
+    const provisionIds = new Set(provisionsFound.map((result) => result.id));
+    const simplifiedProvisionSources = [
+      ...ACT_CHAPTERS.flatMap((chapter) => chapter.sections.map((section) => ({ section, lawType: 'act' as const }))),
+      ...RULE_CHAPTERS.flatMap((chapter) => chapter.sections.map((section) => ({ section, lawType: 'rules' as const }))),
+    ];
+    for (const { section, lawType } of simplifiedProvisionSources) {
+      if (!matches([
+        section.sectionNo,
+        section.title,
+        section.officialSummary,
+        section.simpleExplanation,
+        section.complianceRule,
+        section.practicalTip ?? '',
+        section.amendmentNote ?? '',
+        ...section.tags,
+      ].join(' '))) continue;
+
+      for (const provisionNumber of getCleanNumbersFromSectionNo(section.sectionNo)) {
+        const id = `${lawType === 'act' ? 'act' : 'rule'}-${provisionNumber}`;
+        if (provisionIds.has(id)) continue;
+        provisionIds.add(id);
+        provisionsFound.push({
+          id,
+          type: lawType === 'act' ? 'ऐन' : 'नियम',
+          title: section.title,
+          detail: section.officialSummary,
+          lawType,
+          provisionNumber,
+        });
+      }
+    }
+
+    const precedentsFound: LawSearchResult[] = [
+      ...ALL_PPMO_OPINIONS.flatMap((opinion) => {
+        if (!matches([opinion.subject, opinion.opinion, opinion.requestingEntity, opinion.act, opinion.rule].join(' '))) return [];
+        const actNumber = findProvisionNumber('act', opinion.actNumbers);
+        const ruleNumber = findProvisionNumber('rules', opinion.ruleNumbers);
+        const lawType: LawType = actNumber ? 'act' : 'rules';
+        const provisionNumber = actNumber || ruleNumber;
+        if (!provisionNumber) return [];
+        return [{
+          id: opinion.id,
+          type: 'PPMO राय' as const,
+          title: opinion.subject,
+          detail: `राय नं. ${opinion.no} · ${opinion.date}`,
+          lawType,
+          provisionNumber,
+          precedentTab: 'opinions' as const,
+        }];
+      }),
+      ...ALL_PPRC_DECISIONS.flatMap((decision) => {
+        if (!matches([decision.subject, decision.use, decision.decision, decision.applicant, decision.respondent, decision.act, decision.rule].join(' '))) return [];
+        const actNumber = findProvisionNumber('act', decision.actNumbers);
+        const ruleNumber = findProvisionNumber('rules', decision.ruleNumbers);
+        const lawType: LawType = actNumber ? 'act' : 'rules';
+        const provisionNumber = actNumber || ruleNumber;
+        if (!provisionNumber) return [];
+        return [{
+          id: decision.id,
+          type: 'PPRC निर्णय' as const,
+          title: decision.subject,
+          detail: `निर्णय नं. ${decision.no} · ${decision.type}`,
+          lawType,
+          provisionNumber,
+          precedentTab: 'decisions' as const,
+        }];
+      }),
+    ];
+
+    const sortByTitleMatch = (left: LawSearchResult, right: LawSearchResult) =>
+      Number(matches(right.title)) - Number(matches(left.title));
+
+    return {
+      provisions: provisionsFound.sort(sortByTitleMatch),
+      precedents: precedentsFound.sort(sortByTitleMatch),
+    };
+  }, [searchQuery]);
+
+  const jumpToSearchResult = (result: LawSearchResult) => {
+    setActiveLaw(result.lawType);
+    setSelectedChapterId('all');
+    setActiveTag('all');
+    setSelectedSourceNumber(result.provisionNumber);
+    setViewMode('bare-law');
+    setSearchPrecedentTab(result.precedentTab ?? null);
+    requestAnimationFrame(() => {
+      const target = result.precedentTab ? precedentViewRef.current : provisionViewRef.current;
+      (target ?? provisionViewRef.current)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
   };
 
   const filteredChapters = currentChapters.map((ch) => {
@@ -206,24 +355,28 @@ export const CompleteLawCorpusView: React.FC = () => {
       if (activeTag !== 'all' && !sec.tags.includes(activeTag)) return false;
       if (!searchQuery.trim()) return true;
 
-      const q = searchQuery.toLowerCase();
       const { opinions: secOps, decisions: secDecs } = getPrecedentsForSection(sec.sectionNo, activeLaw);
-      const hasPrecedentMatch = secOps.some(
-        (op) => op.subject.toLowerCase().includes(q) || op.opinion.toLowerCase().includes(q) || op.requestingEntity.toLowerCase().includes(q)
-      ) || secDecs.some(
-        (dec) => dec.subject.toLowerCase().includes(q) || dec.decision.toLowerCase().includes(q) || dec.applicant.toLowerCase().includes(q) || dec.respondent.toLowerCase().includes(q)
+      const hasPrecedentMatch = secOps.some((op) =>
+        matchesSearchText([op.subject, op.opinion, op.requestingEntity, op.act, op.rule].join(' '), searchQuery)
+      ) || secDecs.some((dec) =>
+        matchesSearchText([dec.subject, dec.decision, dec.use, dec.applicant, dec.respondent, dec.act, dec.rule].join(' '), searchQuery)
+      );
+      const provisionNumbers = getCleanNumbersFromSectionNo(sec.sectionNo);
+      const hasBareLawMatch = provisionNumbers.some((number) =>
+        matchesSearchText(getProvisionText(activeLaw === 'act' ? ACT_PROVISION_TEXT : RULE_PROVISION_TEXT, number) ?? '', searchQuery)
       );
 
       return (
-        sec.sectionNo.toLowerCase().includes(q) ||
-        sec.title.toLowerCase().includes(q) ||
-        sec.officialSummary.toLowerCase().includes(q) ||
-        sec.simpleExplanation.toLowerCase().includes(q) ||
-        sec.complianceRule.toLowerCase().includes(q) ||
-        (sec.practicalTip && sec.practicalTip.toLowerCase().includes(q)) ||
-        (sec.amendmentNote && sec.amendmentNote.toLowerCase().includes(q)) ||
-        (sec.relatedActSection && sec.relatedActSection.toLowerCase().includes(q)) ||
-        sec.tags.some((t) => t.toLowerCase().includes(q)) ||
+        matchesSearchText(sec.sectionNo, searchQuery) ||
+        matchesSearchText(sec.title, searchQuery) ||
+        matchesSearchText(sec.officialSummary, searchQuery) ||
+        matchesSearchText(sec.simpleExplanation, searchQuery) ||
+        matchesSearchText(sec.complianceRule, searchQuery) ||
+        (sec.practicalTip && matchesSearchText(sec.practicalTip, searchQuery)) ||
+        (sec.amendmentNote && matchesSearchText(sec.amendmentNote, searchQuery)) ||
+        (sec.relatedActSection && matchesSearchText(sec.relatedActSection, searchQuery)) ||
+        sec.tags.some((t) => matchesSearchText(t, searchQuery)) ||
+        hasBareLawMatch ||
         hasPrecedentMatch
       );
     });
@@ -274,13 +427,19 @@ export const CompleteLawCorpusView: React.FC = () => {
           <input
             type="text"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setSearchPrecedentTab(null);
+            }}
             placeholder="नियम, दफा वा विषय खोज्नुहोस् (उदा: नियम ११०, भेरिएसन, म्याद थप)..."
             className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs sm:text-sm focus:outline-hidden focus:ring-1 focus:ring-red-600 text-slate-900"
           />
           {searchQuery && (
             <button
-              onClick={() => setSearchQuery('')}
+              onClick={() => {
+                setSearchQuery('');
+                setSearchPrecedentTab(null);
+              }}
               className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
             >
               <X className="w-3.5 h-3.5" />
@@ -288,6 +447,90 @@ export const CompleteLawCorpusView: React.FC = () => {
           )}
         </div>
       </div>
+
+      {searchQuery.trim() && (
+        <div className="rounded-xl border border-slate-200 bg-white p-3 sm:p-4 shadow-xs space-y-3">
+          <div className="flex items-center justify-between gap-2">
+            <h3 className="text-sm font-bold text-slate-900">
+              खोज नतिजा: <SearchHighlight text={searchQuery} query={searchQuery} />
+            </h3>
+            <span className="text-xs text-slate-500">
+              {searchResults.provisions.length + searchResults.precedents.length} वटा
+            </span>
+          </div>
+          {searchResults.provisions.length === 0 && searchResults.precedents.length === 0 ? (
+            <p className="text-xs text-slate-600">ऐन, नियम, PPMO राय वा PPRC निर्णयमा मिल्ने नतिजा भेटिएन।</p>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+              {searchResults.provisions.length > 0 && (
+                <div>
+                  <h4 className="text-xs font-semibold text-slate-700 mb-1.5">ऐन तथा नियमका व्यवस्था</h4>
+                  <div className="max-h-64 overflow-y-auto space-y-1.5 pr-1">
+                    {searchResults.provisions.slice(0, 10).map((result) => (
+                      <button
+                        key={result.id}
+                        type="button"
+                        onClick={() => jumpToSearchResult(result)}
+                        className="w-full rounded-lg border border-slate-200 p-2.5 text-left hover:border-blue-300 hover:bg-blue-50/50 transition-colors"
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-[10px] font-bold text-blue-800 bg-blue-50 px-1.5 py-0.5 rounded">
+                            {result.type} {formatProvisionNumber(result.provisionNumber)}
+                          </span>
+                          <span className="text-[10px] text-slate-500">यो व्यवस्था हेर्नुहोस् →</span>
+                        </div>
+                        <span className="block text-xs font-semibold text-slate-900 mt-1">
+                          <SearchHighlight text={result.title} query={searchQuery} />
+                        </span>
+                        <span className="block text-[11px] text-slate-600 mt-0.5 line-clamp-2">
+                          <SearchHighlight text={result.detail} query={searchQuery} />
+                        </span>
+                      </button>
+                    ))}
+                    {searchResults.provisions.length > 10 && (
+                      <p className="text-[11px] text-slate-500 text-center py-1">
+                        थप {searchResults.provisions.length - 10} व्यवस्था छन्; खोज शब्द थप स्पष्ट पार्नुहोस्।
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+              {searchResults.precedents.length > 0 && (
+                <div>
+                  <h4 className="text-xs font-semibold text-slate-700 mb-1.5">PPMO राय तथा PPRC निर्णय</h4>
+                  <div className="max-h-64 overflow-y-auto space-y-1.5 pr-1">
+                    {searchResults.precedents.slice(0, 10).map((result) => (
+                      <button
+                        key={`${result.type}-${result.id}`}
+                        type="button"
+                        onClick={() => jumpToSearchResult(result)}
+                        className="w-full rounded-lg border border-slate-200 p-2.5 text-left hover:border-indigo-300 hover:bg-indigo-50/50 transition-colors"
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-[10px] font-bold text-indigo-800 bg-indigo-50 px-1.5 py-0.5 rounded">
+                            {result.type} · {result.detail}
+                          </span>
+                          <span className="text-[10px] text-slate-500 shrink-0">
+                            {result.lawType === 'act' ? 'दफा' : 'नियम'} {formatProvisionNumber(result.provisionNumber)}
+                          </span>
+                        </div>
+                        <span className="block text-xs font-medium text-slate-900 mt-1 line-clamp-2">
+                          <SearchHighlight text={result.title} query={searchQuery} />
+                        </span>
+                      </button>
+                    ))}
+                    {searchResults.precedents.length > 10 && (
+                      <p className="text-[11px] text-slate-500 text-center py-1">
+                        थप {searchResults.precedents.length - 10} राय/निर्णय छन्; खोज शब्द थप स्पष्ट पार्नुहोस्।
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Main Law Switcher Tabs */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -442,7 +685,7 @@ export const CompleteLawCorpusView: React.FC = () => {
 
               {selectedProvisionText ? (
                 <p className="whitespace-pre-wrap break-words text-sm leading-8 text-slate-800 font-normal">
-                  {selectedProvisionText}
+                  <SearchHighlight text={selectedProvisionText} query={searchQuery} />
                 </p>
               ) : (
                 <p role="alert" className="text-sm text-red-700">
@@ -515,14 +758,17 @@ export const CompleteLawCorpusView: React.FC = () => {
 
               {/* Precedents (PPMO Opinions & PPRC Decisions) for Bare Law Provision */}
               {(activeBareOpinions.length > 0 || activeBareDecisions.length > 0) && (
-                <div className="mt-5 pt-4 border-t border-slate-200">
+                <div ref={precedentViewRef} className="mt-5 pt-4 border-t border-slate-200 scroll-mt-4">
                   <PrecedentsSection
+                    key={`${activeLaw}-${selectedSource.number}`}
                     provisionNumber={formatProvisionNumber(selectedSource.number)}
                     provisionTitle={matchingSimplifiedSection?.title}
                     lawType={activeLaw === 'act' ? 'act' : 'rule'}
                     opinions={activeBareOpinions}
                     decisions={activeBareDecisions}
-                    defaultExpanded={false}
+                    defaultExpanded={Boolean(searchPrecedentTab)}
+                    searchTerm={searchPrecedentTab ? searchQuery : ''}
+                    searchTab={searchPrecedentTab ?? undefined}
                   />
                 </div>
               )}

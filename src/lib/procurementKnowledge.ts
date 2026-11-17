@@ -71,33 +71,59 @@ const provisionKey = (reference: string) => reference
 for (const chapter of ACT_CHAPTERS) {
   for (const section of chapter.sections) {
     const key = provisionKey(section.sectionNo);
-    const exactText = ACT_PROVISION_TEXT[key];
     add({
       id: `act-${section.sectionNo}`,
       kind: 'ऐन',
       title: section.title,
       reference: `सार्वजनिक खरिद ऐन, २०६३ — ${section.sectionNo}`,
-      text: [exactText, section.officialSummary, section.simpleExplanation, section.complianceRule, section.practicalTip, section.amendmentNote, ...section.tags].filter(Boolean).join(' '),
+      text: [section.officialSummary, section.simpleExplanation, section.complianceRule, section.practicalTip, section.amendmentNote, ...section.tags].filter(Boolean).join(' '),
       route: 'law-corpus',
       href: lawCommissionAct,
     });
   }
 }
 
+for (const [key, text] of Object.entries(ACT_PROVISION_TEXT)) {
+  const section = ACT_CHAPTERS.flatMap((chapter) => chapter.sections)
+    .find((item) => provisionKey(item.sectionNo) === key);
+  add({
+    id: `act-text-${key}`,
+    kind: 'ऐन',
+    title: section?.title || text.split('\n')[0],
+    reference: `सार्वजनिक खरिद ऐन, २०६३ — दफा ${key}`,
+    text,
+    route: 'law-corpus',
+    href: lawCommissionAct,
+  });
+}
+
 for (const chapter of RULE_CHAPTERS) {
   for (const rule of chapter.sections) {
     const key = provisionKey(rule.sectionNo);
-    const exactText = RULE_PROVISION_TEXT[key];
     add({
       id: `rule-${rule.sectionNo}`,
       kind: 'नियमावली',
       title: rule.title,
       reference: `सार्वजनिक खरिद नियमावली, २०६४ — ${rule.sectionNo}`,
-      text: [exactText, rule.officialSummary, rule.simpleExplanation, rule.complianceRule, rule.practicalTip, rule.amendmentNote, ...rule.tags].filter(Boolean).join(' '),
+      text: [rule.officialSummary, rule.simpleExplanation, rule.complianceRule, rule.practicalTip, rule.amendmentNote, ...rule.tags].filter(Boolean).join(' '),
       route: 'law-corpus',
       href: lawCommissionRules,
     });
   }
+}
+
+for (const [key, text] of Object.entries(RULE_PROVISION_TEXT)) {
+  const rule = RULE_CHAPTERS.flatMap((chapter) => chapter.sections)
+    .find((item) => provisionKey(item.sectionNo) === key);
+  add({
+    id: `rule-text-${key}`,
+    kind: 'नियमावली',
+    title: rule?.title || text.split('\n')[0],
+    reference: `सार्वजनिक खरिद नियमावली, २०६४ — नियम ${key}`,
+    text,
+    route: 'law-corpus',
+    href: lawCommissionRules,
+  });
 }
 
 for (const opinion of enrichedPpmoOpinions) {
@@ -291,7 +317,7 @@ for (const exc of ALL_LEGAL_EXCEPTIONS) {
 }
 
 const toAsciiDigits = (value: string) => value.replace(/[०-९]/g, (digit) => String('०१२३४५६७८९'.indexOf(digit)));
-const normalize = (value: string) => toAsciiDigits(value).toLocaleLowerCase('ne-NP').normalize('NFKC').replace(/[^\p{L}\p{M}\p{N}]+/gu, ' ').replace(/\s+/g, ' ').trim();
+const normalize = (value: string) => toAsciiDigits(value).toLocaleLowerCase('ne-NP').normalize('NFKC').replace(/[\u094d\u200c\u200d]/gu, '').replace(/[^\p{L}\p{M}\p{N}]+/gu, ' ').replace(/\s+/g, ' ').trim();
 const stopWords = new Set([
   'के', 'कसरी', 'किन', 'हो', 'हुन्छ', 'छ', 'छन्', 'मा', 'को', 'का', 'की', 'कि', 'र', 'वा', 'तथा',
   'गर्न', 'गर्ने', 'गर्नुपर्ने', 'गर्नुपर्छ', 'गर्नुहोस्', 'बारे', 'बारेमा', 'सम्बन्धमा', 'सम्बन्धी',
@@ -362,7 +388,7 @@ export function searchProcurementKnowledge(query: string, limit = 6): Procuremen
     return { source, score, coverage, hasReferenceMatch };
   }).filter((item) => referenceMatch
     ? item.hasReferenceMatch
-    : item.score >= 4 && item.coverage >= Math.min(0.5, 2 / rawTerms.length));
+    : item.score >= 1.5 && item.coverage >= Math.min(0.5, 2 / rawTerms.length));
 
   scored.sort((left, right) => right.score - left.score);
   const seen = new Set<string>();

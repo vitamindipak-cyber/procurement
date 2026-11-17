@@ -330,10 +330,12 @@ function ProcurementApp({
   };
 
   const handleSelectSearchResult = (
-    category: 'method' | 'stage' | 'checklist' | 'clause' | 'schedule' | 'dilemma' | 'glossary' | 'template' | 'restriction',
+    category: 'method' | 'stage' | 'checklist' | 'clause' | 'schedule' | 'dilemma' | 'glossary' | 'template' | 'restriction' | 'knowledge',
     id: string
   ) => {
-    if (category === 'method') {
+    if (category === 'knowledge') {
+      setActiveTab(id);
+    } else if (category === 'method') {
       setSelectedMethodId(id);
       setActiveTab('methods');
     } else if (category === 'stage') {
@@ -423,7 +425,7 @@ function ProcurementApp({
       <FloatingProcurementChatLauncher onOpen={() => setActiveTab('procurement-chat')} />
 
       {/* Main Content Area (offset by Sidebar width on desktop) */}
-      <div className={`${isSidebarCollapsed ? 'lg:pl-20' : 'lg:pl-72'} flex flex-col min-h-screen transition-all duration-200 ease-in-out`}>
+      <div className={`${isSidebarCollapsed ? 'lg:pl-20' : 'lg:pl-[15.3rem]'} flex flex-col min-h-screen transition-all duration-200 ease-in-out`}>
         {/* Top Header with Breadcrumbs & Actions */}
         <TopHeader
           activeTab={activeTab}

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
   Scale, 
   BookOpen, 
@@ -18,6 +18,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { PrecedentOpinion, PrecedentDecision } from '../data/legalPrecedents';
+import { matchesSearchText, SearchHighlight } from '../utils/searchText';
 
 interface PrecedentsSectionProps {
   provisionTitle?: string;
@@ -26,6 +27,8 @@ interface PrecedentsSectionProps {
   opinions: PrecedentOpinion[];
   decisions: PrecedentDecision[];
   defaultExpanded?: boolean;
+  searchTerm?: string;
+  searchTab?: 'opinions' | 'decisions';
 }
 
 export const PrecedentsSection: React.FC<PrecedentsSectionProps> = ({
@@ -35,16 +38,28 @@ export const PrecedentsSection: React.FC<PrecedentsSectionProps> = ({
   opinions,
   decisions,
   defaultExpanded = false,
+  searchTerm,
+  searchTab,
 }) => {
-  const [isExpanded, setIsExpanded] = useState<boolean>(defaultExpanded);
-  const [activeTab, setActiveTab] = useState<'opinions' | 'decisions'>('opinions');
+  const [isExpanded, setIsExpanded] = useState<boolean>(defaultExpanded || Boolean(searchTerm));
+  const [activeTab, setActiveTab] = useState<'opinions' | 'decisions'>(searchTab ?? 'opinions');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>(searchTerm ?? '');
   const [selectedOpinion, setSelectedOpinion] = useState<PrecedentOpinion | null>(null);
   const [selectedDecision, setSelectedDecision] = useState<PrecedentDecision | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const totalCount = opinions.length + decisions.length;
+
+  useEffect(() => {
+    if (!searchTerm) {
+      setSearchQuery('');
+      return;
+    }
+    setIsExpanded(true);
+    setSearchQuery(searchTerm);
+    setActiveTab(searchTab ?? 'opinions');
+  }, [lawType, provisionNumber, searchTerm, searchTab]);
 
   const handleCopy = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
@@ -56,12 +71,9 @@ export const PrecedentsSection: React.FC<PrecedentsSectionProps> = ({
     return opinions.filter((op) => {
       if (selectedCategory !== 'all' && op.categoryKey !== selectedCategory) return false;
       if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase();
-        return (
-          op.subject.toLowerCase().includes(q) ||
-          op.opinion.toLowerCase().includes(q) ||
-          op.requestingEntity.toLowerCase().includes(q) ||
-          op.date.includes(q)
+        return matchesSearchText(
+          [op.subject, op.opinion, op.requestingEntity, op.date, op.act, op.rule].join(' '),
+          searchQuery
         );
       }
       return true;
@@ -71,14 +83,9 @@ export const PrecedentsSection: React.FC<PrecedentsSectionProps> = ({
   const filteredDecisions = useMemo(() => {
     return decisions.filter((dec) => {
       if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase();
-        return (
-          dec.subject.toLowerCase().includes(q) ||
-          dec.decision.toLowerCase().includes(q) ||
-          dec.use.toLowerCase().includes(q) ||
-          dec.applicant.toLowerCase().includes(q) ||
-          dec.respondent.toLowerCase().includes(q) ||
-          dec.type.toLowerCase().includes(q)
+        return matchesSearchText(
+          [dec.subject, dec.decision, dec.use, dec.applicant, dec.respondent, dec.type, dec.act, dec.rule].join(' '),
+          searchQuery
         );
       }
       return true;
@@ -294,16 +301,16 @@ export const PrecedentsSection: React.FC<PrecedentsSectionProps> = ({
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className={`text-[11px] font-bold px-2 py-0.5 rounded-md border ${getCategoryBadgeClass(op.categoryKey)}`}>
-                        {op.category}
+                        <SearchHighlight text={op.category} query={searchQuery} />
                       </span>
                       {op.date && (
                         <span className="flex items-center gap-1 text-[11px] text-slate-500 font-mono">
                           <Calendar className="w-3 h-3 text-slate-400" />
-                          {op.date}
+                          <SearchHighlight text={op.date} query={searchQuery} />
                         </span>
                       )}
                       <span className="text-[11px] text-slate-500 font-mono">
-                        राय नं. {op.no}
+                        राय नं. <SearchHighlight text={op.no} query={searchQuery} />
                       </span>
                     </div>
 
@@ -330,14 +337,14 @@ export const PrecedentsSection: React.FC<PrecedentsSectionProps> = ({
                   {op.requestingEntity && (
                     <div className="flex items-center gap-1.5 text-xs text-indigo-900 font-semibold">
                       <Building2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                      <span>{op.requestingEntity}</span>
+                      <span><SearchHighlight text={op.requestingEntity} query={searchQuery} /></span>
                     </div>
                   )}
 
                   {/* Subject Query */}
                   <div className="text-xs text-slate-800 leading-relaxed font-medium bg-white p-2.5 rounded-lg border border-slate-200">
                     <span className="font-bold text-slate-900 block mb-0.5">माग भएको रायको विषय:</span>
-                    {op.subject}
+                    <SearchHighlight text={op.subject} query={searchQuery} />
                   </div>
 
                   {/* PPMO Binding Opinion */}
@@ -346,13 +353,13 @@ export const PrecedentsSection: React.FC<PrecedentsSectionProps> = ({
                       <Sparkles className="w-3.5 h-3.5 text-amber-700" />
                       सार्वजनिक खरिद अनुगमन कार्यालय (PPMO) को राय:
                     </span>
-                    <p className="whitespace-pre-wrap">{op.opinion}</p>
+                    <p className="whitespace-pre-wrap"><SearchHighlight text={op.opinion} query={searchQuery} /></p>
                   </div>
 
                   {/* Cross references */}
                   <div className="flex flex-wrap items-center gap-2 pt-1 text-[11px] text-slate-500">
-                    {op.act && <span>ऐन: <strong className="text-slate-700">{op.act}</strong></span>}
-                    {op.rule && <span>नियमावली: <strong className="text-slate-700">{op.rule}</strong></span>}
+                    {op.act && <span>ऐन: <strong className="text-slate-700"><SearchHighlight text={op.act} query={searchQuery} /></strong></span>}
+                    {op.rule && <span>नियमावली: <strong className="text-slate-700"><SearchHighlight text={op.rule} query={searchQuery} /></strong></span>}
                   </div>
                 </article>
               ))}
@@ -379,11 +386,11 @@ export const PrecedentsSection: React.FC<PrecedentsSectionProps> = ({
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-[11px] font-bold bg-purple-100 text-purple-900 border border-purple-200 px-2 py-0.5 rounded-md font-mono">
-                          PPRC फैसला नं. {dec.no}
+                          PPRC फैसला नं. <SearchHighlight text={dec.no} query={searchQuery} />
                         </span>
                         <span className={`inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-md border ${badge.bg}`}>
                           <BadgeIcon className="w-3 h-3 shrink-0" />
-                          {badge.label}
+                          <SearchHighlight text={badge.label} query={searchQuery} />
                         </span>
                       </div>
 
@@ -410,18 +417,18 @@ export const PrecedentsSection: React.FC<PrecedentsSectionProps> = ({
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs bg-white p-2.5 rounded-lg border border-slate-200">
                       <div>
                         <span className="text-[11px] font-bold text-slate-500 block">निवेदक (Applicant):</span>
-                        <span className="text-slate-900 font-medium">{dec.applicant || '—'}</span>
+                        <span className="text-slate-900 font-medium"><SearchHighlight text={dec.applicant || '—'} query={searchQuery} /></span>
                       </div>
                       <div>
                         <span className="text-[11px] font-bold text-slate-500 block">विपक्षी (Respondent):</span>
-                        <span className="text-slate-900 font-medium">{dec.respondent || '—'}</span>
+                        <span className="text-slate-900 font-medium"><SearchHighlight text={dec.respondent || '—'} query={searchQuery} /></span>
                       </div>
                     </div>
 
                     {/* Subject */}
                     <div className="text-xs text-slate-700">
                       <span className="font-bold text-slate-900">विवादको विषय: </span>
-                      {dec.subject}
+                      <SearchHighlight text={dec.subject} query={searchQuery} />
                     </div>
 
                     {/* Key Legal Takeaway / Principle */}
@@ -431,20 +438,20 @@ export const PrecedentsSection: React.FC<PrecedentsSectionProps> = ({
                           <Scale className="w-3.5 h-3.5 text-indigo-700" />
                           कायम भएको कानूनी सिद्धान्त (Legal Principle Applied):
                         </span>
-                        <p className="leading-relaxed font-medium">{dec.use}</p>
+                        <p className="leading-relaxed font-medium"><SearchHighlight text={dec.use} query={searchQuery} /></p>
                       </div>
                     )}
 
                     {/* Decision Full Text */}
                     <div className="p-3 bg-purple-50/50 rounded-lg border border-purple-200/70 text-xs text-purple-950">
                       <span className="font-bold text-purple-900 block mb-0.5">पुनरावलोकन समितिको फैसला / आदेश:</span>
-                      <p className="leading-relaxed whitespace-pre-wrap">{dec.decision}</p>
+                      <p className="leading-relaxed whitespace-pre-wrap"><SearchHighlight text={dec.decision} query={searchQuery} /></p>
                     </div>
 
                     {/* Law references */}
                     <div className="flex flex-wrap items-center gap-2 pt-1 text-[11px] text-slate-500">
-                      {dec.act && <span>ऐन: <strong className="text-slate-700">{dec.act}</strong></span>}
-                      {dec.rule && <span>नियमावली: <strong className="text-slate-700">{dec.rule}</strong></span>}
+                      {dec.act && <span>ऐन: <strong className="text-slate-700"><SearchHighlight text={dec.act} query={searchQuery} /></strong></span>}
+                      {dec.rule && <span>नियमावली: <strong className="text-slate-700"><SearchHighlight text={dec.rule} query={searchQuery} /></strong></span>}
                     </div>
                   </article>
                 );
