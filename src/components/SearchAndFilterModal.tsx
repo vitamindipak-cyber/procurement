@@ -28,6 +28,8 @@ import {
   Ban
 } from 'lucide-react';
 import { PROHIBITIONS_DATA, ALL_LEGAL_EXCEPTIONS } from '../data/restrictionsExceptionsData';
+import { searchProcurementKnowledge } from '../lib/procurementKnowledge';
+import { SearchHighlight as HighlightedText } from '../utils/searchText';
 
 const SEARCH_TERM_ALIASES: Record<string, string[]> = {
   'कालोसूची': ['कालोसूची', 'blacklisting'],
@@ -69,7 +71,7 @@ const matchesSearch = (value: unknown, term: string): boolean => {
 interface SearchAndFilterModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelectResult: (category: 'method' | 'stage' | 'checklist' | 'clause' | 'schedule' | 'dilemma' | 'glossary' | 'template' | 'restriction', id: string) => void;
+  onSelectResult: (category: 'method' | 'stage' | 'checklist' | 'clause' | 'schedule' | 'dilemma' | 'glossary' | 'template' | 'restriction' | 'knowledge', id: string) => void;
 }
 
 export const SearchAndFilterModal: React.FC<SearchAndFilterModalProps> = ({
@@ -240,6 +242,8 @@ export const SearchAndFilterModal: React.FC<SearchAndFilterModalProps> = ({
       })
       : [];
 
+    const matchedKnowledge = term ? searchProcurementKnowledge(term) : [];
+
     const totalCount =
       matchedMethods.length +
       matchedClauses.length +
@@ -249,7 +253,8 @@ export const SearchAndFilterModal: React.FC<SearchAndFilterModalProps> = ({
       matchedDilemmas.length +
       matchedGlossary.length +
       matchedTemplates.length +
-      matchedRestrictions.length;
+      matchedRestrictions.length +
+      matchedKnowledge.length;
 
     return {
       methods: matchedMethods,
@@ -261,6 +266,7 @@ export const SearchAndFilterModal: React.FC<SearchAndFilterModalProps> = ({
       glossary: matchedGlossary,
       templates: matchedTemplates,
       restrictions: matchedRestrictions,
+      knowledge: matchedKnowledge,
       totalCount,
     };
   }, [searchTerm, selectedType, selectedThreshold, selectedStage, selectedContentType]);
@@ -456,15 +462,17 @@ export const SearchAndFilterModal: React.FC<SearchAndFilterModalProps> = ({
                       >
                         <div className="flex items-start justify-between gap-2">
                           <h4 className="text-sm font-semibold text-slate-900 group-hover:text-red-700 transition-colors">
-                            {method.nameNepali}
+                            <HighlightedText text={method.nameNepali} query={searchTerm} />
                           </h4>
                           <span className="text-[10px] px-1.5 py-0.5 rounded-sm bg-slate-100 text-slate-600 shrink-0 font-medium">
-                            {method.badgeTag}
+                            <HighlightedText text={method.badgeTag} query={searchTerm} />
                           </span>
                         </div>
-                        <p className="text-xs text-slate-600 mt-1 line-clamp-2">{method.summary}</p>
+                        <p className="text-xs text-slate-600 mt-1 line-clamp-2">
+                          <HighlightedText text={method.summary} query={searchTerm} />
+                        </p>
                         <div className="flex items-center justify-between text-[11px] text-slate-600 mt-2 pt-2 border-t border-slate-100">
-                          <span>ऐन: {method.legalActSection}</span>
+                          <span>ऐन: <HighlightedText text={method.legalActSection} query={searchTerm} /></span>
                           <span className="flex items-center gap-1 text-red-700 font-medium">
                             पूर्ण विवरण <ArrowRight className="w-3 h-3" />
                           </span>
@@ -494,20 +502,22 @@ export const SearchAndFilterModal: React.FC<SearchAndFilterModalProps> = ({
                       >
                         <div className="flex items-center justify-between">
                           <span className="text-xs font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-sm">
-                            {clause.clauseNumber}
+                            <HighlightedText text={clause.clauseNumber} query={searchTerm} />
                           </span>
                           <span className="text-[11px] text-slate-600 uppercase">
                             {clause.lawType === 'act' ? 'खरिद ऐन' : 'नियमावली'}
                           </span>
                         </div>
                         <h4 className="text-sm font-semibold text-slate-900 mt-1.5 group-hover:text-amber-800 transition-colors">
-                          {clause.title}
+                          <HighlightedText text={clause.title} query={searchTerm} />
                         </h4>
-                        <p className="text-xs text-slate-600 mt-1 line-clamp-2">{clause.summary}</p>
+                        <p className="text-xs text-slate-600 mt-1 line-clamp-2">
+                          <HighlightedText text={clause.summary} query={searchTerm} />
+                        </p>
                         <div className="flex items-center gap-1.5 mt-2 flex-wrap">
                           {clause.tags.map((t) => (
                             <span key={t} className="text-[10px] text-slate-700 bg-slate-100 px-1.5 py-0.5 rounded-sm">
-                              #{t}
+                              #<HighlightedText text={t} query={searchTerm} />
                             </span>
                           ))}
                         </div>
@@ -536,10 +546,14 @@ export const SearchAndFilterModal: React.FC<SearchAndFilterModalProps> = ({
                       >
                         <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs sm:text-sm font-medium text-slate-900">{chk.text}</p>
+                          <p className="text-xs sm:text-sm font-medium text-slate-900">
+                            <HighlightedText text={chk.text} query={searchTerm} />
+                          </p>
                           <div className="flex items-center gap-2 text-[11px] text-slate-600 mt-0.5">
-                            <span className="font-mono text-emerald-800 font-semibold">{chk.legalRef}</span>
-                            {chk.notes && <span>· {chk.notes}</span>}
+                            <span className="font-mono text-emerald-800 font-semibold">
+                              <HighlightedText text={chk.legalRef} query={searchTerm} />
+                            </span>
+                            {chk.notes && <span>· <HighlightedText text={chk.notes} query={searchTerm} /></span>}
                           </div>
                         </div>
                       </div>
@@ -571,11 +585,13 @@ export const SearchAndFilterModal: React.FC<SearchAndFilterModalProps> = ({
                         className="p-3 rounded-lg border border-slate-200 hover:border-indigo-400 hover:bg-indigo-50/30 transition-all cursor-pointer group text-left"
                       >
                         <h4 className="text-sm font-semibold text-slate-900 group-hover:text-indigo-700 transition-colors">
-                          {stage.stageNo}. {stage.titleNepali}
+                          {stage.stageNo}. <HighlightedText text={stage.titleNepali} query={searchTerm} />
                         </h4>
-                        <p className="text-xs text-slate-600 mt-1 line-clamp-2">{stage.description}</p>
+                        <p className="text-xs text-slate-600 mt-1 line-clamp-2">
+                          <HighlightedText text={stage.description} query={searchTerm} />
+                        </p>
                         <div className="text-[11px] text-slate-600 mt-2 pt-2 border-t border-slate-100">
-                          कानूनी आधार: {stage.legalBasis}
+                          कानूनी आधार: <HighlightedText text={stage.legalBasis} query={searchTerm} />
                         </div>
                       </div>
                     ))}
@@ -601,13 +617,17 @@ export const SearchAndFilterModal: React.FC<SearchAndFilterModalProps> = ({
                         className="p-3 rounded-lg border border-slate-200 hover:border-blue-400 hover:bg-blue-50/30 transition-all cursor-pointer group text-left"
                       >
                         <span className="text-xs font-bold text-blue-800 bg-blue-50 px-2 py-0.5 rounded-sm">
-                          {sch.scheduleNumber}
+                          <HighlightedText text={sch.scheduleNumber} query={searchTerm} />
                         </span>
                         <h4 className="text-sm font-semibold text-slate-900 mt-1.5 group-hover:text-blue-800 transition-colors">
-                          {sch.title}
+                          <HighlightedText text={sch.title} query={searchTerm} />
                         </h4>
-                        <p className="text-xs text-slate-600 mt-1">{sch.description}</p>
-                        <span className="text-[11px] text-slate-600 mt-2 block font-mono">{sch.ruleReference}</span>
+                        <p className="text-xs text-slate-600 mt-1">
+                          <HighlightedText text={sch.description} query={searchTerm} />
+                        </p>
+                        <span className="text-[11px] text-slate-600 mt-2 block font-mono">
+                          <HighlightedText text={sch.ruleReference} query={searchTerm} />
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -633,18 +653,20 @@ export const SearchAndFilterModal: React.FC<SearchAndFilterModalProps> = ({
                       >
                         <div className="flex items-center justify-between">
                           <span className="text-[10px] font-bold text-purple-800 bg-purple-100 px-2 py-0.5 rounded-sm">
-                            {dil.categoryLabel}
+                            <HighlightedText text={dil.categoryLabel} query={searchTerm} />
                           </span>
                           <span className="text-[10px] text-slate-500 font-mono">
-                            {dil.legalClauses[0]}
+                            <HighlightedText text={dil.legalClauses[0]} query={searchTerm} />
                           </span>
                         </div>
                         <h4 className="text-sm font-semibold text-slate-900 mt-1.5 group-hover:text-purple-800 transition-colors">
-                          {dil.question}
+                          <HighlightedText text={dil.question} query={searchTerm} />
                         </h4>
-                        <p className="text-xs text-slate-600 mt-1 line-clamp-2">{dil.scenario}</p>
+                        <p className="text-xs text-slate-600 mt-1 line-clamp-2">
+                          <HighlightedText text={dil.scenario} query={searchTerm} />
+                        </p>
                         <div className="text-[11px] text-emerald-800 font-semibold mt-2 pt-2 border-t border-purple-100 flex items-center justify-between">
-                          <span className="line-clamp-1">निकास: {dil.verdict}</span>
+                          <span className="line-clamp-1">निकास: <HighlightedText text={dil.verdict} query={searchTerm} /></span>
                           <ArrowRight className="w-3 h-3 text-purple-700 shrink-0 ml-1" />
                         </div>
                       </div>
@@ -672,15 +694,17 @@ export const SearchAndFilterModal: React.FC<SearchAndFilterModalProps> = ({
                       >
                         <div className="flex items-center justify-between">
                           <span className="text-sm font-bold text-emerald-900 group-hover:text-emerald-700">
-                            {term.termNepali}
+                            <HighlightedText text={term.termNepali} query={searchTerm} />
                           </span>
                           <span className="text-[10px] text-slate-500 italic">
-                            {term.termEnglish}
+                            <HighlightedText text={term.termEnglish} query={searchTerm} />
                           </span>
                         </div>
-                        <p className="text-xs text-slate-700 mt-1 line-clamp-2">{term.shortDefinition}</p>
+                        <p className="text-xs text-slate-700 mt-1 line-clamp-2">
+                          <HighlightedText text={term.shortDefinition} query={searchTerm} />
+                        </p>
                         <div className="text-[11px] text-slate-500 mt-2 pt-1 border-t border-emerald-100 font-mono">
-                          {term.legalReference}
+                          <HighlightedText text={term.legalReference} query={searchTerm} />
                         </div>
                       </div>
                     ))}
@@ -707,18 +731,20 @@ export const SearchAndFilterModal: React.FC<SearchAndFilterModalProps> = ({
                       >
                         <div className="flex items-center justify-between">
                           <span className="text-[10px] font-bold text-red-800 bg-red-100 px-2 py-0.5 rounded-sm">
-                            {tmpl.category === 'notesheet' ? 'टिप्पणी र आदेश' : tmpl.category}
+                            <HighlightedText text={tmpl.category === 'notesheet' ? 'टिप्पणी र आदेश' : tmpl.category} query={searchTerm} />
                           </span>
                           <span className="text-[10px] text-slate-500 font-mono">
-                            {tmpl.formatTypes.join(', ')}
+                            <HighlightedText text={tmpl.formatTypes.join(', ')} query={searchTerm} />
                           </span>
                         </div>
                         <h4 className="text-sm font-semibold text-slate-900 mt-1.5 group-hover:text-red-700 transition-colors">
-                          {tmpl.titleNepali}
+                          <HighlightedText text={tmpl.titleNepali} query={searchTerm} />
                         </h4>
-                        <p className="text-xs text-slate-600 mt-1 line-clamp-2">{tmpl.description}</p>
+                        <p className="text-xs text-slate-600 mt-1 line-clamp-2">
+                          <HighlightedText text={tmpl.description} query={searchTerm} />
+                        </p>
                         <div className="text-[11px] text-slate-500 mt-2 pt-1 border-t border-red-100 font-mono">
-                          {tmpl.legalReference}
+                          <HighlightedText text={tmpl.legalReference} query={searchTerm} />
                         </div>
                       </div>
                     ))}
@@ -750,13 +776,54 @@ export const SearchAndFilterModal: React.FC<SearchAndFilterModalProps> = ({
                             {res.kind === 'prohibition' ? 'निषेध' : 'अपवाद'}
                           </span>
                           <span className="text-[10px] text-slate-500 font-mono">
-                            {res.legalRef}
+                            <HighlightedText text={res.legalRef} query={searchTerm} />
                           </span>
                         </div>
                         <h4 className="text-xs font-bold text-slate-900 group-hover:text-red-700 transition-colors">
-                          {res.title}
+                          <HighlightedText text={res.title} query={searchTerm} />
                         </h4>
-                        <p className="text-xs text-slate-600 line-clamp-2">{res.text}</p>
+                        <p className="text-xs text-slate-600 line-clamp-2">
+                          <HighlightedText text={res.text} query={searchTerm} />
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {filteredResults.knowledge.length > 0 && (
+                <div>
+                  <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2.5">
+                    <Search className="w-4 h-4 text-sky-700" />
+                    <span>ऐन, नियम, PPMO/PPRC तथा अन्य एप सामग्री ({filteredResults.knowledge.length})</span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    {filteredResults.knowledge.map((item) => (
+                      <div
+                        key={item.id}
+                        onClick={() => {
+                          if (!item.route) return;
+                          onSelectResult('knowledge', item.route);
+                          onClose();
+                        }}
+                        className={`p-3 rounded-lg border border-sky-200 bg-white transition-colors text-left ${
+                          item.route ? 'hover:border-sky-400 hover:bg-sky-50/30 cursor-pointer' : ''
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <h4 className="text-sm font-semibold text-slate-900">
+                            <HighlightedText text={item.title} query={searchTerm} />
+                          </h4>
+                          <span className="text-[10px] px-1.5 py-0.5 rounded-sm bg-sky-50 text-sky-800 shrink-0 font-medium">
+                            <HighlightedText text={item.kind} query={searchTerm} />
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-slate-600 mt-1">
+                          <HighlightedText text={item.reference} query={searchTerm} />
+                        </p>
+                        <p className="text-xs text-slate-700 mt-2 line-clamp-4">
+                          <HighlightedText text={item.excerpt} query={searchTerm} />
+                        </p>
                       </div>
                     ))}
                   </div>

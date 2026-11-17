@@ -173,8 +173,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <aside
         className={[
           'fixed top-0 bottom-0 left-0 z-50 flex flex-col',
-          isCollapsed ? 'lg:w-[68px]' : 'lg:w-72',
-          'w-72',
+          isCollapsed ? 'lg:w-[68px]' : 'lg:w-[15.3rem]',
+          'w-[15.3rem]',
           SB.bg,
           SB.border, 'border-r',
           'transition-all duration-200 ease-in-out',
