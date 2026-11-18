@@ -115,6 +115,18 @@ export const BidderPortalView: React.FC<BidderPortalViewProps> = ({
     return initialSubTab;
   });
 
+  // Sync when initialSubTab prop changes (e.g. sidebar nav click while component is mounted)
+  React.useEffect(() => {
+    if (!initialSubTab || initialSubTab === 'overview') return;
+    const resolved =
+      initialSubTab === 'goods-guide' ? 'goods-procurement' :
+      initialSubTab === 'services-guide' ? 'consulting-services' :
+      initialSubTab;
+    setActiveSubTabState(resolved);
+    // Scroll to top so the new sub-tab content is visible
+    try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch { }
+  }, [initialSubTab]);
+
   // Wrap sub-tab setter so it also updates the URL hash
   const setActiveSubTab = (subTab: string) => {
     setActiveSubTabState(subTab);
