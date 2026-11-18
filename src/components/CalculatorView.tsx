@@ -26,10 +26,10 @@ export const CalculatorView: React.FC<CalculatorViewProps> = ({
 }) => {
   const [activeSubTab, setActiveSubTab] = useState<'threshold' | 'timeline'>(initialSubTab);
   const [procurementType, setProcurementType] = useState<ProcurementType>('works');
-  const [amount, setAmount] = useState<number>(45000000); // Default 4.5 crore
+  const [amount, setAmount] = useState<number>(0); // Start blank — user enters their own amount
 
   // Additional low bid calculator for Performance Security check
-  const [biddedAmount, setBiddedAmount] = useState<number>(36000000); // 3.6 crore (20% below estimate)
+  const [biddedAmount, setBiddedAmount] = useState<number>(0); // Start blank
 
   const quickAmounts = [
     { label: 'रु ५ लाख', value: 500000 },

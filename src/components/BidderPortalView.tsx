@@ -80,6 +80,7 @@ interface BidderPortalViewProps {
   onSwitchToEntityMode?: () => void;
   onNavigateToLaw?: () => void;
   onNavigateToEgpGuidelines?: () => void;
+  onSubTabChange?: (subTab: string) => void;
   initialSubTab?:
   | 'overview'
   | 'eligibility'
@@ -105,13 +106,32 @@ export const BidderPortalView: React.FC<BidderPortalViewProps> = ({
   onSwitchToEntityMode,
   onNavigateToLaw,
   onNavigateToEgpGuidelines,
+  onSubTabChange,
   initialSubTab = 'overview',
 }) => {
-  const [activeSubTab, setActiveSubTab] = useState<string>(() => {
+  const [activeSubTab, setActiveSubTabState] = useState<string>(() => {
     if (initialSubTab === 'goods-guide') return 'goods-procurement';
     if (initialSubTab === 'services-guide') return 'consulting-services';
     return initialSubTab;
   });
+
+  // Sync when initialSubTab prop changes (e.g. sidebar nav click while component is mounted)
+  React.useEffect(() => {
+    if (!initialSubTab || initialSubTab === 'overview') return;
+    const resolved =
+      initialSubTab === 'goods-guide' ? 'goods-procurement' :
+      initialSubTab === 'services-guide' ? 'consulting-services' :
+      initialSubTab;
+    setActiveSubTabState(resolved);
+    // Scroll to top so the new sub-tab content is visible
+    try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch { }
+  }, [initialSubTab]);
+
+  // Wrap sub-tab setter so it also updates the URL hash
+  const setActiveSubTab = (subTab: string) => {
+    setActiveSubTabState(subTab);
+    onSubTabChange?.(subTab);
+  };
 
   // -------------------------------------------------------------
   // 1. Eligibility & Capacity Self-Assessment Calculator State

@@ -393,8 +393,45 @@ export const CompleteLawCorpusView: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* ── Sticky Inline Search Bar ───────────────────────────────── */}
+      <div className="sticky top-0 z-10 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-2.5 bg-[#f0f4fa]/95 backdrop-blur-sm border-b border-slate-200">
+        <div className="relative max-w-2xl">
+          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setSearchPrecedentTab(null);
+            }}
+            placeholder="नियम, दफा वा विषय खोज्नुहोस्... (उदा: नियम ११०, भेरिएसन, म्याद थप, कार्यसम्पादन जमानत)"
+            className="w-full pl-9 pr-9 py-2.5 bg-white border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm text-slate-900 placeholder:text-slate-400"
+            autoComplete="off"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => {
+                setSearchQuery('');
+                setSearchPrecedentTab(null);
+              }}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+              aria-label="खोज मेटाउनुहोस्"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+        {searchQuery.trim() && (
+          <p className="text-xs text-slate-500 mt-1 ml-1">
+            {searchResults.provisions.length + searchResults.precedents.length === 0
+              ? '— कुनै नतिजा भेटिएन'
+              : `${searchResults.provisions.length} व्यवस्था + ${searchResults.precedents.length} राय/निर्णय भेटियो`}
+          </p>
+        )}
+      </div>
+
       {/* Header Banner */}
-      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs flex flex-col gap-3">
         <div>
           <div className="flex items-center gap-2 text-xs font-semibold text-red-700 uppercase tracking-wide">
             <BookOpen className="w-4 h-4" />
@@ -419,32 +456,6 @@ export const CompleteLawCorpusView: React.FC = () => {
               💡 दफा र नियमहरूसँग प्रत्यक्ष अन्तरसम्बन्धित
             </span>
           </div>
-        </div>
-
-        {/* Search */}
-        <div className="relative w-full md:w-80 shrink-0">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-              setSearchPrecedentTab(null);
-            }}
-            placeholder="नियम, दफा वा विषय खोज्नुहोस् (उदा: नियम ११०, भेरिएसन, म्याद थप)..."
-            className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs sm:text-sm focus:outline-hidden focus:ring-1 focus:ring-red-600 text-slate-900"
-          />
-          {searchQuery && (
-            <button
-              onClick={() => {
-                setSearchQuery('');
-                setSearchPrecedentTab(null);
-              }}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          )}
         </div>
       </div>
 
@@ -822,6 +833,31 @@ export const CompleteLawCorpusView: React.FC = () => {
             ))}
           </div>
 
+          {/* Chapter Filter Tabs — hidden on mobile, replaced by TOC below */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar text-xs font-medium lg:hidden">
+            <button
+              onClick={() => setSelectedChapterId('all')}
+              className={`px-3 py-1.5 rounded-lg whitespace-nowrap transition-colors ${selectedChapterId === 'all'
+                  ? 'bg-slate-900 text-white font-semibold shadow-xs'
+                  : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+                }`}
+            >
+              सबै ({currentChapters.length})
+            </button>
+            {currentChapters.map((ch) => (
+              <button
+                key={ch.id}
+                onClick={() => setSelectedChapterId(ch.id)}
+                className={`px-3 py-1.5 rounded-lg whitespace-nowrap transition-colors ${selectedChapterId === ch.id
+                    ? 'bg-blue-700 text-white font-semibold shadow-xs'
+                    : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+                  }`}
+              >
+                {ch.chapterTitleNepali.split(':')[0]}
+              </button>
+            ))}
+          </div>
+
           {/* Quick Tag Pills */}
           <div className="flex items-center gap-1.5 overflow-x-auto py-1 no-scrollbar text-xs">
             <span className="text-slate-500 font-medium whitespace-nowrap mr-1">मुख्य विषयवस्तु:</span>
@@ -844,8 +880,56 @@ export const CompleteLawCorpusView: React.FC = () => {
             ))}
           </div>
 
-          {/* Chapters & Sections List */}
-          <div className="space-y-6 mt-4">
+          {/* ── Two-column layout: left sticky TOC + right content ────── */}
+          <div className="flex gap-4 items-start mt-4">
+
+            {/* Left Sticky Chapter TOC — desktop only */}
+            <nav
+              aria-label="अध्याय सूची"
+              className="hidden lg:flex flex-col w-52 xl:w-60 shrink-0 sticky top-16 max-h-[calc(100vh-5rem)] overflow-y-auto space-y-0.5 pr-1"
+            >
+              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 px-2 pb-1.5 pt-0.5">
+                {activeLaw === 'act' ? 'ऐनका परिच्छेद' : 'नियमावलीका परिच्छेद'}
+              </p>
+              <button
+                onClick={() => setSelectedChapterId('all')}
+                className={`w-full text-left px-2.5 py-2 rounded-lg text-xs transition-colors ${
+                  selectedChapterId === 'all'
+                    ? 'bg-slate-900 text-white font-semibold'
+                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                }`}
+              >
+                <span className="font-medium">सबै परिच्छेदहरू</span>
+                <span className="ml-1.5 text-[10px] opacity-70">({totalSectionsCount} व्यवस्था)</span>
+              </button>
+              {currentChapters.map((ch) => {
+                const isChActive = selectedChapterId === ch.id;
+                const matchedCount = filteredChapters
+                  .find((fc: any) => fc?.id === ch.id)?.sections?.length ?? 0;
+                const totalCount = ch.sections.length;
+                return (
+                  <button
+                    key={ch.id}
+                    onClick={() => setSelectedChapterId(ch.id)}
+                    className={`w-full text-left px-2.5 py-2 rounded-lg text-xs transition-colors leading-snug ${
+                      isChActive
+                        ? 'bg-blue-700 text-white font-semibold'
+                        : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                    }`}
+                  >
+                    <span className="block">{ch.chapterTitleNepali.split(':')[0]}</span>
+                    <span className={`text-[10px] mt-0.5 block ${isChActive ? 'text-blue-100' : 'text-slate-400'}`}>
+                      {searchQuery.trim() && matchedCount < totalCount
+                        ? `${matchedCount}/${totalCount} मिल्यो`
+                        : `${totalCount} व्यवस्था`}
+                    </span>
+                  </button>
+                );
+              })}
+            </nav>
+
+            {/* Right: Chapters & Sections content */}
+          <div className="flex-1 min-w-0 space-y-6">
             {filteredChapters.map((ch: any) => (
               <div key={ch.id} className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
                 {/* Chapter Header */}
@@ -1123,6 +1207,9 @@ export const CompleteLawCorpusView: React.FC = () => {
               </div>
             )}
           </div>
+          {/* /Right content column */}
+          </div>
+          {/* /Two-column layout */}
         </div>
       )}
     </div>
