@@ -308,7 +308,7 @@ export const METHOD_WORKFLOWS: Record<string, WorkflowMilestone[]> = {
         { id: 'ncb-w-5-1', label: 'सारभूत रूपमा प्रभावग्राही (Substantially Responsive) बोलपत्रहरूको सूची तयार गर्ने', clauseRef: 'नियम ६५', isMandatory: true },
         { id: 'ncb-w-5-2', label: '१६औँ संशोधन: लागत भन्दा ३०% भन्दा घटी कबोल भएको बोलपत्र स्वतः अस्वीकृत गर्ने', clauseRef: 'ऐन दफा २५(७ख), नियम ६५च', isMandatory: true },
         { id: 'ncb-w-5-3', label: '१६औँ संशोधन: सिफारिस फर्मको ५ वटा चालू खरिद सम्झौता सीमा e-GP विवरण रुजु गर्ने', clauseRef: 'नियम ६५(४घ)', isMandatory: true },
-        { id: 'ncb-w-5-4', label: '१५% भन्दा घटेको कबोल भए ५% आधारभूत + थप ५०% अतिरिक्त कार्यसम्पादन जमानत हिसाब गर्ने', clauseRef: 'नियम ६५च', isMandatory: true },
+        { id: 'ncb-w-5-4', label: 'सम्झौताका लागि कबुल अङ्कको ५% कार्यसम्पादन जमानत माग गर्ने (ऐन दफा २७(४) दोस्रो संशोधन)', clauseRef: 'ऐन दफा २७(४)', isMandatory: true },
         { id: 'ncb-w-5-5', label: 'मूल्याङ्कन प्रतिवेदन स्वीकृत गरी सफल फर्मको नाममा ७ (सात) दिने आशयको सूचना (LOI) प्रकाशित गर्ने', clauseRef: 'ऐन दफा २७(२), नियम ६६', isMandatory: true },
       ],
       requiredDocs: [

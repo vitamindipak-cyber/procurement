@@ -172,26 +172,15 @@ export const BidderPortalView: React.FC<BidderPortalViewProps> = ({
 
   const additionalSecurityCalculation = useMemo(() => {
     const normalSecurity = calcBidAmount * 0.05;
-    if (percentBelowEstimate <= 15) {
-      return {
-        isBelow15: false,
-        normalSecurity,
-        additionalSecurity: 0,
-        totalSecurity: normalSecurity,
-        note: 'लागत अनुमान भन्दा १५% सम्म मात्र घटेको हुनाले सामान्य ५% कार्यसम्पादन जमानत मात्र लाग्नेछ।',
-      };
-    } else {
-      const eightyFivePercentOfEstimate = calcEstimateAmount * 0.85;
-      const difference = eightyFivePercentOfEstimate - calcBidAmount;
-      const additionalSecurity = difference * 0.5;
-      return {
-        isBelow15: true,
-        normalSecurity,
-        additionalSecurity,
-        totalSecurity: normalSecurity + additionalSecurity,
-        note: `लागत अनुमानको ८५% (रु ${eightyFivePercentOfEstimate.toLocaleString('ne-NP')}) भन्दा रु ${difference.toLocaleString('ne-NP')} ले घटेको हुनाले नियम ६५(४) बमोजिम ५०% थप धरौटी (रु ${additionalSecurity.toLocaleString('ne-NP')}) लाग्नेछ।`,
-      };
-    }
+    // दोस्रो संशोधन (ऐन दफा २७(४)) अनुसार थप जमानतको व्यवस्था हटाइएको छ।
+    // केवल कबुल अङ्कको ५% मात्र कार्यसम्पादन जमानत लाग्नेछ।
+    return {
+      isBelow15: false,
+      normalSecurity,
+      additionalSecurity: 0,
+      totalSecurity: normalSecurity,
+      note: 'दोस्रो संशोधन (ऐन दफा २७(४)) अनुसार कबुल अङ्कको ५% मात्र कार्यसम्पादन जमानत लाग्नेछ।',
+    };
   }, [percentBelowEstimate, calcEstimateAmount, calcBidAmount]);
 
   const overallEligibility =
@@ -1582,8 +1571,8 @@ export const BidderPortalView: React.FC<BidderPortalViewProps> = ({
                     ३
                   </span>
                   <div>
-                    <strong className="text-slate-900 block font-semibold">१५% भन्दा बढी घटेमा अतिरिक्त कार्यसम्पादन जमानत (नियम ६५(४))</strong>
-                    लागत अनुमान भन्दा १५% भन्दा बढी घटेको (८५% भन्दा कम) खण्डमा सो फरक रकमको ५०% बराबर थप कार्यसम्पादन जमानत बुझाउनु पर्नेछ।
+                    <strong className="text-slate-900 block font-semibold">कार्यसम्पादन जमानत: कबुल अङ्कको ५% (ऐन दफा २७(४), दोस्रो संशोधन)</strong>
+                    दोस्रो संशोधन अनुसार सम्झौता गर्दा बोलपत्रदाताले कबुल गरेको अङ्कको ५% मात्र कार्यसम्पादन जमानत बुझाउनु पर्नेछ। पुरानो थप जमानतको व्यवस्था हटाइएको छ।
                   </div>
                 </div>
               </div>
