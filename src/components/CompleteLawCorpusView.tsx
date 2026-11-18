@@ -393,8 +393,45 @@ export const CompleteLawCorpusView: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* ── Sticky Inline Search Bar ───────────────────────────────── */}
+      <div className="sticky top-0 z-10 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-2.5 bg-[#f0f4fa]/95 backdrop-blur-sm border-b border-slate-200">
+        <div className="relative max-w-2xl">
+          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setSearchPrecedentTab(null);
+            }}
+            placeholder="नियम, दफा वा विषय खोज्नुहोस्... (उदा: नियम ११०, भेरिएसन, म्याद थप, कार्यसम्पादन जमानत)"
+            className="w-full pl-9 pr-9 py-2.5 bg-white border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm text-slate-900 placeholder:text-slate-400"
+            autoComplete="off"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => {
+                setSearchQuery('');
+                setSearchPrecedentTab(null);
+              }}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+              aria-label="खोज मेटाउनुहोस्"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+        {searchQuery.trim() && (
+          <p className="text-xs text-slate-500 mt-1 ml-1">
+            {searchResults.provisions.length + searchResults.precedents.length === 0
+              ? '— कुनै नतिजा भेटिएन'
+              : `${searchResults.provisions.length} व्यवस्था + ${searchResults.precedents.length} राय/निर्णय भेटियो`}
+          </p>
+        )}
+      </div>
+
       {/* Header Banner */}
-      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs flex flex-col gap-3">
         <div>
           <div className="flex items-center gap-2 text-xs font-semibold text-red-700 uppercase tracking-wide">
             <BookOpen className="w-4 h-4" />
@@ -419,32 +456,6 @@ export const CompleteLawCorpusView: React.FC = () => {
               💡 दफा र नियमहरूसँग प्रत्यक्ष अन्तरसम्बन्धित
             </span>
           </div>
-        </div>
-
-        {/* Search */}
-        <div className="relative w-full md:w-80 shrink-0">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-              setSearchPrecedentTab(null);
-            }}
-            placeholder="नियम, दफा वा विषय खोज्नुहोस् (उदा: नियम ११०, भेरिएसन, म्याद थप)..."
-            className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs sm:text-sm focus:outline-hidden focus:ring-1 focus:ring-red-600 text-slate-900"
-          />
-          {searchQuery && (
-            <button
-              onClick={() => {
-                setSearchQuery('');
-                setSearchPrecedentTab(null);
-              }}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          )}
         </div>
       </div>
 

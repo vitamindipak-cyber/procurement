@@ -85,11 +85,23 @@ function ProcurementApp({
   const [activeTab, setActiveTabState] = useState<string>(() => {
     try {
       const hash = window.location.hash.replace(/^#/, '');
-      if (hash && TAB_TITLES[hash]) return hash;
+      // Support compound hash like "bidder-hub:fatal-mistakes" — extract tab portion only
+      const tabPart = hash.split(':')[0];
+      if (tabPart && TAB_TITLES[tabPart]) return tabPart;
       const savedMode = localStorage.getItem('app_user_mode');
       if (savedMode === 'bidder') return 'bidder-hub';
     } catch { }
     return 'dashboard';
+  });
+
+  // Sub-tab extracted from initial hash (e.g. "bidder-hub:fatal-mistakes" → "fatal-mistakes")
+  const [initialBidderSubTab, setInitialBidderSubTab] = useState<string>(() => {
+    try {
+      const hash = window.location.hash.replace(/^#/, '');
+      const parts = hash.split(':');
+      if (parts.length === 2 && parts[0] === 'bidder-hub') return parts[1];
+    } catch { }
+    return 'overview';
   });
 
   const [historyStack, setHistoryStack] = useState<string[]>([activeTab]);
@@ -129,6 +141,15 @@ function ProcurementApp({
     });
   };
 
+  // Update the hash to include sub-tab without triggering a navigation event
+  const updateSubTabHash = (tabId: string, subTabId: string) => {
+    try {
+      const newHash = `#${tabId}:${subTabId}`;
+      // Replace state so browser back doesn't create duplicate entries for every sub-tab click
+      window.history.replaceState(null, '', newHash);
+    } catch { }
+  };
+
   const handleGoBack = () => {
     if (historyIndex > 0) {
       const prevTab = historyStack[historyIndex - 1];
@@ -157,8 +178,12 @@ function ProcurementApp({
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace(/^#/, '');
-      if (hash && TAB_TITLES[hash] && hash !== activeTab) {
-        setActiveTab(hash, false);
+      // Support compound hash: "bidder-hub:fatal-mistakes"
+      const tabPart = hash.split(':')[0];
+      const subPart = hash.split(':')[1];
+      if (tabPart && TAB_TITLES[tabPart] && tabPart !== activeTab) {
+        setActiveTab(tabPart, false);
+        if (subPart) setInitialBidderSubTab(subPart);
       }
     };
     window.addEventListener('hashchange', handleHashChange);
@@ -467,6 +492,8 @@ function ProcurementApp({
                 onSwitchToEntityMode={handleToggleUserMode}
                 onNavigateToLaw={() => setActiveTab('law-corpus')}
                 onNavigateToEgpGuidelines={() => setActiveTab('egp-guidelines')}
+                initialSubTab={initialBidderSubTab as any}
+                onSubTabChange={(subTab) => updateSubTabHash('bidder-hub', subTab)}
               />
             ) : (
               <DashboardView
@@ -485,6 +512,8 @@ function ProcurementApp({
               onSwitchToEntityMode={handleToggleUserMode}
               onNavigateToLaw={() => setActiveTab('law-corpus')}
               onNavigateToEgpGuidelines={() => setActiveTab('egp-guidelines')}
+              initialSubTab={initialBidderSubTab as any}
+              onSubTabChange={(subTab) => updateSubTabHash('bidder-hub', subTab)}
             />
           )}
 
