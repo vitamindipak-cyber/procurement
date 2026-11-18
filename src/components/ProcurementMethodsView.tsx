@@ -86,8 +86,39 @@ export const ProcurementMethodsView: React.FC<ProcurementMethodsViewProps> = ({
 
   return (
     <div className="space-y-6">
+      {/* ── Sticky Inline Search Bar ───────────────────────────────── */}
+      <div className="sticky top-0 z-10 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-2.5 bg-[#f0f4fa]/95 backdrop-blur-sm border-b border-slate-200">
+        <div className="relative max-w-2xl">
+          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="खरिद विधि, दफा वा विषय खोज्नुहोस्... (उदा: NCB, सोझै खरिद, दफा ११)"
+            className="w-full pl-9 pr-9 py-2.5 bg-white border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm text-slate-900 placeholder:text-slate-400"
+            autoComplete="off"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+              aria-label="खोज मेटाउनुहोस्"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+        {searchQuery && (
+          <p className="text-xs text-slate-500 mt-1 ml-1">
+            {filteredMethods.length === 0
+              ? '— कुनै विधि भेटिएन'
+              : `${filteredMethods.length} वटा विधि भेटियो`}
+          </p>
+        )}
+      </div>
+
       {/* Title & Introduction */}
-      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
         <div>
           <div className="flex items-center gap-2 text-xs font-semibold text-red-700 uppercase tracking-wide">
             <Layers className="w-4 h-4" />
@@ -99,26 +130,6 @@ export const ProcurementMethodsView: React.FC<ProcurementMethodsViewProps> = ({
           <p className="text-xs sm:text-sm text-slate-600 mt-1 max-w-3xl leading-relaxed">
             सार्वजनिक निकायले निर्माण, मालसामान वा सेवा खरिद गर्दा मूल्य, जटिलता र आवश्यकताका आधारमा अवलम्बन गर्नुपर्ने आधिकारिक खरिद विधिहरूको विस्तृत विवरण, सीमा, चरणहरू र कागजातहरू।
           </p>
-        </div>
-
-        {/* Search inside methods */}
-        <div className="relative w-full md:w-72 shrink-0">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="विधि वा दफा खोज्नुहोस्..."
-            className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs sm:text-sm focus:outline-hidden focus:ring-1 focus:ring-red-600"
-          />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery('')}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          )}
         </div>
       </div>
 

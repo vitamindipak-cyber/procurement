@@ -73,9 +73,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
     const toolsGroup = {
       groupTitle: 'उपकरण',
       items: [
-        { id: 'dilemma-solver',       label: 'FAQ',                       icon: HelpCircle },
-        { id: 'timeline-calculator',  label: 'कानूनी म्याद क्याल्कुलेटर',  icon: Clock },
+        { id: 'dilemma-solver',       label: 'FAQ / समस्या समाधान',        icon: HelpCircle },
         { id: 'calculator',           label: 'थ्रेसहोल्ड क्याल्कुलेटर',    icon: Calculator },
+        { id: 'timeline-calculator',  label: 'म्याद क्याल्कुलेटर',         icon: Clock },
       ],
     };
 

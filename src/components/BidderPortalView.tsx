@@ -80,6 +80,7 @@ interface BidderPortalViewProps {
   onSwitchToEntityMode?: () => void;
   onNavigateToLaw?: () => void;
   onNavigateToEgpGuidelines?: () => void;
+  onSubTabChange?: (subTab: string) => void;
   initialSubTab?:
   | 'overview'
   | 'eligibility'
@@ -105,13 +106,20 @@ export const BidderPortalView: React.FC<BidderPortalViewProps> = ({
   onSwitchToEntityMode,
   onNavigateToLaw,
   onNavigateToEgpGuidelines,
+  onSubTabChange,
   initialSubTab = 'overview',
 }) => {
-  const [activeSubTab, setActiveSubTab] = useState<string>(() => {
+  const [activeSubTab, setActiveSubTabState] = useState<string>(() => {
     if (initialSubTab === 'goods-guide') return 'goods-procurement';
     if (initialSubTab === 'services-guide') return 'consulting-services';
     return initialSubTab;
   });
+
+  // Wrap sub-tab setter so it also updates the URL hash
+  const setActiveSubTab = (subTab: string) => {
+    setActiveSubTabState(subTab);
+    onSubTabChange?.(subTab);
+  };
 
   // -------------------------------------------------------------
   // 1. Eligibility & Capacity Self-Assessment Calculator State

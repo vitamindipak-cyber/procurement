@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import {
   Search, BookOpen, AlertTriangle, ShieldCheck, Scale, FileText, CheckCircle2,
-  HelpCircle, Copy, Check, ChevronDown, ChevronUp, Clock, Filter,
+  HelpCircle, Copy, Check, ChevronDown, ChevronUp, Clock, Filter, X,
   Info, ArrowRight, Award, FileSpreadsheet, GitCompare, Bookmark,
   Layers, CheckSquare, BarChart3
 } from 'lucide-react';
@@ -244,23 +244,25 @@ export const ProcurementDilemmaSolverView: React.FC = () => {
       </div>
 
       {/* 2. SEARCH & THEMATIC GROUP FILTER BAR */}
-      <div className="bg-white rounded-xl shadow-xs border border-slate-200 p-4 space-y-3">
-        <div className="flex flex-col md:flex-row gap-3">
+      <div className="sticky top-0 z-10 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-2.5 bg-[#f0f4fa]/95 backdrop-blur-sm border-b border-slate-200">
+        <div className="flex flex-col md:flex-row gap-2.5">
           <div className="relative flex-1">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
             <input
               type="text"
               placeholder="दफा, नियम, खरिद विषय, म्याद, धरौटी, भेरिएसन, कालोसूची, वा शब्दावली खोज्नुहोस्..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-300 text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-slate-50/50"
+              className="w-full pl-10 pr-9 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white shadow-sm text-slate-900 placeholder:text-slate-400"
+              autoComplete="off"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600 bg-slate-200 rounded px-1.5 py-0.5"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                aria-label="खोज मेटाउनुहोस्"
               >
-                खाली गर्नुहोस्
+                <X className="w-4 h-4" />
               </button>
             )}
           </div>
@@ -274,7 +276,7 @@ export const ProcurementDilemmaSolverView: React.FC = () => {
                   setSelectedGroup(e.target.value);
                   setSelectedTopicId(null);
                 }}
-                className="w-full pl-9 pr-8 py-2.5 rounded-lg border border-slate-300 text-xs sm:text-sm font-medium bg-white text-slate-700 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-9 pr-8 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm font-medium bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
               >
                 {thematicGroups.map(group => (
                   <option key={group.id} value={group.id}>{group.label}</option>
@@ -286,7 +288,7 @@ export const ProcurementDilemmaSolverView: React.FC = () => {
 
         {/* Topic filter indicator if topic is selected */}
         {selectedTopicId !== null && (
-          <div className="flex items-center justify-between px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-900">
+          <div className="flex items-center justify-between px-3 py-1.5 mt-2 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-900">
             <span className="font-semibold">
               चयनित विषय #{HANDBOOK_TOPICS.find((t: HandbookTopic) => t.id === selectedTopicId)?.number}: {HANDBOOK_TOPICS.find((t: HandbookTopic) => t.id === selectedTopicId)?.title}
             </span>
