@@ -25,6 +25,15 @@ export const TAB_TITLES: Record<string, TabMeta> = {
   'procurement-chat':   { title: 'सार्वजनिक खरिद स्रोत सहायक',                          shortTitle: 'AI सहायक',          category: 'प्रश्नोत्तर',           rootTab: 'procurement-chat' },
   'bidder-hub':         { title: 'बोलपत्रदाता विशेष कर्नर (Bidder Portal)',              shortTitle: 'बोलपत्रदाता कर्नर', category: 'बोलपत्रदाता',           rootTab: 'bidder-hub' },
   'bidding-forms':      { title: 'बोलपत्र फाराम तथा ढाँचा जेनेरेटर',                   shortTitle: 'फाराम जेनेरेटर',    category: 'बोलपत्रदाता',           rootTab: 'bidder-hub' },
+  // ── Bidder sub-tab direct routes ─────────────────────────────────────
+  'bidder-eligibility':       { title: 'योग्यता स्व-मूल्याङ्कन (निर्माण)',              shortTitle: 'योग्यता जाँच',       category: 'बोलपत्रदाता',    rootTab: 'bidder-hub' },
+  'bidder-bid-no-bid':        { title: 'बिड / नो-बिड रणनीतिक विश्लेषक',               shortTitle: 'बिड/नो-बिड',         category: 'बोलपत्रदाता',    rootTab: 'bidder-hub' },
+  'bidder-fatal-mistakes':    { title: 'घातक गल्तीहरू र जोखिम अडिट',                  shortTitle: 'घातक गल्तीहरू',      category: 'बोलपत्रदाता',    rootTab: 'bidder-hub' },
+  'bidder-safeguards':        { title: 'बोलपत्रदाताले अपनाउनुपर्ने सावधानी',          shortTitle: 'सावधानीहरू',         category: 'बोलपत्रदाता',    rootTab: 'bidder-hub' },
+  'bidder-checklist':         { title: 'बिड पेश गर्नुपूर्वको ३०-बुँदे चेकलिस्ट',     shortTitle: 'पेश-अघि चेकलिस्ट',  category: 'बोलपत्रदाता',    rootTab: 'bidder-hub' },
+  'bidder-sbd-hub':           { title: 'SBD कागजात भण्डार (Download)',                 shortTitle: 'SBD भण्डार',         category: 'बोलपत्रदाता',    rootTab: 'bidder-hub' },
+  'bidder-review':            { title: 'पुनरावलोकन तथा उजुरी (दफा ४७/४९)',            shortTitle: 'पुनरावलोकन/उजुरी',  category: 'बोलपत्रदाता',    rootTab: 'bidder-hub' },
+  // ─────────────────────────────────────────────────────────────────────
   advisor:              { title: 'खरिद सल्लाहकार (Wizard)',                              shortTitle: 'खरिद सल्लाहकार',   category: 'सल्लाहकार',             rootTab: 'advisor' },
   'workflow-wizard':    { title: 'चरणबद्ध खरिद कार्यप्रवाह',                           shortTitle: 'कार्यप्रवाह',       category: 'प्रक्रिया',             rootTab: 'workflow-wizard' },
   'user-management':    { title: 'प्रयोगकर्ता व्यवस्थापन',                             shortTitle: 'प्रयोगकर्ता',       category: 'प्रणाली व्यवस्थापन',   rootTab: 'dashboard' },
