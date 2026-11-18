@@ -117,7 +117,35 @@ function ProcurementApp({
     return [activeTab];
   });
 
+  // Map sidebar-level bidder sub-tab IDs to their BidderPortalView sub-tab names
+  const BIDDER_SUBTAB_MAP: Record<string, string> = {
+    'bidder-eligibility':    'eligibility',
+    'bidder-bid-no-bid':     'bid-no-bid',
+    'bidder-fatal-mistakes': 'fatal-mistakes',
+    'bidder-safeguards':     'bidder-safeguards',
+    'bidder-checklist':      'checklist',
+    'bidder-sbd-hub':        'sbd-hub',
+    'bidder-review':         'review',
+  };
+
   const setActiveTab = (tabId: string, addToHistory = true) => {
+    // If it's a bidder sidebar sub-tab, redirect to bidder-hub with the right initialSubTab
+    if (BIDDER_SUBTAB_MAP[tabId]) {
+      const subTabId = BIDDER_SUBTAB_MAP[tabId];
+      setInitialBidderSubTab(subTabId);
+      setActiveTabState('bidder-hub');
+      try { window.location.hash = `#bidder-hub:${subTabId}`; } catch { }
+      if (addToHistory) {
+        setHistoryStack((prev) => [...prev.slice(0, historyIndex + 1), 'bidder-hub']);
+        setHistoryIndex((prev) => prev + 1);
+      }
+      setRecentTabs((prev) => {
+        const updated = ['bidder-hub', ...prev.filter((id) => id !== 'bidder-hub')].slice(0, 6);
+        try { sessionStorage.setItem('recent_tabs', JSON.stringify(updated)); } catch { }
+        return updated;
+      });
+      return;
+    }
     if (!TAB_TITLES[tabId]) return;
     setActiveTabState(tabId);
     try {

@@ -9,6 +9,7 @@ import {
   ClipboardList,
   BookOpen,
   ShieldCheck,
+  ShieldAlert,
   FileText,
   Calculator,
   Scale,
@@ -82,20 +83,32 @@ export const Sidebar: React.FC<SidebarProps> = ({
     if (userMode === 'bidder') {
       return [
         {
-          groupTitle: 'बोलपत्रदाता कर्नर',
+          groupTitle: 'बोलपत्रदाता मुख्य',
           items: [
-            { id: 'bidder-hub',      label: 'बोलपत्रदाता गृहपृष्ठ',          icon: HardHat },
-            { id: 'bidding-forms',   label: 'बोलपत्र फाराम जेनेरेटर',        icon: FileText },
-            { id: 'icb-guide',       label: 'अन्तर्राष्ट्रिय बोलपत्र (ICB)', icon: Globe },
-            { id: 'egp-guidelines',  label: 'e-GP निर्देशिका, २०८०',         icon: FileCheck },
+            { id: 'bidder-hub',              label: 'गृहपृष्ठ / अवलोकन',                icon: HardHat },
+            { id: 'bidder-eligibility',      label: 'योग्यता स्व-मूल्याङ्कन',           icon: Calculator },
+            { id: 'bidder-bid-no-bid',       label: 'बिड/नो-बिड विश्लेषक',              icon: Sparkles },
+            { id: 'bidder-fatal-mistakes',   label: 'घातक गल्तीहरू',                    icon: ShieldAlert },
+            { id: 'bidder-safeguards',       label: 'अपनाउनुपर्ने सावधानी',             icon: ShieldCheck },
+          ],
+        },
+        {
+          groupTitle: 'खरिद प्रकार र कागजात',
+          items: [
+            { id: 'bidding-forms',           label: 'फाराम जेनेरेटर (SBD)',             icon: FileText },
+            { id: 'bidder-checklist',        label: 'पेश-अघि चेकलिस्ट',                icon: FileCheck2 },
+            { id: 'bidder-sbd-hub',          label: 'SBD कागजात भण्डार',               icon: BookOpen },
+            { id: 'icb-guide',               label: 'अन्तर्राष्ट्रिय बोलपत्र (ICB)',    icon: Globe },
+            { id: 'egp-guidelines',          label: 'e-GP निर्देशिका, २०८०',            icon: FileCheck },
+            { id: 'bidder-review',           label: 'पुनरावलोकन / उजुरी',               icon: Scale },
           ],
         },
         {
           groupTitle: 'बुझ्नुपर्ने प्रक्रिया',
           items: [
-            { id: 'methods',       label: 'खरिद विधिहरू',         icon: Layers },
-            { id: 'bid-evaluation',label: 'बोलपत्र मूल्याङ्कन गाइड', icon: Gavel },
-            { id: 'templates',     label: 'कागजात ढाँचाहरू',       icon: FileText },
+            { id: 'methods',       label: 'खरिद विधिहरू',              icon: Layers },
+            { id: 'bid-evaluation',label: 'बोलपत्र मूल्याङ्कन गाइड',   icon: Gavel },
+            { id: 'templates',     label: 'कागजात ढाँचाहरू',            icon: FileText },
           ],
         },
         lawGroup,
@@ -349,7 +362,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <div className="space-y-0.5">
                     {group.items.map((item) => {
                       const Icon = item.icon;
-                      const isActive = activeTab === item.id;
+                      // For bidder sidebar sub-tab items, also highlight when bidder-hub is active
+                      // and the hash matches (e.g. #bidder-hub:eligibility)
+                      const isBidderSubTabItem = [
+                        'bidder-eligibility', 'bidder-bid-no-bid', 'bidder-fatal-mistakes',
+                        'bidder-safeguards', 'bidder-checklist', 'bidder-sbd-hub', 'bidder-review',
+                      ].includes(item.id);
+                      const isActive = activeTab === item.id ||
+                        (item.id === 'bidder-hub' && activeTab === 'bidder-hub' &&
+                          !isBidderSubTabItem) ||
+                        (isBidderSubTabItem && activeTab === 'bidder-hub' &&
+                          typeof window !== 'undefined' &&
+                          window.location.hash.includes(item.id.replace('bidder-', '')));
                       return (
                         <button
                           key={item.id}
