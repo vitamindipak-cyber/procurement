@@ -692,7 +692,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                             <div className="p-2.5 bg-white rounded-lg border border-slate-200">
                               <span className="text-slate-500 block">कार्यसम्पादन जमानत (५%)</span>
                               <span className="font-bold text-slate-900 mt-0.5 block font-mono">
-                                {formatNepaliCurrency(analysis.minimumPerformanceSecurity)} (+१५% बढी घटेमा थप)
+                                {formatNepaliCurrency(analysis.minimumPerformanceSecurity)} (कबुल अङ्कको ५% — दफा २७(४))
                               </span>
                             </div>
                           </div>
