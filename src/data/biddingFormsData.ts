@@ -393,7 +393,7 @@ ${p.procuringEntity || '[सार्वजनिक निकायको न�
     titleEnglish: 'Performance Security Bank Guarantee Format - Section IX',
     sbdSection: 'SBD Section IX: Contract Forms (Performance Security)',
     legalReference: 'सार्वजनिक खरिद ऐन दफा ५४ र खरिद नियमावली नियम ६५(४)',
-    description: 'बोलपत्र स्वीकृत भएपछि ठेक्का सम्झौता गर्नुपूर्व कबुल रकमको ५% (र १५% भन्दा बढी घटेको भए थप ५०% समेत) बुझाउनुपर्ने बैंक जमानत ढाँचा।',
+    description: 'बोलपत्र स्वीकृत भएपछि ठेक्का सम्झौता गर्नुपूर्व कबुल गरेको अङ्कको ५% बुझाउनुपर्ने बैंक जमानत ढाँचा। (ऐन दफा २७(४), दोस्रो संशोधन अनुसार)',
     applicableMethods: ['ncb-works', 'two-envelope', 'icb-works', 'ncb-goods'],
     fields: [
       { key: 'date', label: 'मिति', defaultValue: '२०८३/०२/०५', placeholder: 'मिति' },

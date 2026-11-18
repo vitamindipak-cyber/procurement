@@ -54,20 +54,13 @@ export const CalculatorView: React.FC<CalculatorViewProps> = ({
 
     const diffPercent = ((est - bid) / est) * 100;
     const isOver30PercentBelow = diffPercent > 30; // Rule 65cha / Act Sec 25(7kh)
-    const isOver15PercentBelow = diffPercent > 15;
+    // दोस्रो संशोधन (ऐन दफा २७(४)) अनुसार थप जमानतको व्यवस्था हटाइएको छ।
+    const isOver15PercentBelow = false; // No longer applicable after 2nd Amendment
 
-    // Standard 5%
+    // ऐन दफा २७(४) बमोजिम केवल कबुल अङ्कको ५% मात्र
     const basePerfSec = bid * 0.05;
-    let additionalPerfSec = 0;
-
-    if (isOver15PercentBelow) {
-      // 15% threshold amount
-      const fifteenPercentVal = est * 0.85;
-      const lowerDiff = fifteenPercentVal - bid;
-      additionalPerfSec = lowerDiff * 0.50; // 50% of the difference below 15%
-    }
-
-    const totalPerfSec = basePerfSec + additionalPerfSec;
+    const additionalPerfSec = 0;
+    const totalPerfSec = basePerfSec;
 
     return {
       diffPercent: diffPercent.toFixed(2),
@@ -377,12 +370,12 @@ export const CalculatorView: React.FC<CalculatorViewProps> = ({
             </div>
           </div>
 
-          {/* Interactive Low Bid Calculator (१५% भन्दा बढी घटेको थप जमानत र ३०% घटेको खारेजी परीक्षण) */}
+          {/* Interactive Low Bid Calculator (३०% घटेको खारेजी परीक्षण - दोस्रो संशोधन) */}
           <div className="bg-white rounded-2xl border border-red-200 p-5 shadow-xs space-y-3">
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-bold text-red-900 uppercase tracking-wide flex items-center gap-1.5">
                 <TrendingDown className="w-4 h-4 text-red-600" />
-                <span>घटी कबोल तथा थप जमानत परीक्षण</span>
+                <span>घटी कबोल परीक्षण</span>
               </h3>
               <span className="text-[10px] bg-red-100 text-red-800 px-1.5 py-0.5 rounded-sm font-semibold">
                 १६औँ संशोधन
@@ -423,19 +416,15 @@ export const CalculatorView: React.FC<CalculatorViewProps> = ({
                   {lowBidAnalysis.isOver15PercentBelow && !lowBidAnalysis.isOver30PercentBelow && (
                     <div className="space-y-1.5 pt-2 border-t border-slate-200">
                       <div className="flex items-center justify-between text-slate-600">
-                        <span>सामान्य कार्यसम्पादन जमानत (५%):</span>
+                        <span>कार्यसम्पादन जमानत (कबुल अङ्कको ५%):</span>
                         <span className="font-mono">{formatNepaliCurrency(lowBidAnalysis.basePerfSec)}</span>
-                      </div>
-                      <div className="flex items-center justify-between text-red-700 font-semibold">
-                        <span>अतिरिक्त थप जमानत (१५% भन्दा घटेको ५०%):</span>
-                        <span className="font-mono">+{formatNepaliCurrency(lowBidAnalysis.additionalPerfSec)}</span>
                       </div>
                       <div className="flex items-center justify-between text-slate-900 font-bold pt-1 border-t border-slate-200">
                         <span>दाखिला गर्नुपर्ने कुल कार्यसम्पादन जमानत:</span>
-                        <span className="font-mono text-red-700">{formatNepaliCurrency(lowBidAnalysis.totalPerfSec)}</span>
+                        <span className="font-mono text-emerald-700">{formatNepaliCurrency(lowBidAnalysis.totalPerfSec)}</span>
                       </div>
                       <p className="text-[10px] text-slate-500 mt-1">
-                        सार्वजनिक खरिद ऐन दफा १३(ढ१) तथा दफा २७(४) बमोजिम गणना गरिएको।
+                        ऐन दफा २७(४) (दोस्रो संशोधन) बमोजिम कबुल अङ्कको ५% मात्र कार्यसम्पादन जमानत लाग्नेछ।
                       </p>
                     </div>
                   )}

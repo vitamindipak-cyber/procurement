@@ -19,20 +19,19 @@ export function analyzeAdditionalPerformanceSecurity(estimate: number, bid: numb
   const diffPercent = ((estimate - bid) / estimate) * 100;
   const basePerfSec = bid * 0.05;
   const over30 = diffPercent > 30;
-  const over15 = diffPercent > 15;
-  const fifteenPercentVal = estimate * 0.85;
-  const additionalPerfSec =
-    over15 && !over30 && bid < fifteenPercentVal ? (fifteenPercentVal - bid) * 0.5 : 0;
+  // दोस्रो संशोधन (२०८०) पछि थप जमानत (Additional Performance Security) को व्यवस्था हटाइएको छ।
+  // ऐन दफा २७(४) अनुसार केवल कबुल अङ्कको ५% मात्र कार्यसम्पादन जमानत लाग्छ।
+  const additionalPerfSec = 0;
   return {
     estimate,
     bid,
     diffPercent,
-    over15,
+    over15: false, // No longer applicable after 2nd Amendment
     over30,
     isBelow: diffPercent > 0,
     basePerfSec,
     additionalPerfSec,
-    totalPerfSec: basePerfSec + additionalPerfSec,
+    totalPerfSec: basePerfSec,
   };
 }
 

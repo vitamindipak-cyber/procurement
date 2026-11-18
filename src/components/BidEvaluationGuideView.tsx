@@ -790,7 +790,7 @@ export const BidEvaluationGuideView: React.FC<BidEvaluationGuideViewProps> = ({
 
               <p className="mt-2 text-xs leading-relaxed text-slate-600">
 
-                १५% भन्दा बढी घटेमा (८५% लागत अनुमान − कबोल) को ५०% अतिरिक्त धरौटी। ३०% भन्दा बढी घटेमा मूल्याङ्कनबाटै हट्छ।
+                ३०% भन्दा बढी घटेमा मूल्याङ्कनबाटै हट्छ। दोस्रो संशोधन (ऐन दफा २७(४)) अनुसार कार्यसम्पादन जमानत केवल कबुल अङ्कको ५% मात्र लाग्नेछ।
 
               </p>
 
@@ -834,17 +834,9 @@ export const BidEvaluationGuideView: React.FC<BidEvaluationGuideViewProps> = ({
 
                       <div className="flex justify-between text-slate-700">
 
-                        <span>सामान्य कार्यसम्पादन जमानत (५%)</span>
+                        <span>कार्यसम्पादन जमानत (कबुल अङ्कको ५%)</span>
 
                         <span className="font-mono">{formatNepaliCurrency(apsResult.basePerfSec)}</span>
-
-                      </div>
-
-                      <div className="flex justify-between font-semibold text-red-800">
-
-                        <span>अतिरिक्त कार्यसम्पादन जमानत</span>
-
-                        <span className="font-mono">{formatNepaliCurrency(apsResult.additionalPerfSec)}</span>
 
                       </div>
 
@@ -856,19 +848,11 @@ export const BidEvaluationGuideView: React.FC<BidEvaluationGuideViewProps> = ({
 
                       </div>
 
-                      {apsResult.over15 ? (
+                      <p className="rounded-lg bg-emerald-50 p-2 text-[11px] text-emerald-800">
 
-                        <p className="rounded-lg bg-amber-50 p-2 text-[11px] text-amber-950">
+                        दोस्रो संशोधन (ऐन दफा २७(४)) अनुसार कबुल अङ्कको ५% मात्र कार्यसम्पादन जमानत लाग्नेछ।
 
-                          सूत्र: अतिरिक्त जमानत = (लागत अनुमानको ८५% − कबोल) × ५०%
-
-                        </p>
-
-                      ) : (
-
-                        <p className="text-[11px] text-emerald-800">१५% भित्र घटेको/बढेको हुँदा अतिरिक्त धरौटी लाग्दैन।</p>
-
-                      )}
+                      </p>
 
                     </>
 
