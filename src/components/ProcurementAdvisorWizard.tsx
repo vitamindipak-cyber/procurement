@@ -12,7 +12,8 @@ import {
   CheckCircle2,
   Building,
   Check,
-  Globe
+  Globe,
+  Info
 } from 'lucide-react';
 import { ProcurementType } from '../types/procurement';
 import { PROCUREMENT_METHODS } from '../data/procurementData';
@@ -843,7 +844,7 @@ export const ProcurementAdvisorWizard: React.FC<ProcurementAdvisorWizardProps> =
       {/* Intro Header */}
       <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 text-xs font-semibold text-red-700 uppercase tracking-wide">
+          <div className="flex items-center gap-2 text-xs font-semibold text-blue-800 uppercase tracking-wide">
             <Sparkles className="w-4 h-4" />
             <span>सजिलो खरिद सल्लाहकार (Procurement Decision Assistant)</span>
           </div>
@@ -864,11 +865,25 @@ export const ProcurementAdvisorWizard: React.FC<ProcurementAdvisorWizardProps> =
         </button>
       </div>
 
+      {/* Beginner Tip */}
+      <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
+        <div className="flex-shrink-0 w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center text-amber-700">
+          <HelpCircle className="w-4 h-4" />
+        </div>
+        <div className="flex-1">
+          <p className="text-xs font-semibold text-amber-900 mb-1">खरिदकर्ताका लागि सुझाव</p>
+          <p className="text-xs text-amber-800 leading-relaxed">
+            यदि तपाईं पहिलो पटक खरिद प्रक्रिया गर्दै हुनुहुन्छ भने, कृपया तलका ३ चरणहरू क्रमिक रूपमा पछ्याउनुहोस्। प्रत्येक चरणमा सिस्टमले तपाईंलाई उपयुक्त खरिद विधि र कानूनी आधार सुझाव दिनेछ।
+          </p>
+        </div>
+      </div>
+
       {/* Stepper Navigation */}
       <div className="grid grid-cols-3 gap-2 text-xs">
         <button
           type="button"
           onClick={() => setStep(1)}
+          aria-current={step === 1 ? 'step' : undefined}
           className={`p-3 rounded-xl border text-center transition-all cursor-pointer ${
             step === 1
               ? 'bg-blue-700 text-white font-bold shadow-xs'
@@ -880,6 +895,7 @@ export const ProcurementAdvisorWizard: React.FC<ProcurementAdvisorWizardProps> =
         <button
           type="button"
           onClick={() => setStep(2)}
+          aria-current={step === 2 ? 'step' : undefined}
           className={`p-3 rounded-xl border text-center transition-all cursor-pointer ${
             step === 2
               ? 'bg-blue-700 text-white font-bold shadow-xs'
@@ -893,6 +909,7 @@ export const ProcurementAdvisorWizard: React.FC<ProcurementAdvisorWizardProps> =
         <button
           type="button"
           onClick={() => setStep(3)}
+          aria-current={step === 3 ? 'step' : undefined}
           className={`p-3 rounded-xl border text-center transition-all cursor-pointer ${
             step === 3
               ? 'bg-blue-700 text-white font-bold shadow-xs'
@@ -915,13 +932,20 @@ export const ProcurementAdvisorWizard: React.FC<ProcurementAdvisorWizardProps> =
             </p>
           </div>
 
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-start gap-2">
+            <Info className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+            <p className="text-xs text-blue-800 leading-relaxed">
+              <strong>खरिदकर्ताका लागि:</strong> यदि तपाईं अनिश्चित हुनुहुन्छ भने, आफ्नो खरिदको मुख्य उद्देश्य र प्रकृति ध्यानपूर्वक हेर्नुहोस्। उदाहरणका लागि: भवन निर्माण = निर्माण कार्य, कम्प्युटर किन्नु = मालसामान, डिजाइन सेवा = परामर्श सेवा।
+            </p>
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <button
               onClick={() => { setProcurementType('works'); setStep(2); }}
-              className="p-5 rounded-xl border border-slate-200 hover:border-red-500 hover:bg-red-50/20 text-left transition-all group"
+              className="p-5 rounded-xl border border-slate-200 hover:border-blue-400 hover:bg-blue-50/50 text-left transition-all group focus-visible:ring-2 focus-visible:ring-blue-600"
             >
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-bold text-slate-900 group-hover:text-red-700">
+                <span className="text-sm font-bold text-slate-900 group-hover:text-blue-800">
                   निर्माण कार्य (Works)
                 </span>
                 <span className="text-[11px] text-slate-500 bg-slate-100 px-2 py-0.5 rounded-sm">
@@ -935,10 +959,10 @@ export const ProcurementAdvisorWizard: React.FC<ProcurementAdvisorWizardProps> =
 
             <button
               onClick={() => { setProcurementType('goods'); setStep(2); }}
-              className="p-5 rounded-xl border border-slate-200 hover:border-red-500 hover:bg-red-50/20 text-left transition-all group"
+              className="p-5 rounded-xl border border-slate-200 hover:border-blue-400 hover:bg-blue-50/50 text-left transition-all group focus-visible:ring-2 focus-visible:ring-blue-600"
             >
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-bold text-slate-900 group-hover:text-red-700">
+                <span className="text-sm font-bold text-slate-900 group-hover:text-blue-800">
                   मालसामान आपूर्ति (Goods)
                 </span>
                 <span className="text-[11px] text-slate-500 bg-slate-100 px-2 py-0.5 rounded-sm">
@@ -952,10 +976,10 @@ export const ProcurementAdvisorWizard: React.FC<ProcurementAdvisorWizardProps> =
 
             <button
               onClick={() => { setProcurementType('consulting'); setStep(2); }}
-              className="p-5 rounded-xl border border-slate-200 hover:border-red-500 hover:bg-red-50/20 text-left transition-all group"
+              className="p-5 rounded-xl border border-slate-200 hover:border-blue-400 hover:bg-blue-50/50 text-left transition-all group focus-visible:ring-2 focus-visible:ring-blue-600"
             >
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-bold text-slate-900 group-hover:text-red-700">
+                <span className="text-sm font-bold text-slate-900 group-hover:text-blue-800">
                   परामर्श सेवा (Consulting)
                 </span>
                 <span className="text-[11px] text-slate-500 bg-slate-100 px-2 py-0.5 rounded-sm">
@@ -969,10 +993,10 @@ export const ProcurementAdvisorWizard: React.FC<ProcurementAdvisorWizardProps> =
 
             <button
               onClick={() => { setProcurementType('services'); setStep(2); }}
-              className="p-5 rounded-xl border border-slate-200 hover:border-red-500 hover:bg-red-50/20 text-left transition-all group"
+              className="p-5 rounded-xl border border-slate-200 hover:border-blue-400 hover:bg-blue-50/50 text-left transition-all group focus-visible:ring-2 focus-visible:ring-blue-600"
             >
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-bold text-slate-900 group-hover:text-red-700">
+                <span className="text-sm font-bold text-slate-900 group-hover:text-blue-800">
                   अन्य गैर-परामर्श सेवा (Other Services)
                 </span>
                 <span className="text-[11px] text-slate-500 bg-slate-100 px-2 py-0.5 rounded-sm">
@@ -1005,6 +1029,13 @@ export const ProcurementAdvisorWizard: React.FC<ProcurementAdvisorWizardProps> =
             >
               ← प्रकार बदल्नुहोस्
             </button>
+          </div>
+
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-start gap-2">
+            <Info className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+            <p className="text-xs text-blue-800 leading-relaxed">
+              <strong>खरिदकर्ताका लागि:</strong> बजेट रकम खरिद विधि छनोटको मुख्य आधार हो। साना रकमका लागि सोझै खरिद वा सिलबन्दी दरभाउपत्र, ठूला रकमका लागि खुला बोलपत्र प्रयोग गरिन्छ। द्रुत सीमा बटनहरूबाट सहायता लिनुहोस्।
+            </p>
           </div>
 
           {/* Amount Input & Presets */}
@@ -1053,6 +1084,12 @@ export const ProcurementAdvisorWizard: React.FC<ProcurementAdvisorWizardProps> =
             <label className="text-xs font-bold text-slate-800 uppercase tracking-wider block">
               के कुनै विशेष परिस्थिति वा सर्त छ?
             </label>
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-2.5 flex items-start gap-2">
+              <HelpCircle className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
+              <p className="text-[11px] text-amber-800 leading-relaxed">
+                विशेष परिस्थितिहरू (जस्तै आपतकालीन, एकल स्रोत, वा उपभोक्ता समिति) भएमा मात्र छनोट गर्नुहोस्। सामान्य खरिदका लागि "सामान्य नियमित खरिद" छान्नुहोस्।
+              </p>
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
               <label className={`p-3 rounded-xl border cursor-pointer transition-all flex items-start gap-2.5 ${specialCondition === 'normal' ? 'bg-red-50/50 border-red-500 ring-1 ring-red-500/20' : 'bg-slate-50 border-slate-200'}`}>
                 <input

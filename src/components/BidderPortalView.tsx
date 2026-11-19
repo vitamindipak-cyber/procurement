@@ -57,6 +57,7 @@ import {
   UtensilsCrossed,
 } from 'lucide-react';
 import { ProcessGuideStrip } from './ProcessGuideStrip';
+import { BeginnerJourney } from './BeginnerJourney';
 import { BiddingFormsGenerator } from './BiddingFormsGenerator';
 import { RationProcurementHub } from './bidder/RationProcurementHub';
 import { BidNoBidAnalyzer } from './bidder/BidNoBidAnalyzer';
@@ -1294,6 +1295,13 @@ export const BidderPortalView: React.FC<BidderPortalViewProps> = ({
       {/* ------------------------------------------------------------- */}
       {activeSubTab === 'overview' && (
         <div className="space-y-6">
+          <BeginnerJourney
+            audience="bidder"
+            onOpen={(step) => {
+              setActiveSubTab(step.subTab || 'overview');
+              try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch { }
+            }}
+          />
           <ProcessGuideStrip audience="bidder" onSelect={setActiveSubTab} />
           {/* Quick Stats & Action Cards: Key Bidder Tools */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">

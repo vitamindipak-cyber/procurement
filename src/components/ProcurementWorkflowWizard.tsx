@@ -221,6 +221,36 @@ export const ProcurementWorkflowWizard: React.FC<ProcurementWorkflowWizardProps>
   return (
     <div className="space-y-6">
       <GuideSourceNotice />
+      <section aria-labelledby="workflow-first-steps" className="rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50 via-white to-teal-50 p-5 shadow-xs sm:p-6">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <p className="text-[11px] font-bold uppercase tracking-wider text-blue-800">शुरुआती प्रयोगकर्ताका लागि</p>
+            <h2 id="workflow-first-steps" className="mt-0.5 text-lg font-bold text-slate-900">यो कार्यप्रवाह ३ सजिला चरणमा प्रयोग गर्नुहोस्</h2>
+            <p className="mt-1 max-w-3xl text-xs leading-relaxed text-slate-600">एकैपटक सबै कुरा गर्नुपर्दैन—हालको चरणका काम पूरा गर्दै क्रमशः अघि बढ्नुहोस्।</p>
+          </div>
+          <span className="rounded-full bg-blue-100 px-3 py-1 text-[11px] font-bold text-blue-900">क्रमशः अघि बढ्नुहोस्</span>
+        </div>
+        <ol className="mt-4 grid gap-3 md:grid-cols-3">
+          <li className="rounded-xl border border-white bg-white/90 p-3.5">
+            <span className="text-[10px] font-bold text-blue-800">चरण १</span>
+            <h3 className="mt-0.5 text-sm font-bold text-slate-900">मिल्दो विधि वा नमूना छान्नुहोस्</h3>
+            <p className="mt-1 text-xs leading-relaxed text-slate-600">निर्माण, मालसामान वा सेवाको प्रकार मिल्ने विकल्प रोज्नुहोस्।</p>
+          </li>
+          <li className="rounded-xl border border-white bg-white/90 p-3.5">
+            <span className="text-[10px] font-bold text-blue-800">चरण २</span>
+            <h3 className="mt-0.5 text-sm font-bold text-slate-900">आयोजनाको विवरण आफ्नो राख्नुहोस्</h3>
+            <p className="mt-1 text-xs leading-relaxed text-slate-600">कार्यालय, आयोजना, लागत अनुमान र ठेक्का नम्बर जाँचेर सच्याउनुहोस्।</p>
+          </li>
+          <li className="rounded-xl border border-white bg-white/90 p-3.5">
+            <span className="text-[10px] font-bold text-blue-800">चरण ३</span>
+            <h3 className="mt-0.5 text-sm font-bold text-slate-900">काम टिक लगाउँदै अघि बढ्नुहोस्</h3>
+            <p className="mt-1 text-xs leading-relaxed text-slate-600">माइलस्टोन खोल्नुहोस्, आवश्यक कागजात हेर्नुहोस् र सम्पन्न काममा टिक लगाउनुहोस्।</p>
+          </li>
+        </ol>
+        <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3.5 py-2.5 text-xs leading-relaxed text-amber-950">
+          <strong>नमूना विवरण:</strong> सुरुमा देखिने आयोजना र रकम उदाहरणका लागि हुन्। वास्तविक काम अघि आफ्ना तथ्य राख्नुहोस्; टिक लगाइएका कार्यहरू यही ब्राउजरमा सुरक्षित हुन्छन्।
+        </p>
+      </section>
       {/* Intro Header */}
       <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4 no-print">
         <div>

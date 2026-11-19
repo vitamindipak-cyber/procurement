@@ -281,6 +281,24 @@ export const SearchAndFilterModal: React.FC<SearchAndFilterModalProps> = ({
     setSelectedContentType('all');
   };
 
+  const naturalLanguageActions = (() => {
+    const query = searchTerm.normalize('NFKC').toLocaleLowerCase().trim();
+    if (!query) return [] as Array<{ title: string; detail: string; tab: string }>;
+    if (query.includes('मूल्यांकन') || query.includes('evaluate')) {
+      return [{ title: 'बोलपत्र मूल्याङ्कन गाइड खोल्नुहोस्', detail: 'कागजात, प्राविधिक र आर्थिक जाँचको सही क्रम हेर्नुहोस्।', tab: 'bid-evaluation' }];
+    }
+    if (query.includes('बोलपत्र हाल') || query.includes('bid submit') || query.includes('bidder')) {
+      return [{ title: 'बोलपत्रदाता तयारी खोल्नुहोस्', detail: 'योग्यता, फाराम र पेश-पूर्व checklist एकै ठाउँमा पाउनुहोस्।', tab: 'bidder-hub' }];
+    }
+    if (query.includes('कुन विधि') || query.includes('कसरी किन') || query.includes('रु') || query.includes('लाख') || query.includes('करोड') || query.includes('amount')) {
+      return [{ title: 'विधि सल्लाहकारबाट सुरु गर्नुहोस्', detail: 'रकम, खरिदको प्रकार र विशेष अवस्था राखेर उपयुक्त विधि खोज्नुहोस्।', tab: 'advisor' }];
+    }
+    if (query.includes('ढाँचा') || query.includes('फाराम') || query.includes('template')) {
+      return [{ title: 'कागजात ढाँचा खोल्नुहोस्', detail: 'आफ्नो कामसँग मिल्ने template छान्नुहोस्।', tab: 'templates' }];
+    }
+    return [] as Array<{ title: string; detail: string; tab: string }>;
+  })();
+
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-start justify-center p-3 sm:p-6 pt-12 sm:pt-16 animate-in fade-in duration-150">
       <div className="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-4xl overflow-hidden flex flex-col max-h-[88vh]">
@@ -313,6 +331,23 @@ export const SearchAndFilterModal: React.FC<SearchAndFilterModalProps> = ({
               <X className="w-5 h-5" />
             </button>
           </div>
+
+          {naturalLanguageActions.length > 0 && (
+            <div className="mt-3 rounded-xl border border-blue-200 bg-blue-50 p-3">
+              <p className="text-[11px] font-bold uppercase tracking-wide text-blue-800">तपाईंको प्रश्नका लागि सुझाइएको बाटो</p>
+              {naturalLanguageActions.map((action) => (
+                <button
+                  key={action.tab}
+                  type="button"
+                  onClick={() => { onSelectResult('knowledge', action.tab); onClose(); }}
+                  className="mt-2 flex w-full items-center justify-between gap-3 rounded-lg bg-white px-3 py-2.5 text-left shadow-xs transition-colors hover:bg-blue-100"
+                >
+                  <span><span className="block text-xs font-bold text-slate-900">{action.title}</span><span className="mt-0.5 block text-[11px] text-slate-600">{action.detail}</span></span>
+                  <ArrowRight className="h-4 w-4 shrink-0 text-blue-700" />
+                </button>
+              ))}
+            </div>
+          )}
 
           {/* Quick preset chips */}
           <div className="flex items-center gap-1.5 overflow-x-auto pt-3 pb-1 no-scrollbar text-xs">

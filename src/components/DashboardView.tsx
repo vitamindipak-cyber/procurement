@@ -16,9 +16,11 @@ import {
   Printer,
   Edit3,
   ShieldCheck,
-  Check
+  Check,
 } from 'lucide-react';
 import { ProcessGuideStrip } from './ProcessGuideStrip';
+import { BeginnerJourney } from './BeginnerJourney';
+import { BeginnerTooltip } from './BeginnerTooltip';
 import { TrackedProject, ProcurementType } from '../types/procurement';
 import { 
   PROCUREMENT_METHODS, 
@@ -38,6 +40,7 @@ interface DashboardViewProps {
   onSelectMethod: (methodId: string) => void;
   onSelectStage: (stageId: string) => void;
   onNavigateToGuide?: (tabId: string) => void;
+  beginnerMode?: boolean;
 }
 
 export const DashboardView: React.FC<DashboardViewProps> = ({
@@ -47,6 +50,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   onSelectMethod,
   onSelectStage,
   onNavigateToGuide,
+  beginnerMode = true,
 }) => {
   const [selectedTypeFilter, setSelectedTypeFilter] = useState<string>('all');
   const [selectedProject, setSelectedProject] = useState<TrackedProject | null>(null);
@@ -64,6 +68,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   const biddingCount = projects.filter((p) => p.currentStageId === 'stage-3' || p.currentStageId === 'stage-4').length;
   const evaluationCount = projects.filter((p) => p.currentStageId === 'stage-5' || p.currentStageId === 'stage-6').length;
   const executionCount = projects.filter((p) => p.currentStageId === 'stage-7').length;
+  const stageCounts = projects.reduce<Record<string, number>>((counts, project) => {
+    counts[project.currentStageId] = (counts[project.currentStageId] ?? 0) + 1;
+    return counts;
+  }, {});
+  const highlightedStageId = Object.entries(stageCounts).sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
 
   const toggleChecklist = (projectId: string, checkId: string) => {
     const proj = projects.find((p) => p.id === projectId);
@@ -116,7 +125,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             खरिद प्रक्रियाको पूर्ण ड्यासबोर्ड
           </h1>
           <p className="mt-2 text-slate-200 text-sm sm:text-base leading-relaxed">
-            सार्वजनिक खरिद ऐन, २०६३ र नियमावली, २०६४ (१६औँ संशोधन) बमोजिम विधि छनोटदेखि मूल्याङ्कन, सम्झौता र फाइल अनुपालनसम्मको सरल मार्गदर्शन — आयोजना ट्र्याकिङसहित।
+            {beginnerMode
+              ? 'तलको चरण छानेर एक-एक गर्दै अघि बढ्नुहोस्। प्रत्येक चरणमा के गर्ने, के नबिर्सने र कुन पृष्ठ खोल्ने लेखिएको छ।'
+              : 'विधि छनोटदेखि मूल्याङ्कन, सम्झौता र फाइल अनुपालनसम्मको मार्गदर्शन — आयोजना ट्र्याकिङसहित।'}
           </p>
 
           <div className="mt-5 flex items-center gap-3 flex-wrap">
@@ -127,6 +138,25 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <PlusCircle className="w-4 h-4" />
               नयाँ खरिद आयोजना थप्नुहोस्
             </button>
+            {beginnerMode ? (
+              <button
+                type="button"
+                onClick={() => document.getElementById('beginner-journey')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+                className="inline-flex items-center gap-2 rounded-lg border border-white/30 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-white/20"
+              >
+                <span>चरणबद्ध प्रक्रिया हेर्नुहोस्</span>
+                <ChevronRight className="h-4 w-4 shrink-0" aria-hidden="true" />
+              </button>
+            ) : onNavigateToGuide && (
+              <button
+                type="button"
+                onClick={() => onNavigateToGuide('advisor')}
+                className="inline-flex items-center gap-2 rounded-lg border border-white/30 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-white/20"
+              >
+                <span>विधि सल्लाहकारबाट सुरु गर्नुहोस्</span>
+                <ChevronRight className="h-4 w-4 shrink-0" aria-hidden="true" />
+              </button>
+            )}
             <div className="flex items-center gap-2 text-xs text-slate-300 bg-white/10 px-3 py-2 rounded-lg backdrop-blur-xs">
               <ShieldCheck className="w-4 h-4 text-emerald-400" />
               <span>१६औँ संशोधनका नयाँ प्रावधानहरू (औसत अङ्क, ५ ठेक्का सीमा, SSF) समावेश</span>
@@ -146,15 +176,41 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
       </div>
 
+      {beginnerMode && (
+        <BeginnerJourney
+          audience="entity"
+          highlightStageId={highlightedStageId}
+          onOpen={(step) => {
+            if (step.tab && step.tab !== 'stages') onNavigateToGuide?.(step.tab);
+            else onSelectStage(step.stageId || 'stage-1');
+          }}
+        />
+      )}
+
       {onNavigateToGuide && (
-        <ProcessGuideStrip audience="entity" onSelect={onNavigateToGuide} />
+        beginnerMode ? (
+          <details className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs sm:p-5">
+            <summary className="cursor-pointer text-sm font-bold text-slate-800">
+              उपकरणहरू कुन क्रममा खोल्ने?
+              <span className="mt-0.5 block text-xs font-medium text-slate-500">विधि सल्लाहकार, चेकलिस्ट र ऐन खोल्ने विस्तृत सूची</span>
+            </summary>
+            <div className="mt-4">
+              <ProcessGuideStrip audience="entity" onSelect={onNavigateToGuide} />
+            </div>
+          </details>
+        ) : (
+          <ProcessGuideStrip audience="entity" onSelect={onNavigateToGuide} />
+        )
       )}
 
       {/* Metrics Row */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
           <div className="flex items-center justify-between text-slate-500 text-xs font-medium">
-            <span>कुल चालू योजना</span>
+            <span className="inline-flex items-center gap-1">
+              कुल चालू योजना
+              <BeginnerTooltip title="कुल चालू योजना" content="यस प्रणालीमा राखिएका खरिद आयोजनाको संख्या र तिनीहरूको अनुमानित बजेट।" position="bottom" />
+            </span>
             <Briefcase className="w-4 h-4 text-blue-600" />
           </div>
           <div className="mt-2 flex items-baseline gap-2">
@@ -168,7 +224,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
           <div className="flex items-center justify-between text-slate-500 text-xs font-medium">
-            <span>पूर्वतयारी/लागत</span>
+            <span className="inline-flex items-center gap-1">
+              पूर्वतयारी/लागत
+              <BeginnerTooltip title="पूर्वतयारी र लागत" content="अहिले योजना बनाउने वा लागत अनुमान स्वीकृत गर्ने चरणमा रहेका आयोजना। खरिदको सुरुका दुई चरण हुन्।" position="bottom" />
+            </span>
             <span className="w-2 h-2 rounded-full bg-amber-500"></span>
           </div>
           <div className="mt-2 flex items-baseline gap-2">
@@ -182,7 +241,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
           <div className="flex items-center justify-between text-slate-500 text-xs font-medium">
-            <span>बोलपत्र आह्वान</span>
+            <span className="inline-flex items-center gap-1">
+              बोलपत्र आह्वान
+              <BeginnerTooltip title="बोलपत्र आह्वान" content="सूचना प्रकाशित भइसकेको वा प्रस्ताव संकलन हुँदै गरेका आयोजना। अहिले चरण ३ र ४ मा छन्।" position="bottom" />
+            </span>
             <span className="w-2 h-2 rounded-full bg-blue-500"></span>
           </div>
           <div className="mt-2 flex items-baseline gap-2">
@@ -196,7 +258,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
           <div className="flex items-center justify-between text-slate-500 text-xs font-medium">
-            <span>मूल्याङ्कन/आशय</span>
+            <span className="inline-flex items-center gap-1">
+              मूल्याङ्कन/आशय
+              <BeginnerTooltip title="मूल्याङ्कन र आशय" content="प्रस्ताव जाँच्ने वा कसलाई छानियो भन्ने सूचना दिने चरणमा रहेका आयोजना।" position="bottom" />
+            </span>
             <span className="w-2 h-2 rounded-full bg-purple-500"></span>
           </div>
           <div className="mt-2 flex items-baseline gap-2">
@@ -210,7 +275,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs col-span-2 sm:col-span-1">
           <div className="flex items-center justify-between text-slate-500 text-xs font-medium">
-            <span>सम्झौता कार्यान्वयन</span>
+            <span className="inline-flex items-center gap-1">
+              सम्झौता कार्यान्वयन
+              <BeginnerTooltip title="सम्झौता कार्यान्वयन" content="सम्झौता भइसकेर काम, आपूर्ति वा भुक्तानी चलिरहेका आयोजना।" position="bottom" />
+            </span>
             <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
           </div>
           <div className="mt-2 flex items-baseline gap-2">
@@ -309,13 +377,23 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               </h3>
               <p className="mx-auto mt-1 max-w-md text-sm leading-6 text-slate-600">
                 {projects.length === 0
-                  ? 'पहिलो खरिद आयोजना थपेपछि यसको चरण, बजेट र अनुपालन प्रगति यहाँ देखिनेछ।'
+                  ? 'नयाँ हुनुहुन्छ भने पहिले खरिद विधि सल्लाहकारबाट सुरु गर्नुहोस्। त्यसपछि आयोजना थपेर यसको चरण, बजेट र अनुपालन प्रगति यहाँ हेर्न सक्नुहुन्छ।'
                   : 'अर्को प्रकार छान्नुहोस् वा सबै आयोजना सूचीमा फर्कनुहोस्।'}
               </p>
               {projects.length === 0 ? (
-                <button onClick={onOpenNewProjectModal} className="mt-4 inline-flex items-center gap-2 rounded-lg bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-800">
-                  <PlusCircle className="h-4 w-4" /> पहिलो आयोजना थप्नुहोस्
-                </button>
+                <div className="mt-4 flex flex-wrap justify-center gap-2">
+                  {onNavigateToGuide && (
+                    <button
+                      onClick={() => onNavigateToGuide('advisor')}
+                      className="inline-flex items-center gap-2 rounded-lg bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-800"
+                    >
+                      <ShieldCheck className="h-4 w-4" /> पहिले विधि सल्लाहकार चलाउनुहोस्
+                    </button>
+                  )}
+                  <button onClick={onOpenNewProjectModal} className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                    <PlusCircle className="h-4 w-4" /> पहिलो आयोजना थप्नुहोस्
+                  </button>
+                </div>
               ) : (
                 <button onClick={() => setSelectedTypeFilter('all')} className="mt-4 rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
                   सबै आयोजना देखाउनुहोस्

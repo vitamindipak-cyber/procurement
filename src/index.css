@@ -77,6 +77,15 @@
   }
 }
 
+/* Shared meaning system: blue = guidance, green = complete/safe,
+   amber = attention, red = risk/stop. Use these names for new UI states. */
+@layer components {
+  .ui-guidance { @apply border border-blue-200 bg-blue-50 text-blue-900; }
+  .ui-safe { @apply border border-emerald-200 bg-emerald-50 text-emerald-900; }
+  .ui-attention { @apply border border-amber-200 bg-amber-50 text-amber-950; }
+  .ui-risk { @apply border border-red-200 bg-red-50 text-red-900; }
+}
+
 /* ─── Skip-to-content ─────────────────────────────────────────────────── */
 .skip-to-content {
   position: absolute;

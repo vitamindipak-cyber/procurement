@@ -7,6 +7,9 @@ import React, { lazy, Suspense, useState, useEffect } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { TopHeader, TAB_TITLES } from './components/TopHeader';
 import { DashboardView } from './components/DashboardView';
+import { BeginnerCoachBar } from './components/BeginnerCoachBar';
+import { CommonTermsBar } from './components/CommonTermsBar';
+import { FirstVisitChoice, FirstVisitGuide } from './components/FirstVisitGuide';
 import { FloatingProcurementChatLauncher } from './components/FloatingProcurementChatLauncher';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { ScrollToTop } from './components/ScrollToTop';
@@ -241,6 +244,9 @@ function ProcurementApp({
     });
   };
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
+  const [isFirstVisitGuideOpen, setIsFirstVisitGuideOpen] = useState<boolean>(() => {
+    try { return localStorage.getItem('procurement_first_visit_complete') !== 'true'; } catch { return true; }
+  });
   const [isNewProjectOpen, setIsNewProjectOpen] = useState<boolean>(false);
   const [selectedMethodId, setSelectedMethodId] = useState<string | null>(null);
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
@@ -271,6 +277,37 @@ function ProcurementApp({
       }
       return next;
     });
+  };
+
+  const completeFirstVisit = () => {
+    try { localStorage.setItem('procurement_first_visit_complete', 'true'); } catch { }
+    setIsFirstVisitGuideOpen(false);
+  };
+
+  const handleFirstVisitChoice = (choice: FirstVisitChoice) => {
+    const switchMode = (mode: 'entity' | 'bidder') => {
+      setUserMode(mode);
+      try { localStorage.setItem('app_user_mode', mode); } catch { }
+    };
+    completeFirstVisit();
+    if (choice === 'plan') {
+      switchMode('entity');
+      setActiveTab('dashboard');
+      setIsNewProjectOpen(true);
+    } else if (choice === 'method') {
+      switchMode('entity');
+      setActiveTab('advisor');
+    } else if (choice === 'notice') {
+      switchMode('entity');
+      setActiveTab('workflow-wizard');
+    } else if (choice === 'evaluation') {
+      switchMode('entity');
+      setActiveTab('bid-evaluation');
+    } else {
+      switchMode('bidder');
+      setInitialBidderSubTab('overview');
+      setActiveTab('bidder-hub');
+    }
   };
 
   useEffect(() => {
@@ -476,6 +513,9 @@ function ProcurementApp({
         onToggleUserMode={handleToggleUserMode}
       />
       <FloatingProcurementChatLauncher onOpen={() => setActiveTab('procurement-chat')} />
+      {isFirstVisitGuideOpen && (
+        <FirstVisitGuide onChoose={handleFirstVisitChoice} onDismiss={completeFirstVisit} />
+      )}
 
       {/* Main Content Area (offset by Sidebar width on desktop) */}
       <div className={`${isSidebarCollapsed ? 'lg:pl-20' : 'lg:pl-[15.3rem]'} flex flex-col min-h-screen transition-all duration-200 ease-in-out`}>
@@ -512,6 +552,13 @@ function ProcurementApp({
           {isProjectsLoading && activeTab === 'dashboard' && userMode !== 'bidder' && (
             <p role="status" className="mb-4 text-sm text-slate-600">आयोजना विवरण लोड हुँदैछ...</p>
           )}
+
+          <BeginnerCoachBar
+            activeTab={activeTab}
+            userMode={userMode}
+            onNavigate={setActiveTab}
+          />
+          <CommonTermsBar />
 
           <Suspense fallback={<ViewLoadingFallback />}>
           {activeTab === 'dashboard' && (

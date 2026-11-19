@@ -57,7 +57,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   userMode = 'entity',
   onToggleUserMode,
 }) => {
-  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
+  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({
+    'थप उपकरणहरू': true,
+  });
 
   const navGroups = useMemo(() => {
     const lawGroup = {
@@ -146,6 +148,41 @@ export const Sidebar: React.FC<SidebarProps> = ({
       toolsGroup,
     ];
   }, [userMode, userRole]);
+
+  // Keep the first level intentionally small. Less-frequent, specialist screens remain
+  // available under one collapsed group instead of competing with the everyday workflow.
+  const simplifiedNavGroups = useMemo(() => {
+    const allItems = navGroups.flatMap((group) => group.items);
+    const pick = (ids: string[]) => allItems.filter((item) => ids.includes(item.id));
+
+    if (userMode === 'bidder') {
+      const primaryIds = ['bidder-hub'];
+      const toolIds = ['bidder-eligibility', 'bidder-bid-no-bid', 'bidder-checklist'];
+      const documentIds = ['bidding-forms', 'bidder-sbd-hub'];
+      const helpIds = ['egp-guidelines', 'bidder-review', 'dilemma-solver', 'law-corpus'];
+      const shown = new Set([...primaryIds, ...toolIds, ...documentIds, ...helpIds]);
+      return [
+        { groupTitle: 'मुख्य', items: pick(primaryIds) },
+        { groupTitle: 'उपकरणहरू', items: pick(toolIds) },
+        { groupTitle: 'कागजात / ढाँचा', items: pick(documentIds) },
+        { groupTitle: 'कानून / सहायता', items: pick(helpIds) },
+        { groupTitle: 'थप उपकरणहरू', items: allItems.filter((item) => !shown.has(item.id)) },
+      ].filter((group) => group.items.length > 0);
+    }
+
+    const primaryIds = ['dashboard', 'workflow-wizard'];
+    const toolIds = ['advisor', 'methods', 'calculator', 'checklists', 'bid-evaluation'];
+    const documentIds = ['templates'];
+    const helpIds = ['law-corpus', 'dilemma-solver', 'glossary'];
+    const shown = new Set([...primaryIds, ...toolIds, ...documentIds, ...helpIds]);
+    return [
+      { groupTitle: 'मुख्य', items: pick(primaryIds) },
+      { groupTitle: 'उपकरणहरू', items: pick(toolIds) },
+      { groupTitle: 'कागजात / ढाँचा', items: pick(documentIds) },
+      { groupTitle: 'कानून / सहायता', items: pick(helpIds) },
+      { groupTitle: 'थप उपकरणहरू', items: allItems.filter((item) => !shown.has(item.id)) },
+    ].filter((group) => group.items.length > 0);
+  }, [navGroups, userMode]);
 
   const toggleGroupCollapse = (groupTitle: string) => {
     setCollapsedGroups((prev) => ({ ...prev, [groupTitle]: !prev[groupTitle] }));
@@ -337,7 +374,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         {/* ── Scrollable nav ─────────────────────────────────────────────── */}
         <div className={`flex-1 overflow-y-auto py-3 space-y-1 ${isCollapsed ? 'px-2' : 'px-2.5'}`}>
-          {navGroups.map((group, gIdx) => {
+          {simplifiedNavGroups.map((group, gIdx) => {
             const isGroupCollapsed = Boolean(collapsedGroups[group.groupTitle]);
             return (
               <div key={gIdx}>

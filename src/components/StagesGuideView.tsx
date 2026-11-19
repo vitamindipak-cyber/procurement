@@ -250,10 +250,39 @@ export const StagesGuideView: React.FC<StagesGuideViewProps> = ({
         </button>
       </div>
 
+      {/* Beginner Guide for Stages */}
+      <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl border border-emerald-200 p-4 flex items-start gap-3">
+        <div className="flex-shrink-0 w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center text-white">
+          <BookOpen className="w-5 h-5" />
+        </div>
+        <div className="flex-1">
+          <h3 className="text-sm font-bold text-slate-900 mb-1">खरिद प्रक्रियाको ७ चरण - सुरुआतीका लागि मार्गदर्शन</h3>
+          <p className="text-xs text-slate-600 leading-relaxed mb-2">
+            सार्वजनिक खरिदमा कुल ७ चरण हुन्छन्। तलका चरणहरूमा क्लिक गरी प्रत्येक चरणको कानूनी आधार, आवश्यक कागजात र समयसीमा बारे जान्नुहोस्।
+          </p>
+          <div className="flex flex-wrap gap-2 text-[11px]">
+            <span className="inline-flex items-center gap-1 px-2 py-1 bg-white rounded-md border border-emerald-300 text-emerald-800 font-medium">
+              <CheckCircle2 className="w-3 h-3" />
+              <span>चरण १: पूर्वतयारी</span>
+            </span>
+            <span className="inline-flex items-center gap-1 px-2 py-1 bg-white rounded-md border border-emerald-300 text-emerald-800 font-medium">
+              <CheckCircle2 className="w-3 h-3" />
+              <span>चरण २: लागत अनुमान</span>
+            </span>
+            <span className="inline-flex items-center gap-1 px-2 py-1 bg-white rounded-md border border-emerald-300 text-emerald-800 font-medium">
+              <CheckCircle2 className="w-3 h-3" />
+              <span>चरण ३: सूचना जारी</span>
+            </span>
+            <span className="text-slate-500">... र ४ थप चरणहरू</span>
+          </div>
+        </div>
+      </div>
+
       {/* Horizontal Stepper Nav (7 Stages) */}
       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
-        {PROCUREMENT_STAGES.map((stg) => {
+        {PROCUREMENT_STAGES.map((stg, index) => {
           const isActive = activeStage.id === stg.id;
+          const isPast = index < PROCUREMENT_STAGES.findIndex(s => s.id === activeStage.id);
           return (
             <button
               key={stg.id}
@@ -263,19 +292,22 @@ export const StagesGuideView: React.FC<StagesGuideViewProps> = ({
               }}
               className={`p-3 rounded-xl border text-left transition-all relative ${isActive
                 ? 'bg-blue-700 text-white border-blue-700 shadow-sm ring-2 ring-red-400/30'
+                : isPast
+                ? 'bg-emerald-50 border-emerald-300 text-emerald-900 hover:bg-emerald-100'
                 : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
                 }`}
             >
               <div className="flex items-center justify-between text-[11px] mb-1">
-                <span className={`font-mono font-bold ${isActive ? 'text-red-200' : 'text-red-700'}`}>
+                <span className={`font-mono font-bold ${isActive ? 'text-red-200' : isPast ? 'text-emerald-700' : 'text-red-700'}`}>
                   चरण {stg.stageNo}
                 </span>
+                {isPast && <Check className="w-3 h-3 text-emerald-600" />}
                 {isActive && <span className="w-2 h-2 rounded-full bg-white animate-pulse" />}
               </div>
               <h4 className="text-xs font-bold leading-snug line-clamp-2">
                 {stg.titleNepali.split('.')[1]?.trim() || stg.titleNepali}
               </h4>
-              <span className={`text-[10px] block mt-1 line-clamp-1 ${isActive ? 'text-red-100' : 'text-slate-500'}`}>
+              <span className={`text-[10px] block mt-1 line-clamp-1 ${isActive ? 'text-red-100' : isPast ? 'text-emerald-600' : 'text-slate-500'}`}>
                 {stg.titleEnglish}
               </span>
             </button>

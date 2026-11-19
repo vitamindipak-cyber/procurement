@@ -34,8 +34,8 @@ export const TAB_TITLES: Record<string, TabMeta> = {
   'bidder-sbd-hub':           { title: 'SBD कागजात भण्डार (Download)',                 shortTitle: 'SBD भण्डार',         category: 'बोलपत्रदाता',    rootTab: 'bidder-hub' },
   'bidder-review':            { title: 'पुनरावलोकन तथा उजुरी (दफा ४७/४९)',            shortTitle: 'पुनरावलोकन/उजुरी',  category: 'बोलपत्रदाता',    rootTab: 'bidder-hub' },
   // ─────────────────────────────────────────────────────────────────────
-  advisor:              { title: 'खरिद सल्लाहकार (Wizard)',                              shortTitle: 'खरिद सल्लाहकार',   category: 'सल्लाहकार',             rootTab: 'advisor' },
-  'workflow-wizard':    { title: 'चरणबद्ध खरिद कार्यप्रवाह',                           shortTitle: 'कार्यप्रवाह',       category: 'प्रक्रिया',             rootTab: 'workflow-wizard' },
+  advisor:              { title: 'खरिद विधि सल्लाहकार',                                  shortTitle: 'विधि सल्लाहकार',    category: 'सुरुआत',              rootTab: 'advisor' },
+  'workflow-wizard':    { title: 'चरणबद्ध खरिद कार्ययोजना',                            shortTitle: 'कार्ययोजना',         category: 'प्रक्रिया',            rootTab: 'workflow-wizard' },
   'user-management':    { title: 'प्रयोगकर्ता व्यवस्थापन',                             shortTitle: 'प्रयोगकर्ता',       category: 'प्रणाली व्यवस्थापन',   rootTab: 'dashboard' },
   'dilemma-solver':     { title: 'खरिद समस्या समाधान',                                  shortTitle: 'समस्या समाधान',     category: 'सल्लाह तथा नजिर',       rootTab: 'dilemma-solver' },
   methods:              { title: 'खरिदका सम्पूर्ण विधिहरू',                             shortTitle: 'खरिद विधिहरू',      category: 'विधिहरू',               rootTab: 'methods' },
