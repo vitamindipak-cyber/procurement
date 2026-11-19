@@ -23,8 +23,8 @@ const choices: Array<{
 ];
 
 export const FirstVisitGuide: React.FC<FirstVisitGuideProps> = ({ onChoose, onDismiss }) => (
-  <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-950/55 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="first-visit-title">
-    <section className="relative w-full max-w-4xl overflow-hidden rounded-3xl border border-white/60 bg-white shadow-2xl">
+  <div className="fixed inset-0 z-[70] flex items-start justify-center overflow-y-auto bg-slate-950/55 p-3 backdrop-blur-sm sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-labelledby="first-visit-title">
+    <section className="relative my-auto w-full max-w-4xl overflow-hidden rounded-3xl border border-white/60 bg-white shadow-2xl">
       <div className="bg-gradient-to-r from-[#12375f] via-[#1a4b82] to-teal-800 px-3 py-3 text-white sm:px-8">
         <button type="button" onClick={onDismiss} className="absolute right-4 top-4 rounded-lg p-2 text-white/70 transition-colors hover:bg-white/10 hover:text-white" aria-label="अहिलेका लागि बन्द गर्नुहोस्">
           <X className="h-5 w-5" />
@@ -33,7 +33,7 @@ export const FirstVisitGuide: React.FC<FirstVisitGuideProps> = ({ onChoose, onDi
         <h4 id="first-visit-title" className="mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl">म के गर्न चाहन्छु?</h4>
         <p className="mt-2 max-w-2xl text-sm leading-relaxed text-blue-100">एउटा काम छान्नुहोस्। हामी तपाईंलाई सही पृष्ठ र अर्को चरणमा लैजान्छौँ।</p>
       </div>
-      <div className="grid gap-3 p-5 sm:grid-cols-2 sm:p-6 lg:grid-cols-3">
+      <div className="grid gap-3 p-4 sm:grid-cols-2 sm:p-6 lg:grid-cols-3">
         {choices.map(({ id, title, description, icon: Icon, tone }) => (
           <button key={id} type="button" onClick={() => onChoose(id)} className={`group flex min-h-36 flex-col rounded-2xl border p-4 text-left transition-all hover:-translate-y-0.5 hover:shadow-md ${tone}`}>
             <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/80 shadow-sm"><Icon className="h-5 w-5" /></span>

@@ -137,7 +137,9 @@ main:not(.login-screen) textarea::placeholder { color: #9baec1; }
 
 /* ─── Responsive ──────────────────────────────────────────────────────── */
 @media (max-width: 640px) {
-  #root main:not(.login-screen) { padding: 1rem; }
+  #root main:not(.login-screen) {
+    padding: 1rem 1rem calc(6rem + env(safe-area-inset-bottom, 0px));
+  }
   #root footer { padding: 1rem; }
 }
 

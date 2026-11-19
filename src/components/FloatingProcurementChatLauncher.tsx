@@ -29,6 +29,17 @@ function getSavedPosition(): Position | null {
   return null;
 }
 
+function clampLauncherPosition(left: number, top: number, width: number, height: number): Position {
+  const mobileNav = document.querySelector<HTMLElement>('[aria-label="मोबाइल नेभिगेसन बार"]');
+  const bottomLimit = mobileNav && getComputedStyle(mobileNav).display !== 'none'
+    ? mobileNav.getBoundingClientRect().top - 12
+    : window.innerHeight;
+  return {
+    left: Math.max(0, Math.min(left, window.innerWidth - width)),
+    top: Math.max(0, Math.min(top, bottomLimit - height)),
+  };
+}
+
 export const FloatingProcurementChatLauncher: React.FC<{ onOpen: () => void }> = ({ onOpen }) => {
   const [position, setPosition] = useState<Position | null>(getSavedPosition);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -49,10 +60,7 @@ export const FloatingProcurementChatLauncher: React.FC<{ onOpen: () => void }> =
       const { width, height } = button.getBoundingClientRect();
       setPosition((current) => {
         if (!current) return current;
-        const clamped = {
-          left: Math.max(0, Math.min(current.left, window.innerWidth - width)),
-          top: Math.max(0, Math.min(current.top, window.innerHeight - height)),
-        };
+        const clamped = clampLauncherPosition(current.left, current.top, width, height);
         if (clamped.left !== current.left || clamped.top !== current.top) {
           try {
             localStorage.setItem('procurement_chat_launcher_position', JSON.stringify(clamped));
@@ -88,10 +96,12 @@ export const FloatingProcurementChatLauncher: React.FC<{ onOpen: () => void }> =
     if (!drag.didMove && Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY) < 5) return;
     drag.didMove = true;
     const bounds = event.currentTarget.getBoundingClientRect();
-    setPosition({
-      left: Math.max(0, Math.min(event.clientX - drag.offsetX, window.innerWidth - bounds.width)),
-      top: Math.max(0, Math.min(event.clientY - drag.offsetY, window.innerHeight - bounds.height)),
-    });
+    setPosition(clampLauncherPosition(
+      event.clientX - drag.offsetX,
+      event.clientY - drag.offsetY,
+      bounds.width,
+      bounds.height,
+    ));
   };
 
   const handlePointerEnd = (event: React.PointerEvent<HTMLButtonElement>) => {
@@ -100,10 +110,12 @@ export const FloatingProcurementChatLauncher: React.FC<{ onOpen: () => void }> =
     dragRef.current = null;
     if (!drag.didMove) return;
     const bounds = event.currentTarget.getBoundingClientRect();
-    const nextPosition = {
-      left: Math.max(0, Math.min(event.clientX - drag.offsetX, window.innerWidth - bounds.width)),
-      top: Math.max(0, Math.min(event.clientY - drag.offsetY, window.innerHeight - bounds.height)),
-    };
+    const nextPosition = clampLauncherPosition(
+      event.clientX - drag.offsetX,
+      event.clientY - drag.offsetY,
+      bounds.width,
+      bounds.height,
+    );
     setPosition(nextPosition);
     try {
       localStorage.setItem('procurement_chat_launcher_position', JSON.stringify(nextPosition));
@@ -130,12 +142,12 @@ export const FloatingProcurementChatLauncher: React.FC<{ onOpen: () => void }> =
       onPointerUp={handlePointerEnd}
       onPointerCancel={handlePointerEnd}
       style={position ? { left: position.left, top: position.top } : undefined}
-      className={`fixed z-40 inline-flex h-14 items-center gap-2 rounded-full border border-blue-200 bg-white px-4 text-blue-800 shadow-lg transition-shadow hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 touch-none ${position ? '' : 'bottom-6 right-6'
+      className={`fixed z-40 inline-flex h-12 items-center gap-2 rounded-full border border-blue-200 bg-white px-3 text-blue-800 shadow-lg transition-shadow hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 touch-none sm:h-14 sm:px-4 ${position ? '' : 'bottom-[calc(5.25rem+env(safe-area-inset-bottom))] right-3 lg:bottom-6 lg:right-6'
         } cursor-grab active:cursor-grabbing`}
     >
       <Bot className="h-5 w-5 shrink-0" aria-hidden="true" />
-      <span className="text-sm font-bold">खरिद सहायक</span>
-      <GripVertical className="h-4 w-4 text-slate-400" aria-hidden="true" />
+      <span className="hidden text-sm font-bold sm:inline">खरिद सहायक</span>
+      <GripVertical className="hidden h-4 w-4 text-slate-400 sm:block" aria-hidden="true" />
     </button>
   );
 };

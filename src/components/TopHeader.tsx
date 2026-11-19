@@ -94,7 +94,7 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
       style={{ background: '#0f1a2d', borderBottom: '1px solid #1a2d47' }}
     >
       {/* ── Main bar ─────────────────────────────────────────────────────── */}
-      <div className="h-14 flex items-center justify-between px-3 sm:px-5 gap-2">
+      <div className="min-h-14 flex items-center justify-between px-2.5 sm:px-5 gap-1.5 sm:gap-2">
 
         {/* Left: mobile hamburger + history + breadcrumb */}
         <div className="flex items-center gap-2 min-w-0">
@@ -110,7 +110,7 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
           </button>
 
           {/* History nav */}
-          <div className="flex items-center gap-0.5 bg-white/[.06] rounded-lg p-0.5 shrink-0">
+          <div className="hidden sm:flex items-center gap-0.5 bg-white/[.06] rounded-lg p-0.5 shrink-0">
             <button
               type="button"
               onClick={onGoBack}
@@ -144,7 +144,7 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
           {/* Breadcrumb */}
           <nav
             aria-label="Breadcrumb"
-            className="flex items-center gap-1 text-xs text-slate-400 truncate min-w-0 ml-1"
+            className="flex flex-1 items-center gap-1 text-xs text-slate-400 truncate min-w-0 sm:ml-1"
           >
             <button
               type="button"
@@ -182,7 +182,7 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
         </div>
 
         {/* Right: mode toggle, search, print, ext-link, logout */}
-        <div className="flex items-center gap-1.5 shrink-0">
+        <div className="flex items-center gap-0.5 sm:gap-1.5 shrink-0">
 
           {/* Mode toggle pill */}
           {onToggleUserMode && (
@@ -207,7 +207,7 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
           {/* Search */}
           <button
             onClick={onOpenSearch}
-            className="flex items-center gap-2 px-2.5 py-1.5 text-xs font-medium text-slate-300 bg-white/[.07] hover:bg-white/[.12] rounded-lg transition-colors border border-white/[.08] shrink-0"
+            className="flex items-center gap-2 px-2 py-1.5 sm:px-2.5 text-xs font-medium text-slate-300 bg-white/[.07] hover:bg-white/[.12] rounded-lg transition-colors border border-white/[.08] shrink-0"
             title="खोज तथा फिल्टर (Ctrl+K वा /)"
           >
             <Search className="w-3.5 h-3.5 text-slate-400" />
@@ -220,7 +220,7 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
           {/* Print */}
           <button
             onClick={() => window.print()}
-            className="p-2 text-slate-400 hover:text-white hover:bg-white/[.08] rounded-lg transition-colors no-print shrink-0"
+            className="hidden sm:flex p-2 text-slate-400 hover:text-white hover:bg-white/[.08] rounded-lg transition-colors no-print shrink-0"
             title="प्रिन्ट"
             aria-label="प्रिन्ट"
           >
