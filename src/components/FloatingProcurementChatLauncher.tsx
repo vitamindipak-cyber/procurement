@@ -31,11 +31,13 @@ function getSavedPosition(): Position | null {
 
 function clampLauncherPosition(left: number, top: number, width: number, height: number): Position {
   const mobileNav = document.querySelector<HTMLElement>('[aria-label="मोबाइल नेभिगेसन बार"]');
+  const viewportWidth = document.documentElement.clientWidth || window.innerWidth;
+  const horizontalInset = 12;
   const bottomLimit = mobileNav && getComputedStyle(mobileNav).display !== 'none'
     ? mobileNav.getBoundingClientRect().top - 12
     : window.innerHeight;
   return {
-    left: Math.max(0, Math.min(left, window.innerWidth - width)),
+    left: Math.max(0, Math.min(left, viewportWidth - width - horizontalInset)),
     top: Math.max(0, Math.min(top, bottomLimit - height)),
   };
 }
@@ -142,7 +144,7 @@ export const FloatingProcurementChatLauncher: React.FC<{ onOpen: () => void }> =
       onPointerUp={handlePointerEnd}
       onPointerCancel={handlePointerEnd}
       style={position ? { left: position.left, top: position.top } : undefined}
-      className={`fixed z-40 inline-flex h-12 items-center gap-2 rounded-full border border-slate-200 bg-white px-3 text-[#123f6d] shadow-lg transition-shadow hover:border-[#b9cfe6] hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#123f6d] touch-none sm:h-14 sm:px-4 ${position ? '' : 'bottom-[calc(5.25rem+env(safe-area-inset-bottom))] right-3 lg:bottom-6 lg:right-6'
+      className={`fixed z-40 inline-flex max-w-[calc(100vw-1.5rem)] items-center gap-2 rounded-full border border-slate-200 bg-white px-3 text-[#123f6d] shadow-lg transition-shadow hover:border-[#b9cfe6] hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#123f6d] touch-none h-12 sm:h-14 sm:px-4 ${position ? '' : 'bottom-[calc(5.25rem+env(safe-area-inset-bottom))] right-4 lg:bottom-6 lg:right-6'
         } cursor-grab active:cursor-grabbing`}
     >
       <Bot className="h-5 w-5 shrink-0" aria-hidden="true" />
