@@ -143,6 +143,11 @@ main:not(.login-screen) textarea::placeholder { color: #9aa9bb; }
 
 /* ─── Responsive ──────────────────────────────────────────────────────── */
 @media (max-width: 640px) {
+  html, body, #root {
+    max-width: 100%;
+    overflow-x: clip;
+  }
+
   #root main:not(.login-screen) {
     padding: 1rem 1rem calc(6rem + env(safe-area-inset-bottom, 0px));
   }

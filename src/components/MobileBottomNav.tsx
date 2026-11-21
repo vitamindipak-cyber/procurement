@@ -49,7 +49,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
   return (
     <nav
       aria-label="मोबाइल नेभिगेसन बार"
-      className="fixed inset-x-0 bottom-0 z-40 box-border overflow-x-clip border-t border-slate-200/80 bg-white/95 text-slate-500 shadow-[0_-10px_30px_-22px_rgba(15,28,46,0.35)] backdrop-blur-md no-print lg:hidden pb-[env(safe-area-inset-bottom)]"
+      className="fixed inset-x-0 bottom-0 z-40 box-border max-w-[100vw] overflow-x-clip border-t border-slate-200/80 bg-white/95 text-slate-500 shadow-[0_-10px_30px_-22px_rgba(15,28,46,0.35)] backdrop-blur-md no-print lg:hidden pb-[env(safe-area-inset-bottom)]"
     >
       <div className="mx-auto grid h-16 w-full max-w-lg grid-cols-[repeat(5,minmax(0,1fr))] items-center px-1">
         {navItems.map((item) => {
