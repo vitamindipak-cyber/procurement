@@ -30,11 +30,37 @@ supabase link --project-ref umjwglcybhwjfkoththh
 supabase db push
 ```
 
-The migration creates `user_profiles` and `procurement_projects`, plus
+The migrations create `user_profiles` and `procurement_projects`, plus
 row-level security policies. Each user can read and update only their own
 projects; admins can read and manage all projects. Deleted users' project rows
 are retained as unassigned records that only admins can access. Existing
 browser/localStorage records are intentionally not imported.
+
+The practical simulation migration adds versioned cases, attempts, answers,
+results, and certificates. Answer keys are not directly readable by ordinary
+users; grading and certificate issuance run through restricted database
+functions. The admin simulation screen seeds the five bundled starter cases
+when they are missing, then admins can save drafts or publish immutable case
+versions. Public certificate verification uses the database verification
+function. Apply migrations before using the lab; local browser-mode certificates
+are labelled samples and are not official credentials.
+
+If the app reports that `public.list_admin_simulation_case_versions()` is
+missing from the schema cache, first apply pending migrations with
+`supabase db push`. In Supabase **SQL Editor**, confirm that the function exists:
+
+```sql
+select to_regprocedure('public.list_admin_simulation_case_versions()');
+```
+
+If that returns a function signature but the app still reports `PGRST202`,
+refresh PostgREST's schema cache and retry:
+
+```sql
+notify pgrst, 'reload schema';
+```
+
+The simulation migration also sends this notification when it is applied.
 
 ## 3. Create the initial admin
 
@@ -151,5 +177,9 @@ placeholder `.example` addresses.
 
 - `user_profiles`: Supabase Auth user ID, unique username, `admin`/`user` role.
 - `procurement_projects`: project details, checklist JSON, and owner Auth ID.
+- `simulation_case_versions`: published/draft case content and protected answer keys.
+- `simulation_attempts`, `simulation_answers`, `simulation_results`: per-user work and server-graded outcomes.
+- `simulation_certificates`: certificate records with public status verification.
 - Auth profile trigger: creates a `user` profile for each new Auth account.
 - RLS: project visibility is per-user, with admin access across users.
+- Simulation: users can only manage their own attempts; case authoring is admin-only.

@@ -14,6 +14,7 @@ import { FloatingProcurementChatLauncher } from './components/FloatingProcuremen
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { ScrollToTop } from './components/ScrollToTop';
 import { LoginPage } from './components/LoginPage';
+import { SimulationCertificateVerificationPage } from './components/SimulationCertificateVerificationPage';
 
 // Code-split dynamic lazy loading for lightweight instant page loads
 const ProcurementAdvisorWizard = lazy(() => import('./components/ProcurementAdvisorWizard').then(m => ({ default: m.ProcurementAdvisorWizard })));
@@ -38,6 +39,7 @@ const BidderPortalView = lazy(() => import('./components/BidderPortalView').then
 const BiddingFormsGenerator = lazy(() => import('./components/BiddingFormsGenerator').then(m => ({ default: m.BiddingFormsGenerator })));
 const IcbProcurementHub = lazy(() => import('./components/IcbProcurementHub').then(m => ({ default: m.IcbProcurementHub })));
 const BidEvaluationGuideView = lazy(() => import('./components/BidEvaluationGuideView').then(m => ({ default: m.BidEvaluationGuideView })));
+const PracticalSimulationView = lazy(() => import('./components/PracticalSimulationView').then(m => ({ default: m.PracticalSimulationView })));
 
 function ViewLoadingFallback() {
   return (
@@ -132,12 +134,15 @@ function ProcurementApp({
   };
 
   const setActiveTab = (tabId: string, addToHistory = true) => {
+    if (tabId === 'simulation-case-management' && currentUser.role !== 'admin') return;
     // If it's a bidder sidebar sub-tab, redirect to bidder-hub with the right initialSubTab
     if (BIDDER_SUBTAB_MAP[tabId]) {
       const subTabId = BIDDER_SUBTAB_MAP[tabId];
       setInitialBidderSubTab(subTabId);
       setActiveTabState('bidder-hub');
-      try { window.location.hash = `#bidder-hub:${subTabId}`; } catch { }
+      if (addToHistory) {
+        try { window.location.hash = `#bidder-hub:${subTabId}`; } catch { }
+      }
       if (addToHistory) {
         setHistoryStack((prev) => [...prev.slice(0, historyIndex + 1), 'bidder-hub']);
         setHistoryIndex((prev) => prev + 1);
@@ -151,9 +156,11 @@ function ProcurementApp({
     }
     if (!TAB_TITLES[tabId]) return;
     setActiveTabState(tabId);
-    try {
-      window.location.hash = '#' + tabId;
-    } catch { }
+    if (addToHistory) {
+      try {
+        window.location.hash = '#' + tabId;
+      } catch { }
+    }
 
     if (addToHistory) {
       setHistoryStack((prev) => {
@@ -536,7 +543,7 @@ function ProcurementApp({
         />
 
         {/* Viewport Content */}
-        <main id="main-content" aria-label="पृष्ठको मुख्य सामग्री" className="mx-auto w-full max-w-[1600px] flex-1 p-4 pb-24 sm:p-6 lg:p-8 lg:pb-8">
+        <main id="main-content" aria-label="पृष्ठको मुख्य सामग्री" className="mx-auto w-full max-w-[1600px] flex-1 p-3 pb-24 sm:p-4 lg:p-5 lg:pb-5">
           {authError && (
             <p role="alert" className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
               {authError}
@@ -580,6 +587,20 @@ function ProcurementApp({
                 onNavigateToGuide={setActiveTab}
               />
             )
+          )}
+
+          {activeTab === 'simulation-verify' && (
+            <SimulationCertificateVerificationPage
+              initialCode={window.location.hash.split(':').slice(1).join(':')}
+            />
+          )}
+
+          {activeTab.startsWith('simulation-') && activeTab !== 'simulation-verify' && (
+            <PracticalSimulationView
+              currentUser={currentUser}
+              activeTab={activeTab}
+              onNavigate={setActiveTab}
+            />
           )}
 
           {activeTab === 'bidder-hub' && (
@@ -832,6 +853,15 @@ export default function App() {
       subscription.unsubscribe();
     };
   }, []);
+
+  const verificationHash = typeof window !== 'undefined' ? window.location.hash : '';
+  if (!currentUser && verificationHash.startsWith('#simulation-verify')) {
+    return (
+      <SimulationCertificateVerificationPage
+        initialCode={verificationHash.split(':').slice(1).join(':')}
+      />
+    );
+  }
 
   if (!currentUser) {
     if (!isSupabaseConfigured) {

@@ -22,6 +22,14 @@ export interface TabMeta {
 
 export const TAB_TITLES: Record<string, TabMeta> = {
   dashboard:            { title: 'ड्यासबोर्ड तथा आयोजना अनुगमन',                       shortTitle: 'ड्यासबोर्ड',       category: 'व्यवस्थापन',           rootTab: 'dashboard' },
+  'simulation-dashboard': { title: 'व्यावहारिक अभ्यासशाला', shortTitle: 'अभ्यासशाला', category: 'Practical Simulation Lab', rootTab: 'simulation-dashboard' },
+  'simulation-cases': { title: 'अभ्यास केसहरू', shortTitle: 'अभ्यास केस', category: 'Practical Simulation Lab', rootTab: 'simulation-dashboard' },
+  'simulation-progress': { title: 'अभ्यास प्रगति', shortTitle: 'प्रगति', category: 'Practical Simulation Lab', rootTab: 'simulation-dashboard' },
+  'simulation-reports': { title: 'अभ्यास प्रतिवेदन', shortTitle: 'प्रतिवेदन', category: 'Practical Simulation Lab', rootTab: 'simulation-dashboard' },
+  'simulation-certificates': { title: 'अभ्यास प्रमाणपत्र', shortTitle: 'प्रमाणपत्र', category: 'Practical Simulation Lab', rootTab: 'simulation-dashboard' },
+  'simulation-legal': { title: 'अभ्यासका कानुनी सन्दर्भ', shortTitle: 'कानुनी सन्दर्भ', category: 'Practical Simulation Lab', rootTab: 'simulation-dashboard' },
+  'simulation-case-management': { title: 'अभ्यास केस व्यवस्थापन', shortTitle: 'केस व्यवस्थापन', category: 'प्रणाली व्यवस्थापन', rootTab: 'simulation-dashboard' },
+  'simulation-verify': { title: 'अभ्यास प्रमाणपत्र प्रमाणीकरण', shortTitle: 'प्रमाणीकरण', category: 'Practical Simulation Lab', rootTab: 'simulation-certificates' },
   'procurement-chat':   { title: 'सार्वजनिक खरिद स्रोत सहायक',                          shortTitle: 'AI सहायक',          category: 'प्रश्नोत्तर',           rootTab: 'procurement-chat' },
   'bidder-hub':         { title: 'बोलपत्रदाता विशेष कर्नर (Bidder Portal)',              shortTitle: 'बोलपत्रदाता कर्नर', category: 'बोलपत्रदाता',           rootTab: 'bidder-hub' },
   'bidding-forms':      { title: 'बोलपत्र फाराम तथा ढाँचा जेनेरेटर',                   shortTitle: 'फाराम जेनेरेटर',    category: 'बोलपत्रदाता',           rootTab: 'bidder-hub' },

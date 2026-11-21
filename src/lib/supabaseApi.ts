@@ -2,10 +2,716 @@ import { Session } from '@supabase/supabase-js';
 import { AppUser, ManagedUserInput, UserRole } from '../types/auth';
 import { TrackedProject } from '../types/procurement';
 import { Database, Json, supabase } from './supabase';
+import { PRACTICAL_SIMULATION_CASES } from '../data/practicalSimulationCases';
+import {
+  SimulationAttempt,
+  SimulationAnswerKey,
+  SimulationCaseContent,
+  SimulationCaseDraft,
+  SimulationCaseVersion,
+  SimulationCertificate,
+  SimulationCertificateVerification,
+  SimulationResult,
+  SimulationScoreRow,
+} from '../types/simulation';
+import { calculateSimulationResult } from './simulationScoring';
 
 const LOCAL_STORAGE_KEY_PROJECTS = 'app_local_procurement_projects';
 const LOCAL_STORAGE_KEY_USERS = 'app_local_users';
 const LOCAL_STORAGE_KEY_SESSION = 'app_local_session_user';
+const LOCAL_STORAGE_KEY_SIMULATION_CASES = 'app_local_simulation_case_versions';
+const LOCAL_STORAGE_KEY_SIMULATION_ATTEMPTS = 'app_local_simulation_attempts';
+const LOCAL_STORAGE_KEY_SIMULATION_CERTIFICATES = 'app_local_simulation_certificates';
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
+const isSimulationCaseContent = (value: unknown): value is SimulationCaseContent => {
+  if (!isRecord(value) || typeof value.title !== 'string' || typeof value.category !== 'string'
+    || (value.difficulty !== 'सुरुआती' && value.difficulty !== 'मध्यम' && value.difficulty !== 'उन्नत')
+    || typeof value.estimatedMinutes !== 'number'
+    || typeof value.scenario !== 'string' || !Array.isArray(value.steps)
+    || !Array.isArray(value.objectives) || !value.objectives.every((item) => typeof item === 'string')
+    || !Array.isArray(value.priorKnowledge) || !value.priorKnowledge.every((item) => typeof item === 'string')
+    || !Array.isArray(value.legalReferenceIds)
+    || !value.legalReferenceIds.every((item) => typeof item === 'string')) return false;
+
+  return value.steps.every((step) => isRecord(step)
+    && typeof step.id === 'string'
+    && typeof step.title === 'string'
+    && typeof step.prompt === 'string'
+    && typeof step.points === 'number'
+    && (step.criterion === 'decision' || step.criterion === 'legal-basis'
+      || step.criterion === 'process' || step.criterion === 'reasoning')
+    && (step.questionType === 'single-choice' || step.questionType === 'number')
+    && Array.isArray(step.legalReferenceIds)
+    && step.legalReferenceIds.every((item) => typeof item === 'string')
+    && (step.options === undefined || (Array.isArray(step.options)
+      && step.options.every((option) => isRecord(option)
+        && typeof option.id === 'string' && typeof option.label === 'string'))));
+};
+
+const isSimulationCaseVersion = (value: unknown): value is SimulationCaseVersion =>
+  isRecord(value)
+  && typeof value.caseKey === 'string'
+  && typeof value.version === 'number'
+  && (value.status === 'draft' || value.status === 'published')
+  && isSimulationCaseContent(value.content);
+
+const parseStoredArray = <T,>(
+  key: string,
+  guard: (value: unknown) => value is T,
+  fallback: T[],
+): T[] => {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return fallback;
+    const parsed: unknown = JSON.parse(raw);
+    if (!Array.isArray(parsed) || !parsed.every(guard)) {
+      throw new Error('Stored data has an unexpected shape.');
+    }
+    return parsed;
+  } catch (error) {
+    console.error(`Failed to load local simulation data (${key}).`, error);
+    throw new Error('स्थानीय अभ्यास विवरण पढ्न सकिएन। ब्राउजर भण्डारण जाँचेर पुनः प्रयास गर्नुहोस्।');
+  }
+};
+
+const saveStoredArray = <T,>(key: string, value: T[]): void => {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (error) {
+    console.error(`Failed to save local simulation data (${key}).`, error);
+    throw new Error('अभ्यास विवरण स्थानीय रूपमा सुरक्षित गर्न सकिएन। ब्राउजर भण्डारण जाँचेर पुनः प्रयास गर्नुहोस्।');
+  }
+};
+
+const toJson = (value: object): Json => JSON.parse(JSON.stringify(value)) as Json;
+
+const getLocalSimulationCases = (): SimulationCaseVersion[] => {
+  const storedCases = parseStoredArray(
+    LOCAL_STORAGE_KEY_SIMULATION_CASES,
+    isSimulationCaseVersion,
+    PRACTICAL_SIMULATION_CASES,
+  );
+  const existingKeys = new Set(storedCases.map((simulationCase) => simulationCase.caseKey));
+  const missingDefaults = PRACTICAL_SIMULATION_CASES.filter(
+    (simulationCase) => !existingKeys.has(simulationCase.caseKey),
+  );
+  if (missingDefaults.length === 0) return storedCases;
+
+  const mergedCases = [...storedCases, ...missingDefaults];
+  saveStoredArray(LOCAL_STORAGE_KEY_SIMULATION_CASES, mergedCases);
+  return mergedCases;
+};
+
+const isSimulationAttempt = (value: unknown): value is SimulationAttempt => {
+  if (!isRecord(value) || typeof value.id !== 'string' || typeof value.userId !== 'string'
+    || typeof value.caseKey !== 'string' || typeof value.caseVersion !== 'number'
+    || typeof value.attemptNumber !== 'number'
+    || (value.status !== 'in_progress' && value.status !== 'completed')
+    || !isRecord(value.answers) || typeof value.startedAt !== 'string'
+    || typeof value.updatedAt !== 'string') return false;
+
+  if (!Object.values(value.answers).every((answer) =>
+    typeof answer === 'string' || typeof answer === 'number')) return false;
+  if (value.result === undefined) return true;
+  return isRecord(value.result)
+    && typeof value.result.score === 'number'
+    && typeof value.result.passed === 'boolean'
+    && typeof value.result.completedAt === 'string'
+    && Array.isArray(value.result.breakdown)
+    && value.result.breakdown.every(isSimulationScoreRow);
+};
+
+const getLocalSimulationAttempts = (): SimulationAttempt[] =>
+  parseStoredArray(LOCAL_STORAGE_KEY_SIMULATION_ATTEMPTS, isSimulationAttempt, []);
+
+const isSimulationCertificate = (value: unknown): value is SimulationCertificate =>
+  isRecord(value)
+  && typeof value.code === 'string'
+  && typeof value.displayName === 'string'
+  && typeof value.caseKey === 'string'
+  && typeof value.caseTitle === 'string'
+  && typeof value.score === 'number'
+  && typeof value.issuedAt === 'string'
+  && (value.attemptId === undefined || typeof value.attemptId === 'string')
+  && typeof value.isSample === 'boolean';
+
+const getLocalSimulationCertificates = (): SimulationCertificate[] =>
+  parseStoredArray(LOCAL_STORAGE_KEY_SIMULATION_CERTIFICATES, isSimulationCertificate, []);
+
+const createLocalId = (): string =>
+  typeof crypto !== 'undefined' && 'randomUUID' in crypto
+    ? crypto.randomUUID()
+    : `local-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+
+const isSimulationScoreRow = (value: unknown): value is SimulationScoreRow =>
+  isRecord(value)
+  && typeof value.stepId === 'string'
+  && typeof value.pointsEarned === 'number'
+  && typeof value.pointsAvailable === 'number'
+  && typeof value.isCorrect === 'boolean'
+  && typeof value.explanation === 'string'
+  && typeof value.correctAnswer === 'string';
+
+const parseSimulationResult = (value: unknown): SimulationResult => {
+  if (!isRecord(value) || typeof value.score !== 'number'
+    || typeof value.passed !== 'boolean' || typeof value.completedAt !== 'string'
+    || !Array.isArray(value.breakdown) || !value.breakdown.every(isSimulationScoreRow)) {
+    throw new Error('अभ्यास मूल्याङ्कनको नतिजा अमान्य छ।');
+  }
+  return {
+    score: value.score,
+    passed: value.passed,
+    breakdown: value.breakdown,
+    completedAt: value.completedAt,
+  };
+};
+
+const isSimulationAnswerKey = (value: unknown): value is SimulationAnswerKey => {
+  if (!isRecord(value)) return false;
+  return Object.values(value).every((entry) => {
+    if (!isRecord(entry) || typeof entry.type !== 'string'
+      || typeof entry.explanation !== 'string') return false;
+    if (entry.type === 'single-choice') {
+      return typeof entry.correctOptionId === 'string'
+        && isRecord(entry.optionScores)
+        && Object.values(entry.optionScores).every((score) => typeof score === 'number');
+    }
+    return entry.type === 'number'
+      && typeof entry.expectedValue === 'number'
+      && typeof entry.tolerance === 'number';
+  });
+};
+
+const parseSimulationCaseContent = (value: unknown): SimulationCaseContent => {
+  if (!isSimulationCaseContent(value)) {
+    throw new Error('अभ्यास केसको सामग्री अमान्य छ।');
+  }
+  return value;
+};
+
+const mapSimulationResultRow = (
+  row: Database['public']['Tables']['simulation_results']['Row'],
+): SimulationResult => parseSimulationResult({
+  score: row.score,
+  passed: row.passed,
+  breakdown: row.breakdown,
+  completedAt: row.completed_at,
+});
+
+const mapLocalPublishedCases = (versions = getLocalSimulationCases()): SimulationCaseVersion[] => {
+  const latest = new Map<string, SimulationCaseVersion>();
+  for (const simulationCase of versions
+    .filter((item) => item.status === 'published')
+    .sort((a, b) => b.version - a.version)) {
+    if (!latest.has(simulationCase.caseKey)) latest.set(simulationCase.caseKey, simulationCase);
+  }
+  return [...latest.values()];
+};
+
+const isSimulationCaseDraft = (value: unknown): value is SimulationCaseDraft =>
+  isRecord(value)
+  && typeof value.caseKey === 'string'
+  && isSimulationCaseContent(value.content)
+  && isSimulationAnswerKey(value.answerKey);
+
+export const validateSimulationCaseDraft: (value: unknown) => asserts value is SimulationCaseDraft =
+  (value) => {
+    if (!isSimulationCaseDraft(value)) {
+      throw new Error('केस सामग्री वा rubric/उत्तर-सूचीको संरचना अमान्य छ।');
+    }
+    const draft = value;
+    if (!/^[a-z0-9][a-z0-9-]{2,63}$/.test(draft.caseKey)) {
+      throw new Error('केस key मा ३–६४ lowercase अक्षर, अङ्क वा hyphen मात्र राख्नुहोस्।');
+    }
+    if (draft.content.steps.length === 0
+      || draft.content.steps.reduce((total, step) => total + step.points, 0) !== 100) {
+      throw new Error('कम्तीमा एक प्रश्न राख्नुहोस् र rubric का अङ्क जम्मा १०० बनाउनुहोस्।');
+    }
+
+    const stepIds = new Set<string>();
+    for (const step of draft.content.steps) {
+      if (stepIds.has(step.id) || !Number.isSafeInteger(step.points) || step.points <= 0) {
+        throw new Error('प्रश्नका ID अद्वितीय र प्रत्येक प्रश्नको अङ्क सकारात्मक पूर्णांक हुनुपर्छ।');
+      }
+      stepIds.add(step.id);
+      const key = draft.answerKey[step.id];
+      if (!key) throw new Error(`प्रश्न ${step.id} का लागि उत्तर-सूची राख्नुहोस्।`);
+      if (step.questionType === 'single-choice') {
+        const optionIds = step.options?.map((option) => option.id) ?? [];
+        if (optionIds.length < 2 || new Set(optionIds).size !== optionIds.length
+          || key.type !== 'single-choice' || !optionIds.includes(key.correctOptionId)) {
+          throw new Error(`प्रश्न ${step.id} का विकल्प वा उत्तर-सूची मिलेन।`);
+        }
+        if (Object.entries(key.optionScores).some(([optionId, score]) =>
+          !optionIds.includes(optionId) || !Number.isFinite(score) || score < 0 || score > 100,
+        )) {
+          throw new Error(`प्रश्न ${step.id} का आंशिक अङ्क विकल्पअनुसार ० देखि १०० बीच हुनुपर्छ।`);
+        }
+      } else if (key.type !== 'number'
+        || !Number.isFinite(key.expectedValue)
+        || !Number.isFinite(key.tolerance)
+        || key.tolerance < 0) {
+        throw new Error(`प्रश्न ${step.id} को संख्यात्मक उत्तर वा सहनशीलता अमान्य छ।`);
+      }
+    }
+  };
+
+export const ensureDefaultSimulationCases = async (): Promise<void> => {
+  if (!supabase) return;
+  const { data, error } = await requireSupabase()
+    .from('simulation_case_versions')
+    .select('case_key')
+    .in('case_key', PRACTICAL_SIMULATION_CASES.map((item) => item.caseKey));
+  const existingKeys = new Set(requireSimulationData(data, error, 'simulation_case_versions').map((item) => item.case_key));
+
+  const missingCases = PRACTICAL_SIMULATION_CASES.filter(
+    (simulationCase) => !existingKeys.has(simulationCase.caseKey),
+  );
+  const batchSize = 5;
+  for (let index = 0; index < missingCases.length; index += batchSize) {
+    const batch = missingCases.slice(index, index + batchSize);
+    await Promise.all(batch.map((simulationCase) => {
+      if (!simulationCase.answerKey) {
+        throw new Error(`Default case ${simulationCase.caseKey} has no answer key.`);
+      }
+      return saveSimulationCaseVersion({
+        caseKey: simulationCase.caseKey,
+        content: simulationCase.content,
+        answerKey: simulationCase.answerKey,
+      }, 'published');
+    }));
+  }
+};
+
+export const listPublishedSimulationCases = async (): Promise<SimulationCaseVersion[]> => {
+  if (!supabase) return mapLocalPublishedCases();
+
+  const { data, error } = await requireSupabase()
+    .from('simulation_case_versions')
+    .select('case_key, version, status, content, created_at')
+    .eq('status', 'published')
+    .order('version', { ascending: false });
+  const rows = requireSimulationData(data, error, 'simulation_case_versions');
+  const latest = new Map<string, SimulationCaseVersion>();
+
+  for (const row of rows) {
+    if (latest.has(row.case_key)) continue;
+    latest.set(row.case_key, {
+      caseKey: row.case_key,
+      version: row.version,
+      status: row.status,
+      content: parseSimulationCaseContent(row.content),
+      createdAt: row.created_at,
+    });
+  }
+  return [...latest.values()];
+};
+
+export const getPublishedSimulationCaseVersion = async (
+  caseKey: string,
+  version: number,
+): Promise<SimulationCaseVersion> => {
+  if (!supabase) {
+    const simulationCase = getLocalSimulationCases().find((item) =>
+      item.caseKey === caseKey && item.version === version && item.status === 'published',
+    );
+    if (!simulationCase) throw new Error('प्रकाशित अभ्यास केस संस्करण भेटिएन।');
+    return simulationCase;
+  }
+
+  const { data, error } = await requireSupabase()
+    .from('simulation_case_versions')
+    .select('case_key, version, status, content, created_at')
+    .eq('case_key', caseKey)
+    .eq('version', version)
+    .eq('status', 'published')
+    .single();
+  const row = requireSimulationData(data, error, 'simulation_case_versions');
+  return {
+    caseKey: row.case_key,
+    version: row.version,
+    status: row.status,
+    content: parseSimulationCaseContent(row.content),
+    createdAt: row.created_at,
+  };
+};
+
+export const listAdminSimulationCaseVersions = async (): Promise<SimulationCaseVersion[]> => {
+  if (!supabase) return getLocalSimulationCases();
+
+  const { data, error } = await requireSupabase().rpc('list_admin_simulation_case_versions');
+  if (error) throw simulationDatabaseError(error, 'public.list_admin_simulation_case_versions()');
+  return requireSimulationData(data, null, 'list_admin_simulation_case_versions()').map((row) => {
+    if (!isSimulationAnswerKey(row.answer_key)) {
+      throw new Error(`केस ${row.case_key} को rubric/उत्तर-सूची अमान्य छ।`);
+    }
+    return {
+      caseKey: row.case_key,
+      version: row.version,
+      status: row.status,
+      content: parseSimulationCaseContent(row.content),
+      answerKey: row.answer_key,
+      createdAt: row.created_at,
+    };
+  });
+};
+
+export const saveSimulationCaseVersion = async (
+  draft: SimulationCaseDraft,
+  status: 'draft' | 'published',
+): Promise<SimulationCaseVersion> => {
+  validateSimulationCaseDraft(draft);
+  if (!supabase) {
+    const versions = getLocalSimulationCases();
+    const version = Math.max(0, ...versions
+      .filter((item) => item.caseKey === draft.caseKey)
+      .map((item) => item.version)) + 1;
+    const created: SimulationCaseVersion = {
+      ...draft,
+      version,
+      status,
+      createdAt: new Date().toISOString(),
+    };
+    saveStoredArray(LOCAL_STORAGE_KEY_SIMULATION_CASES, [...versions, created]);
+    return created;
+  }
+
+  const { data, error } = await requireSupabase().rpc('save_simulation_case_version', {
+    p_case_key: draft.caseKey,
+    p_content: toJson(draft.content),
+    p_answer_key: toJson(draft.answerKey),
+    p_status: status,
+  });
+  const row = requireSimulationData(data, error, 'save_simulation_case_version()')[0];
+  if (!row) throw new Error('नयाँ केस संस्करण सिर्जना भएन।');
+  if (row.status !== 'draft' && row.status !== 'published') {
+    throw new Error(`केस संस्करणको अवस्था अमान्य छ: ${row.status}`);
+  }
+  return {
+    ...draft,
+    version: row.version,
+    status: row.status,
+    createdAt: row.created_at,
+  };
+};
+
+export const startSimulationAttempt = async (
+  userId: string,
+  simulationCase: SimulationCaseVersion,
+): Promise<SimulationAttempt> => {
+  if (simulationCase.status !== 'published') throw new Error('प्रकाशित केस मात्र सुरु गर्न सकिन्छ।');
+
+  if (!supabase) {
+    const attempts = getLocalSimulationAttempts();
+    const attemptNumber = attempts.filter((item) =>
+      item.userId === userId && item.caseKey === simulationCase.caseKey,
+    ).length + 1;
+    const now = new Date().toISOString();
+    const attempt: SimulationAttempt = {
+      id: createLocalId(),
+      userId,
+      caseKey: simulationCase.caseKey,
+      caseVersion: simulationCase.version,
+      attemptNumber,
+      status: 'in_progress',
+      answers: {},
+      startedAt: now,
+      updatedAt: now,
+    };
+    saveStoredArray(LOCAL_STORAGE_KEY_SIMULATION_ATTEMPTS, [attempt, ...attempts]);
+    return attempt;
+  }
+
+  const { data, error } = await requireSupabase()
+    .from('simulation_attempts')
+    .insert({
+      user_id: userId,
+      case_key: simulationCase.caseKey,
+      case_version: simulationCase.version,
+    })
+    .select('id, user_id, case_key, case_version, attempt_no, status, started_at, updated_at, completed_at')
+    .single();
+  const row = requireSimulationData(data, error, 'simulation_attempts');
+  return {
+    id: row.id,
+    userId: row.user_id,
+    caseKey: row.case_key,
+    caseVersion: row.case_version,
+    attemptNumber: row.attempt_no,
+    status: row.status,
+    answers: {},
+    startedAt: row.started_at,
+    updatedAt: row.updated_at,
+  };
+};
+
+export const saveSimulationAnswer = async (
+  attemptId: string,
+  userId: string,
+  stepId: string,
+  value: string | number,
+): Promise<void> => {
+  if (!supabase) {
+    const attempts = getLocalSimulationAttempts();
+    let updated = false;
+    const next = attempts.map((attempt) => {
+      if (attempt.id !== attemptId || attempt.userId !== userId) return attempt;
+      if (attempt.status !== 'in_progress') throw new Error('पूरा भएको अभ्यासको उत्तर परिवर्तन गर्न मिल्दैन।');
+      updated = true;
+      return {
+        ...attempt,
+        answers: { ...attempt.answers, [stepId]: value },
+        updatedAt: new Date().toISOString(),
+      };
+    });
+    if (!updated) throw new Error('सक्रिय अभ्यास भेटिएन।');
+    saveStoredArray(LOCAL_STORAGE_KEY_SIMULATION_ATTEMPTS, next);
+    return;
+  }
+
+  const { error } = await requireSupabase()
+    .from('simulation_answers')
+    .upsert({
+      attempt_id: attemptId,
+      step_id: stepId,
+      response: toJson({ value }),
+    }, { onConflict: 'attempt_id,step_id' });
+  if (error) throw simulationDatabaseError(error, 'simulation_answers');
+};
+
+export const completeSimulationAttempt = async (
+  attemptId: string,
+  userId: string,
+): Promise<SimulationResult> => {
+  if (!supabase) {
+    const attempts = getLocalSimulationAttempts();
+    const attempt = attempts.find((item) => item.id === attemptId && item.userId === userId);
+    if (!attempt) throw new Error('अभ्यास भेटिएन।');
+    if (attempt.result) return attempt.result;
+
+    const simulationCase = getLocalSimulationCases().find((item) =>
+      item.caseKey === attempt.caseKey && item.version === attempt.caseVersion,
+    );
+    if (!simulationCase) throw new Error('अभ्यासको केस संस्करण भेटिएन।');
+    const result = calculateSimulationResult(simulationCase, attempt.answers);
+    const updated = attempts.map((item) => item.id === attemptId
+      ? { ...item, status: 'completed' as const, updatedAt: result.completedAt, result }
+      : item);
+    saveStoredArray(LOCAL_STORAGE_KEY_SIMULATION_ATTEMPTS, updated);
+    return result;
+  }
+
+  const { data, error } = await requireSupabase().rpc('grade_simulation_attempt', {
+    p_attempt_id: attemptId,
+  });
+  return parseSimulationResult(requireSimulationData(data, error, 'grade_simulation_attempt()'));
+};
+
+export const listSimulationAttempts = async (
+  userId: string,
+  userRole: UserRole,
+): Promise<SimulationAttempt[]> => {
+  if (!supabase) {
+    return getLocalSimulationAttempts()
+      .filter((attempt) => userRole === 'admin' || attempt.userId === userId)
+      .sort((a, b) => b.startedAt.localeCompare(a.startedAt));
+  }
+
+  let attemptsQuery = requireSupabase()
+    .from('simulation_attempts')
+    .select('id, user_id, case_key, case_version, attempt_no, status, started_at, updated_at, completed_at')
+    .order('started_at', { ascending: false });
+  if (userRole !== 'admin') attemptsQuery = attemptsQuery.eq('user_id', userId);
+  const { data, error } = await attemptsQuery;
+  const rows = requireSimulationData(data, error, 'simulation_attempts');
+  if (rows.length === 0) return [];
+
+  const attemptIds = rows.map((row) => row.id);
+  let resultsQuery = requireSupabase()
+    .from('simulation_results')
+    .select('attempt_id, user_id, score, passed, breakdown, completed_at')
+    .in('attempt_id', attemptIds);
+  if (userRole !== 'admin') resultsQuery = resultsQuery.eq('user_id', userId);
+  const { data: resultRows, error: resultError } = await resultsQuery;
+  const resultMap = new Map(requireSimulationData(resultRows, resultError, 'simulation_results')
+    .map((row) => [row.attempt_id, mapSimulationResultRow(row)]));
+  if (rows.some((row) => row.status === 'completed' && !resultMap.has(row.id))) {
+    throw new Error('सम्पन्न अभ्यासको मूल्याङ्कन नतिजा उपलब्ध छैन।');
+  }
+
+  const { data: answerRows, error: answerError } = await requireSupabase()
+    .from('simulation_answers')
+    .select('attempt_id, step_id, response')
+    .in('attempt_id', attemptIds);
+  const answersByAttempt = new Map<string, Record<string, string | number>>();
+  for (const answer of requireSimulationData(answerRows, answerError, 'simulation_answers')) {
+    if (!isRecord(answer.response)) {
+      throw new Error(`अभ्यास प्रश्न ${answer.step_id} को सुरक्षित उत्तर अमान्य छ।`);
+    }
+    const value = answer.response.value;
+    if (typeof value !== 'string' && typeof value !== 'number') {
+      throw new Error(`अभ्यास प्रश्न ${answer.step_id} को उत्तर खाली वा अमान्य छ।`);
+    }
+    const answers = answersByAttempt.get(answer.attempt_id) ?? {};
+    answers[answer.step_id] = value;
+    answersByAttempt.set(answer.attempt_id, answers);
+  }
+
+  return rows.map((row) => ({
+    id: row.id,
+    userId: row.user_id,
+    caseKey: row.case_key,
+    caseVersion: row.case_version,
+    attemptNumber: row.attempt_no,
+    status: row.status,
+    answers: answersByAttempt.get(row.id) ?? {},
+    startedAt: row.started_at,
+    updatedAt: row.updated_at,
+    ...(resultMap.has(row.id) ? { result: resultMap.get(row.id) } : {}),
+  }));
+};
+
+export const listSimulationCertificates = async (
+  userId: string,
+  userRole: UserRole,
+): Promise<SimulationCertificate[]> => {
+  if (!supabase) {
+    return getLocalSimulationCertificates()
+      .filter((certificate) => userRole === 'admin'
+        || getLocalSimulationAttempts().some((attempt) =>
+          attempt.userId === userId && attempt.id === certificate.attemptId,
+        ));
+  }
+
+  let query = requireSupabase()
+    .from('simulation_certificates')
+    .select('certificate_code, attempt_id, user_id, case_key, case_version, display_name, issued_at, revoked_at')
+    .order('issued_at', { ascending: false });
+  if (userRole !== 'admin') query = query.eq('user_id', userId);
+  const { data, error } = await query;
+  const rows = requireSimulationData(data, error, 'simulation_certificates');
+  if (rows.length === 0) return [];
+  const attempts = await listSimulationAttempts(userId, userRole);
+  const attemptScores = new Map(attempts.map((item) => [item.id, item.result?.score ?? 0]));
+
+  const versions = await requireSupabase()
+    .from('simulation_case_versions')
+    .select('case_key, version, content')
+    .in('case_key', [...new Set(rows.map((row) => row.case_key))])
+    .in('version', [...new Set(rows.map((row) => row.case_version))]);
+  const versionRows = requireSimulationData(versions.data, versions.error, 'simulation_case_versions');
+  const caseNames = new Map(versionRows.map((row) => [
+    `${row.case_key}:${row.version}`,
+    parseSimulationCaseContent(row.content).title,
+  ]));
+
+  return rows.map((row) => {
+    const score = attemptScores.get(row.attempt_id);
+    if (score === undefined) throw new Error(`प्रमाणपत्र ${row.certificate_code} को नतिजा भेटिएन।`);
+    return {
+      code: row.certificate_code,
+      attemptId: row.attempt_id,
+      displayName: row.display_name,
+      caseKey: row.case_key,
+      caseTitle: caseNames.get(`${row.case_key}:${row.case_version}`) ?? row.case_key,
+      score,
+      issuedAt: row.issued_at,
+      isSample: false,
+    };
+  });
+};
+
+export const issueSimulationCertificate = async (
+  attemptId: string,
+  userId: string,
+  displayName: string,
+): Promise<SimulationCertificate> => {
+  const normalizedName = displayName.trim();
+  if (normalizedName.length < 2 || normalizedName.length > 120) {
+    throw new Error('प्रमाणपत्रका लागि २ देखि १२० अक्षरसम्मको नाम लेख्नुहोस्।');
+  }
+
+  if (!supabase) {
+    const attempts = getLocalSimulationAttempts();
+    const attempt = attempts.find((item) => item.id === attemptId && item.userId === userId);
+    if (!attempt?.result?.passed) throw new Error('उत्तीर्ण अभ्यासपछि मात्र नमुना प्रमाणपत्र बनाउन सकिन्छ।');
+
+    const existing = getLocalSimulationCertificates().find((item) =>
+      item.attemptId === attemptId,
+    );
+    if (existing) return existing;
+
+    const simulationCase = getLocalSimulationCases().find((item) => item.caseKey === attempt.caseKey);
+    if (!simulationCase) throw new Error('प्रमाणपत्रको अभ्यास विवरण भेटिएन।');
+    const certificate: SimulationCertificate = {
+      code: createLocalId(),
+      attemptId,
+      displayName: normalizedName,
+      caseKey: attempt.caseKey,
+      caseTitle: simulationCase.content.title,
+      score: attempt.result.score,
+      issuedAt: new Date().toISOString(),
+      isSample: true,
+    };
+    saveStoredArray(LOCAL_STORAGE_KEY_SIMULATION_CERTIFICATES, [
+      certificate,
+      ...getLocalSimulationCertificates(),
+    ]);
+    return certificate;
+  }
+
+  const { data, error } = await requireSupabase().rpc('issue_simulation_certificate', {
+    p_attempt_id: attemptId,
+    p_display_name: normalizedName,
+  });
+  const row = requireSimulationData(data, error, 'issue_simulation_certificate()')[0];
+  if (!row) throw new Error('प्रमाणपत्र अभिलेख सिर्जना भएन।');
+  return {
+    code: row.certificate_code,
+    displayName: row.display_name,
+    caseKey: row.case_key,
+    caseTitle: row.case_title,
+    score: row.score,
+    issuedAt: row.issued_at,
+    isSample: false,
+  };
+};
+
+export const verifySimulationCertificate = async (
+  certificateCode: string,
+): Promise<SimulationCertificateVerification> => {
+  if (!supabase) {
+    const certificate = getLocalSimulationCertificates()
+      .find((item) => item.code === certificateCode);
+    if (!certificate) return { valid: false };
+    return {
+      valid: false,
+      isSample: true,
+      code: certificate.code,
+      caseTitle: certificate.caseTitle,
+      score: certificate.score,
+      issuedAt: certificate.issuedAt,
+    };
+  }
+  const { data, error } = await requireSupabase().rpc('verify_simulation_certificate', {
+    p_certificate_code: certificateCode,
+  });
+  const result = requireSimulationData(data, error, 'verify_simulation_certificate()');
+  if (!isRecord(result) || typeof result.valid !== 'boolean') {
+    throw new Error('प्रमाणपत्र प्रमाणीकरणको जवाफ अमान्य छ।');
+  }
+  return {
+    valid: result.valid,
+    ...(result.status === 'valid' || result.status === 'revoked' ? { status: result.status } : {}),
+    ...(typeof result.code === 'string' ? { code: result.code } : {}),
+    ...(typeof result.caseTitle === 'string' ? { caseTitle: result.caseTitle } : {}),
+    ...(typeof result.score === 'number' ? { score: result.score } : {}),
+    ...(typeof result.issuedAt === 'string' ? { issuedAt: result.issuedAt } : {}),
+  };
+};
 
 export const DEFAULT_LOCAL_ADMIN: AppUser = {
   id: 'local-admin-1',
@@ -107,6 +813,32 @@ const requireData = <T,>(data: T | null, error: { message: string } | null): T =
   if (error) throw new Error(error.message);
   if (data === null) throw new Error('Supabase बाट अपेक्षित विवरण प्राप्त भएन।');
   return data;
+};
+
+const simulationSchemaCacheError = (resource: string): Error =>
+  new Error(
+    `Supabase schema cache मा ${resource} भेटिएन। Practical Simulation migration लागू गर्न `
+    + '`supabase db push` चलाउनुहोस्। Migration लागू छ भने SQL Editor मा '
+    + "`NOTIFY pgrst, 'reload schema';` चलाएर पुनः प्रयास गर्नुहोस्। विवरण `supabase/SETUP.md` मा छ।",
+  );
+
+const simulationDatabaseError = (
+  error: { code?: string; message: string },
+  resource: string,
+): Error => {
+  if (['PGRST202', 'PGRST204', 'PGRST205'].includes(error.code ?? '')) {
+    return simulationSchemaCacheError(resource);
+  }
+  return new Error(error.message);
+};
+
+const requireSimulationData = <T,>(
+  data: T | null,
+  error: { code?: string; message: string } | null,
+  resource: string,
+): T => {
+  if (error) throw simulationDatabaseError(error, resource);
+  return requireData(data, null);
 };
 
 export const signInWithUsername = async (username: string, password: string): Promise<AppUser> => {

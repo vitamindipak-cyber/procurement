@@ -20,7 +20,7 @@ export const BeginnerCoachBar: React.FC<BeginnerCoachBarProps> = ({
   return (
     <section
       aria-label="यस पृष्ठमा के गर्ने"
-      className={`mb-5 flex flex-col gap-3 rounded-2xl border bg-white px-4 py-3.5 shadow-xs sm:flex-row sm:items-center sm:justify-between sm:px-5 ${
+      className={`mb-3 flex flex-col gap-3 rounded-2xl border bg-white px-4 py-3 shadow-xs sm:flex-row sm:items-center sm:justify-between sm:px-5 ${
         isBidder ? 'border-emerald-200' : 'border-blue-200'
       }`}
     >

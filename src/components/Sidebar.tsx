@@ -27,6 +27,7 @@ import {
   Globe,
   Gavel,
   Bot,
+  GraduationCap,
 } from 'lucide-react';
 import { UserRole } from '../types/auth';
 
@@ -123,6 +124,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         groupTitle: 'खरिद सल्लाह',
         items: [
           { id: 'dashboard',        label: 'सार्वजनिक निकाय ड्यासबोर्ड', icon: Briefcase },
+          { id: 'simulation-dashboard', label: 'व्यावहारिक अभ्यासशाला', icon: GraduationCap },
           { id: 'bidder-hub',       label: 'बोलपत्रदाता कर्नर',           icon: HardHat },
           { id: 'advisor',          label: 'खरिद सल्लाहकार',              icon: Sparkles },
           { id: 'workflow-wizard',  label: 'चरणबद्ध गाइड',                icon: ClipboardList },
@@ -170,7 +172,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       ].filter((group) => group.items.length > 0);
     }
 
-    const primaryIds = ['dashboard', 'workflow-wizard'];
+    const primaryIds = ['dashboard', 'workflow-wizard', 'simulation-dashboard'];
     const toolIds = ['advisor', 'methods', 'calculator', 'checklists', 'bid-evaluation'];
     const documentIds = ['templates'];
     const helpIds = ['law-corpus', 'dilemma-solver', 'glossary'];
@@ -407,6 +409,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         'bidder-safeguards', 'bidder-checklist', 'bidder-sbd-hub', 'bidder-review',
                       ].includes(item.id);
                       const isActive = activeTab === item.id ||
+                        (item.id === 'simulation-dashboard' && activeTab.startsWith('simulation-')) ||
                         (item.id === 'bidder-hub' && activeTab === 'bidder-hub' &&
                           !isBidderSubTabItem) ||
                         (isBidderSubTabItem && activeTab === 'bidder-hub' &&

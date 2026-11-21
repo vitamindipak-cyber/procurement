@@ -149,7 +149,7 @@ main:not(.login-screen) textarea::placeholder { color: #9aa9bb; }
   }
 
   #root main:not(.login-screen) {
-    padding: 1rem 1rem calc(6rem + env(safe-area-inset-bottom, 0px));
+    padding: 0.75rem 0.75rem calc(6rem + env(safe-area-inset-bottom, 0px));
   }
   #root footer { padding: 1rem; }
 
