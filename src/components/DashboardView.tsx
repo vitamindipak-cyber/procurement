@@ -116,27 +116,33 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   return (
     <div className="space-y-6">
       {/* Top Banner / Welcome with Quick Action */}
-      <div className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm sm:rounded-3xl">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(18,63,109,0.075),transparent_55%),radial-gradient(ellipse_at_bottom_right,rgba(15,118,110,0.055),transparent_50%)]" />
-        <div className="relative grid gap-4 p-4 sm:gap-8 sm:p-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
-          <div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-3 py-1 text-[11px] font-semibold text-slate-600">
-              <Building2 className="h-3.5 w-3.5 text-[#123f6d]" aria-hidden="true" />
+      <div className="relative min-h-[220px] overflow-hidden rounded-2xl border border-slate-200/80 bg-[#0b2543] shadow-sm sm:min-h-[230px] sm:rounded-3xl">
+        <img
+          src={dashboardImage}
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 h-full w-full object-cover object-center"
+        />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#0b2543]/95 via-[#0b2543]/75 to-[#0b2543]/30" />
+        <div className="relative flex min-h-[220px] items-center p-4 sm:min-h-[230px] sm:p-6">
+          <div className="max-w-3xl">
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3 py-1 text-[11px] font-semibold text-white/90">
+              <Building2 className="h-3.5 w-3.5" aria-hidden="true" />
               सार्वजनिक निकाय · खरिद अधिकृत गाइड
             </span>
-            <h1 className="mt-3 text-xl font-extrabold leading-[1.18] text-slate-900 sm:mt-4 sm:text-3xl lg:text-[2.15rem]">
-              खरिद प्रक्रियाको पूर्ण <span className="text-[#123f6d]">ड्यासबोर्ड</span>
+            <h1 className="mt-2 text-xl font-extrabold leading-[1.18] text-white sm:text-3xl">
+              खरिद प्रक्रियाको पूर्ण <span className="text-sky-200">ड्यासबोर्ड</span>
             </h1>
-            <p className="mt-3 max-w-xl text-sm leading-relaxed text-slate-600 sm:text-[15px]">
+            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-white/85">
               {beginnerMode
                 ? 'तलको चरण छानेर एक-एक गर्दै अघि बढ्नुहोस्। प्रत्येक चरणमा के गर्ने, के नबिर्सने र कुन पृष्ठ खोल्ने लेखिएको छ।'
                 : 'विधि छनोटदेखि मूल्याङ्कन, सम्झौता र फाइल अनुपालनसम्मको मार्गदर्शन — आयोजना ट्र्याकिङसहित।'}
             </p>
 
-            <div className="mt-4 flex flex-col items-stretch gap-2.5 sm:mt-6 sm:flex-row sm:flex-wrap sm:items-center">
+            <div className="mt-3 flex flex-col items-stretch gap-2 sm:flex-row sm:flex-wrap sm:items-center">
               <button
                 onClick={onOpenNewProjectModal}
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#123f6d] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#0e3359]"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-2 text-sm font-semibold text-[#123f6d] shadow-sm transition-colors hover:bg-slate-100"
               >
                 <PlusCircle className="h-4 w-4" />
                 नयाँ खरिद आयोजना थप्नुहोस्
@@ -145,7 +151,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 <button
                   type="button"
                   onClick={() => document.getElementById('beginner-journey')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/50 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/20"
                 >
                   <span>चरणबद्ध प्रक्रिया हेर्नुहोस्</span>
                   <ChevronRight className="h-4 w-4 shrink-0" aria-hidden="true" />
@@ -154,61 +160,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 <button
                   type="button"
                   onClick={() => onNavigateToGuide('advisor')}
-                  className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50"
+                  className="inline-flex items-center gap-2 rounded-xl border border-white/50 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/20"
                 >
                   <span>विधि सल्लाहकारबाट सुरु गर्नुहोस्</span>
                   <ChevronRight className="h-4 w-4 shrink-0" aria-hidden="true" />
                 </button>
               )}
-            </div>
-
-            <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-[11px] font-medium text-slate-500">
-              <span className="inline-flex items-center gap-1.5">
-                <ShieldCheck className="h-3.5 w-3.5 text-teal-600" aria-hidden="true" />
-                १६औँ संशोधन समावेश
-              </span>
-              <span className="inline-flex items-center gap-1.5">
-                <CheckCircle2 className="h-3.5 w-3.5 text-teal-600" aria-hidden="true" />
-                e-GP अनुपालन
-              </span>
-              <span className="inline-flex items-center gap-1.5">
-                <Clock className="h-3.5 w-3.5 text-teal-600" aria-hidden="true" />
-                ७ प्रक्रियागत चरण
-              </span>
-            </div>
-          </div>
-
-          <div className="relative hidden lg:block">
-            <div className="relative overflow-hidden rounded-2xl border border-white/70 shadow-lg">
-              <img
-                src={dashboardImage}
-                alt="सार्वजनिक खरिद कार्यालय"
-                className="h-64 w-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0b2543]/80 via-[#0b2543]/15 to-transparent" />
-            </div>
-            <div className="absolute bottom-4 left-4 right-4 rounded-xl border border-white/60 bg-white/95 p-3.5 shadow-md backdrop-blur-sm">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">हालको अवस्था</span>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-teal-50 px-2 py-0.5 text-[10px] font-semibold text-teal-700">
-                  <span className="h-1.5 w-1.5 rounded-full bg-teal-500" />
-                  सक्रिय
-                </span>
-              </div>
-              <div className="mt-2.5 grid grid-cols-3 gap-2 text-center">
-                <div>
-                  <div className="text-lg font-bold tabular-nums text-slate-900">{projects.length}</div>
-                  <div className="text-[10px] text-slate-500">आयोजना</div>
-                </div>
-                <div className="border-x border-slate-100">
-                  <div className="text-lg font-bold tabular-nums text-slate-900">{biddingCount}</div>
-                  <div className="text-[10px] text-slate-500">बोलपत्रमा</div>
-                </div>
-                <div>
-                  <div className="text-lg font-bold tabular-nums text-slate-900">{executionCount}</div>
-                  <div className="text-[10px] text-slate-500">कार्यान्वयन</div>
-                </div>
-              </div>
             </div>
           </div>
         </div>

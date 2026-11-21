@@ -518,7 +518,7 @@ function ProcurementApp({
       )}
 
       {/* Main Content Area (offset by Sidebar width on desktop) */}
-      <div className={`${isSidebarCollapsed ? 'lg:pl-20' : 'lg:pl-[15.3rem]'} flex flex-col min-h-screen transition-all duration-200 ease-in-out`}>
+      <div className={`${isSidebarCollapsed ? 'lg:pl-20' : 'lg:pl-[16.83rem]'} flex flex-col min-h-screen transition-all duration-200 ease-in-out`}>
         {/* Top Header with Breadcrumbs & Actions */}
         <TopHeader
           activeTab={activeTab}

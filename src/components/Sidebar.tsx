@@ -223,8 +223,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <aside
         className={[
           'fixed top-0 bottom-0 left-0 z-50 flex flex-col',
-          isCollapsed ? 'lg:w-[68px]' : 'lg:w-[15.3rem]',
-          'w-[15.3rem]',
+          isCollapsed ? 'lg:w-[68px]' : 'lg:w-[16.83rem]',
+          'w-[16.83rem]',
           SB.bg,
           SB.border, 'border-r',
           'shadow-[0_0_0_1px_rgba(15,28,46,0.02)]',
