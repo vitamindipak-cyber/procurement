@@ -49,9 +49,9 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
   return (
     <nav
       aria-label="मोबाइल नेभिगेसन बार"
-      className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/80 text-slate-500 lg:hidden no-print shadow-[0_-10px_30px_-22px_rgba(15,28,46,0.35)] pb-[env(safe-area-inset-bottom)]"
+      className="fixed inset-x-0 bottom-0 z-40 w-full overflow-x-clip border-t border-slate-200/80 bg-white/95 text-slate-500 shadow-[0_-10px_30px_-22px_rgba(15,28,46,0.35)] backdrop-blur-md no-print lg:hidden pb-[env(safe-area-inset-bottom)]"
     >
-      <div className="grid grid-cols-5 h-16 max-w-lg mx-auto px-1 items-center">
+      <div className="mx-auto grid h-16 w-full max-w-lg grid-cols-5 items-center px-1">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
@@ -60,7 +60,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
               key={item.id}
               type="button"
               onClick={() => setActiveTab(item.id)}
-              className={`flex flex-col items-center justify-center h-full py-1 px-1 transition-all relative ${
+              className={`relative flex h-full min-w-0 flex-col items-center justify-center overflow-hidden px-1 py-1 transition-all ${
                 isActive
                   ? 'text-[#123f6d] font-bold'
                   : 'text-slate-500 hover:text-slate-800'
@@ -71,9 +71,9 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
                   isActive ? 'bg-[#eff5fc] text-[#123f6d]' : 'text-slate-400'
                 }`}
               >
-                <Icon className="w-5 h-5" />
+                <Icon className="h-5 w-5 shrink-0" />
               </div>
-              <span className="text-[10px] mt-0.5 tracking-tight truncate max-w-full">
+              <span className="mt-0.5 block w-full min-w-0 truncate text-center text-[10px] tracking-tight">
                 {item.label}
               </span>
             </button>
@@ -83,13 +83,13 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
         <button
           type="button"
           onClick={onOpenMobileMenu}
-          className="flex flex-col items-center justify-center h-full py-1 px-1 text-slate-500 hover:text-slate-800 transition-all"
+          className="flex h-full min-w-0 flex-col items-center justify-center overflow-hidden px-1 py-1 text-slate-500 transition-all hover:text-slate-800"
           title="सबै मेनु खोल्नुहोस्"
         >
           <div className="p-1 rounded-xl text-slate-400 hover:bg-slate-100 transition-all">
-            <Menu className="w-5 h-5" />
+            <Menu className="h-5 w-5 shrink-0" />
           </div>
-          <span className="text-[10px] mt-0.5 tracking-tight truncate max-w-full">
+          <span className="mt-0.5 block w-full min-w-0 truncate text-center text-[10px] tracking-tight">
             सबै मेनु
           </span>
         </button>
