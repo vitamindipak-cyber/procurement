@@ -49,9 +49,9 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
   return (
     <nav
       aria-label="मोबाइल नेभिगेसन बार"
-      className="fixed inset-x-0 bottom-0 z-40 w-full overflow-x-clip border-t border-slate-200/80 bg-white/95 text-slate-500 shadow-[0_-10px_30px_-22px_rgba(15,28,46,0.35)] backdrop-blur-md no-print lg:hidden pb-[env(safe-area-inset-bottom)]"
+      className="fixed inset-x-0 bottom-0 z-40 box-border overflow-x-clip border-t border-slate-200/80 bg-white/95 text-slate-500 shadow-[0_-10px_30px_-22px_rgba(15,28,46,0.35)] backdrop-blur-md no-print lg:hidden pb-[env(safe-area-inset-bottom)]"
     >
-      <div className="mx-auto grid h-16 w-full max-w-lg grid-cols-5 items-center px-1">
+      <div className="mx-auto grid h-16 w-full max-w-lg grid-cols-[repeat(5,minmax(0,1fr))] items-center px-1">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
@@ -60,7 +60,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
               key={item.id}
               type="button"
               onClick={() => setActiveTab(item.id)}
-              className={`relative flex h-full min-w-0 flex-col items-center justify-center overflow-hidden px-1 py-1 transition-all ${
+              className={`relative flex h-full w-full min-w-0 flex-col items-center justify-center overflow-hidden px-1 py-1 transition-all ${
                 isActive
                   ? 'text-[#123f6d] font-bold'
                   : 'text-slate-500 hover:text-slate-800'
@@ -83,7 +83,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
         <button
           type="button"
           onClick={onOpenMobileMenu}
-          className="flex h-full min-w-0 flex-col items-center justify-center overflow-hidden px-1 py-1 text-slate-500 transition-all hover:text-slate-800"
+          className="flex h-full w-full min-w-0 flex-col items-center justify-center overflow-hidden px-1 py-1 text-slate-500 transition-all hover:text-slate-800"
           title="सबै मेनु खोल्नुहोस्"
         >
           <div className="p-1 rounded-xl text-slate-400 hover:bg-slate-100 transition-all">
