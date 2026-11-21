@@ -70,7 +70,7 @@ export const BeginnerJourney: React.FC<BeginnerJourneyProps> = ({
       <div className="border-b border-slate-100 px-5 py-5 sm:px-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="max-w-2xl">
-            <p className={`text-[11px] font-bold uppercase tracking-wider ${isBidder ? 'text-emerald-700' : 'text-blue-800'}`}>
+            <p className={`text-[11px] font-bold uppercase tracking-wider ${isBidder ? 'text-emerald-700' : 'text-[#123f6d]'}`}>
               {isBidder ? 'बोलपत्रदाताका लागि सरल मार्ग' : 'सार्वजनिक निकायका लागि सरल मार्ग'}
             </p>
             <h2 id="beginner-journey-title" className="mt-1 text-xl font-bold tracking-tight text-slate-950">
@@ -82,7 +82,7 @@ export const BeginnerJourney: React.FC<BeginnerJourneyProps> = ({
                 : 'नयाँ हुनुहुन्छ भने चरण १ बाट सुरु गर्नुहोस्। चरण छानेपछि के गर्ने, के नबिर्सने र कुन पृष्ठ खोल्ने देखिन्छ।'}
             </p>
           </div>
-          <p className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${isBidder ? 'bg-emerald-50 text-emerald-800' : 'bg-blue-50 text-blue-800'}`}>
+          <p className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${isBidder ? 'bg-emerald-50 text-emerald-800' : 'bg-[#eff5fc] text-[#123f6d]'}`}>
             <Compass className="h-3.5 w-3.5" aria-hidden="true" />
             {readIds.length}/{steps.length} चरण पढियो
           </p>
@@ -105,12 +105,12 @@ export const BeginnerJourney: React.FC<BeginnerJourneyProps> = ({
                     isSelected
                       ? isBidder
                         ? 'border-emerald-700 bg-emerald-800 text-white'
-                        : 'border-blue-800 bg-[#1a4b82] text-white'
+                        : 'border-[#123f6d] bg-[#123f6d] text-white'
                       : 'border-slate-200 bg-slate-50 text-slate-800 hover:border-slate-300 hover:bg-white'
                   }`}
                 >
                   <span className="flex items-center justify-between gap-2">
-                    <span className={`text-[11px] font-bold ${isSelected ? 'text-white/80' : isBidder ? 'text-emerald-700' : 'text-blue-800'}`}>
+                    <span className={`text-[11px] font-bold ${isSelected ? 'text-white/80' : isBidder ? 'text-emerald-700' : 'text-[#123f6d]'}`}>
                       चरण {step.number}
                     </span>
                     {isRead && (
@@ -130,8 +130,8 @@ export const BeginnerJourney: React.FC<BeginnerJourneyProps> = ({
           })}
         </ol>
 
-        <div className={`mt-4 rounded-2xl border p-4 sm:p-5 ${isBidder ? 'border-emerald-100 bg-emerald-50/40' : 'border-blue-100 bg-blue-50/40'}`}>
-          <p className={`text-[11px] font-bold uppercase tracking-wider ${isBidder ? 'text-emerald-800' : 'text-blue-800'}`}>
+        <div className={`mt-4 rounded-2xl border p-4 sm:p-5 ${isBidder ? 'border-emerald-100 bg-emerald-50/40' : 'border-[#dce7f3] bg-[#f6f9fc]'}`}>
+          <p className={`text-[11px] font-bold uppercase tracking-wider ${isBidder ? 'text-emerald-800' : 'text-[#123f6d]'}`}>
             चरण {selected.number} · अहिले यो गर्नुहोस्
           </p>
           <h3 className="mt-1 text-lg font-bold text-slate-950">{selected.title}</h3>
@@ -143,7 +143,7 @@ export const BeginnerJourney: React.FC<BeginnerJourneyProps> = ({
               <ul className="mt-2 space-y-2">
                 {selected.doNow.map((item) => (
                   <li key={item} className="flex items-start gap-2 text-sm leading-relaxed text-slate-700">
-                    <span className={`mt-2 h-1.5 w-1.5 shrink-0 rounded-full ${isBidder ? 'bg-emerald-600' : 'bg-blue-700'}`} aria-hidden="true" />
+                    <span className={`mt-2 h-1.5 w-1.5 shrink-0 rounded-full ${isBidder ? 'bg-emerald-600' : 'bg-[#123f6d]'}`} aria-hidden="true" />
                     <span>{item}</span>
                   </li>
                 ))}
@@ -215,7 +215,7 @@ export const BeginnerJourney: React.FC<BeginnerJourneyProps> = ({
                   onOpen(selected);
                 }}
                 className={`inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-bold text-white transition-colors ${
-                  isBidder ? 'bg-emerald-800 hover:bg-emerald-900' : 'bg-[#1a4b82] hover:bg-[#15396a]'
+                  isBidder ? 'bg-emerald-800 hover:bg-emerald-900' : 'bg-[#123f6d] hover:bg-[#0e3359]'
                 }`}
               >
                 {selected.actionLabel}

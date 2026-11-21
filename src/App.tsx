@@ -536,7 +536,7 @@ function ProcurementApp({
         />
 
         {/* Viewport Content */}
-        <main id="main-content" aria-label="पृष्ठको मुख्य सामग्री" className="flex-1 w-full p-4 sm:p-6 lg:p-8 pb-24 lg:pb-8">
+        <main id="main-content" aria-label="पृष्ठको मुख्य सामग्री" className="mx-auto w-full max-w-[1600px] flex-1 p-4 pb-24 sm:p-6 lg:p-8 lg:pb-8">
           {authError && (
             <p role="alert" className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
               {authError}
@@ -736,7 +736,7 @@ function ProcurementApp({
         <footer className="mt-auto py-5 px-4 sm:px-8 no-print border-t border-slate-200/80 bg-white/70 backdrop-blur-sm">
           <div className="flex flex-col md:flex-row items-center justify-between gap-3 text-[11px] text-slate-400">
             <div className="flex items-center gap-2.5">
-              <div className="w-6 h-6 rounded-lg bg-[#1a4b82] text-white flex items-center justify-center font-bold text-[10px] shrink-0">
+              <div className="w-6 h-6 rounded-lg bg-[#123f6d] text-white flex items-center justify-center font-bold text-[10px] shrink-0">
                 ख
               </div>
               <span className="font-semibold text-slate-700">सार्वजनिक खरिद सहयोगी</span>
@@ -754,7 +754,7 @@ function ProcurementApp({
                 <React.Fragment key={tab}>
                   <button
                     onClick={() => setActiveTab(tab)}
-                    className="text-slate-400 hover:text-[#1a4b82] transition-colors font-medium"
+                    className="text-slate-400 hover:text-[#123f6d] transition-colors font-medium"
                   >
                     {label}
                   </button>
@@ -836,7 +836,7 @@ export default function App() {
   if (!currentUser) {
     if (!isSupabaseConfigured) {
       return (
-        <main className="flex min-h-screen items-center justify-center bg-[#f0f4fa] p-6">
+        <main className="flex min-h-screen items-center justify-center bg-[#f5f7fb] p-6">
           <section className="max-w-xl rounded-2xl border border-amber-200 bg-white p-7 shadow-sm">
             <h1 className="text-lg font-bold text-slate-900">Supabase configuration आवश्यक छ</h1>
             <p className="mt-2.5 text-sm leading-relaxed text-slate-600">
@@ -850,13 +850,13 @@ export default function App() {
     }
     if (isAuthLoading) {
       return (
-        <main role="status" className="flex min-h-screen flex-col items-center justify-center gap-4 bg-[#f0f4fa]">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#1a4b82] text-xl font-bold text-white shadow-lg">ख</div>
+        <main role="status" className="flex min-h-screen flex-col items-center justify-center gap-4 bg-[#f5f7fb]">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#123f6d] text-xl font-bold text-white shadow-lg">ख</div>
           <div className="text-center">
             <p className="text-sm font-bold text-slate-800">सार्वजनिक खरिद सहयोगी</p>
             <p className="text-xs text-slate-400 mt-1">लोड हुँदैछ...</p>
           </div>
-          <div className="w-6 h-6 border-2 border-[#1a4b82]/20 border-t-[#1a4b82] rounded-full animate-spin" />
+          <div className="w-6 h-6 border-2 border-[#123f6d]/20 border-t-[#123f6d] rounded-full animate-spin" />
         </main>
       );
     }

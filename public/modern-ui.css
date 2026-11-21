@@ -1,26 +1,27 @@
 /*
  * modern-ui.css — Global polish layer for Public Procurement App
  * Loaded directly from index.html (before the React bundle)
+ * Light, airy and professional visual system.
  */
 
 /* ─── Reset & base ─────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; }
 
 :root {
-  --ui-radius-sm:  8px;
-  --ui-radius:    12px;
-  --ui-radius-lg: 18px;
-  --ui-shadow-xs: 0 1px 3px rgba(14 30 52 / .05), 0 4px 10px rgba(14 30 52 / .04);
-  --ui-shadow-sm: 0 2px 6px rgba(14 30 52 / .07), 0 10px 24px rgba(14 30 52 / .05);
-  --ui-shadow-md: 0 8px 28px rgba(14 30 52 / .10);
-  --ui-shadow-lg: 0 20px 56px rgba(14 30 52 / .14);
+  --ui-radius-sm:  10px;
+  --ui-radius:     14px;
+  --ui-radius-lg:  20px;
+  --ui-shadow-xs:  0 1px 2px rgba(15 28 46 / .04), 0 8px 24px -18px rgba(15 28 46 / .18);
+  --ui-shadow-sm:  0 2px 6px rgba(15 28 46 / .05), 0 16px 36px -22px rgba(15 28 46 / .22);
+  --ui-shadow-md:  0 10px 32px -14px rgba(15 28 46 / .22);
+  --ui-shadow-lg:  0 24px 60px -24px rgba(15 28 46 / .30);
 }
 
 html { scroll-behavior: smooth; }
 
 body {
   font-family: "Mukta", "Plus Jakarta Sans", system-ui, sans-serif;
-  letter-spacing: .004em;
+  letter-spacing: .002em;
   line-height: 1.6;
 }
 
@@ -30,7 +31,7 @@ a:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: 2.5px solid rgba(26 75 130 / .50) !important;
+  outline: 2.5px solid rgba(18 63 109 / .42) !important;
   outline-offset: 2px;
 }
 
@@ -39,62 +40,66 @@ input:not([type="checkbox"]):not([type="radio"]),
 select,
 textarea {
   border-radius: var(--ui-radius-sm) !important;
-  border-color: #d2dce9 !important;
-  min-height: 40px;
-  transition: border-color .15s ease, box-shadow .15s ease;
+  border-color: #dfe6f0 !important;
+  min-height: 42px;
+  transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
 }
 input:not([type="checkbox"]):not([type="radio"]):focus,
 select:focus,
 textarea:focus {
-  border-color: #3b7dd8 !important;
-  box-shadow: 0 0 0 3px rgba(59 125 216 / .18) !important;
+  border-color: #3f6f9e !important;
+  box-shadow: 0 0 0 3.5px rgba(18 63 109 / .10) !important;
   outline: none !important;
 }
 
 /* ─── Buttons ─────────────────────────────────────────────────────────── */
 button { transition: background-color .15s ease, border-color .15s ease, color .15s ease, box-shadow .15s ease, transform .12s ease; }
 button[class*="rounded"] { font-weight: 600; }
+button:not(:disabled):active { transform: translateY(0.5px); }
 
 /* ─── Card borders & shadows ──────────────────────────────────────────── */
 [class*="rounded-xl"][class*="border"],
 [class*="rounded-2xl"][class*="border"],
 [class*="rounded-3xl"][class*="border"] {
-  border-color: #dce4ef;
+  border-color: #e5ebf3;
 }
 [class*="shadow-sm"] { box-shadow: var(--ui-shadow-xs) !important; }
 [class*="shadow-md"] { box-shadow: var(--ui-shadow-sm) !important; }
+[class*="shadow-lg"] { box-shadow: var(--ui-shadow-md) !important; }
+[class*="shadow-xl"],
+[class*="shadow-2xl"] { box-shadow: var(--ui-shadow-lg) !important; }
 
 /* ─── Tables ──────────────────────────────────────────────────────────── */
 table { border-collapse: separate; border-spacing: 0; width: 100%; }
 thead th {
-  background: #f4f7fc;
-  color: #3d526b;
+  background: #f7f9fc;
+  color: #5a6b80;
   font-weight: 700;
-  font-size: .78rem;
-  letter-spacing: .03em;
+  font-size: .76rem;
+  letter-spacing: .045em;
   text-transform: uppercase;
 }
-th, td { border-color: #e6edf5 !important; }
+th, td { border-color: #edf1f7 !important; }
 tbody tr { transition: background .12s ease; }
-tbody tr:hover { background: #f7fafd; }
+tbody tr:hover { background: #f8fafd; }
 
 /* ─── Scrollbar ───────────────────────────────────────────────────────── */
 * {
-  scrollbar-color: #c8d5e4 transparent;
+  scrollbar-color: #cbd6e4 transparent;
   scrollbar-width: thin;
 }
 *::-webkit-scrollbar { width: 6px; height: 6px; }
 *::-webkit-scrollbar-track { background: transparent; }
 *::-webkit-scrollbar-thumb {
-  background: #c8d5e4;
+  background: #cbd6e4;
   border-radius: 99px;
   border: 1px solid transparent;
   background-clip: padding-box;
 }
-*::-webkit-scrollbar-thumb:hover { background: #9fb3c8; }
+*::-webkit-scrollbar-thumb:hover { background: #a9b9cc; }
 
 /* ─── Selection ───────────────────────────────────────────────────────── */
-::selection { background: #cfe4fb; color: #0b2341; }
+::selection { background: #cfe2f6; color: #08213a; }
 
 /* ─── Reduced motion ──────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {

@@ -49,7 +49,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
   return (
     <nav
       aria-label="मोबाइल नेभिगेसन बार"
-      className="fixed bottom-0 left-0 right-0 z-40 bg-[#163e68]/95 backdrop-blur-md border-t border-[#31577b] text-white lg:hidden no-print shadow-lg pb-[env(safe-area-inset-bottom)]"
+      className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/80 text-slate-500 lg:hidden no-print shadow-[0_-10px_30px_-22px_rgba(15,28,46,0.35)] pb-[env(safe-area-inset-bottom)]"
     >
       <div className="grid grid-cols-5 h-16 max-w-lg mx-auto px-1 items-center">
         {navItems.map((item) => {
@@ -62,16 +62,13 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
               onClick={() => setActiveTab(item.id)}
               className={`flex flex-col items-center justify-center h-full py-1 px-1 transition-all relative ${
                 isActive
-                  ? 'text-white font-bold'
-                  : 'text-blue-200/80 hover:text-white'
+                  ? 'text-[#123f6d] font-bold'
+                  : 'text-slate-500 hover:text-slate-800'
               }`}
             >
-              {isActive && (
-                <span className="absolute top-1 w-8 h-1 bg-blue-400 rounded-full shadow-sm animate-pulse" />
-              )}
               <div
                 className={`p-1 rounded-xl transition-all ${
-                  isActive ? 'bg-blue-600 text-white shadow-xs' : ''
+                  isActive ? 'bg-[#eff5fc] text-[#123f6d]' : 'text-slate-400'
                 }`}
               >
                 <Icon className="w-5 h-5" />
@@ -86,10 +83,10 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
         <button
           type="button"
           onClick={onOpenMobileMenu}
-          className="flex flex-col items-center justify-center h-full py-1 px-1 text-blue-200/80 hover:text-white transition-all"
+          className="flex flex-col items-center justify-center h-full py-1 px-1 text-slate-500 hover:text-slate-800 transition-all"
           title="सबै मेनु खोल्नुहोस्"
         >
-          <div className="p-1 rounded-xl hover:bg-white/10 transition-all">
+          <div className="p-1 rounded-xl text-slate-400 hover:bg-slate-100 transition-all">
             <Menu className="w-5 h-5" />
           </div>
           <span className="text-[10px] mt-0.5 tracking-tight truncate max-w-full">

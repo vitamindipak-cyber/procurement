@@ -10,11 +10,11 @@ const TERMS = [
 ];
 
 export const CommonTermsBar: React.FC = () => (
-  <section aria-label="सामान्य खरिद शब्दको सरल अर्थ" className="mb-5 flex flex-wrap items-center gap-2 rounded-xl border border-blue-100 bg-blue-50/70 px-3 py-2.5">
-    <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-blue-900"><BookOpen className="h-3.5 w-3.5 text-blue-700" /> शब्दको सरल अर्थ</span>
+  <section aria-label="सामान्य खरिद शब्दको सरल अर्थ" className="mb-5 flex flex-wrap items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2.5 shadow-xs">
+    <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-slate-900"><BookOpen className="h-3.5 w-3.5 text-[#123f6d]" /> शब्दको सरल अर्थ</span>
     {TERMS.map((term) => (
       <BeginnerTooltip key={term.word} title={term.word} content={term.meaning} position="bottom">
-        <span className="rounded-full border border-blue-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-blue-800 hover:border-blue-400">{term.word}</span>
+        <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-700 transition-colors hover:border-[#b9cfe6] hover:bg-[#eff5fc] hover:text-[#123f6d]">{term.word}</span>
       </BeginnerTooltip>
     ))}
   </section>

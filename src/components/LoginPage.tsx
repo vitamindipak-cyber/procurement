@@ -60,7 +60,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ errorMessage, onLogin, onS
 
   /* ── Shared input classes ─────────────────────────────────────────── */
   const inputCls =
-    'w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 focus:bg-white';
+    'w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition focus:border-[#3f6f9e] focus:ring-2 focus:ring-[#123f6d]/15 focus:bg-white';
 
   return (
     <main
@@ -125,7 +125,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ errorMessage, onLogin, onS
 
           {/* Mobile logo */}
           <div className="mb-6 flex items-center gap-3 lg:hidden">
-            <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-[#1a4b82] text-lg font-bold text-white shrink-0">ख</div>
+            <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-[#123f6d] text-lg font-bold text-white shrink-0">ख</div>
             <div>
               <div className="text-sm font-bold text-slate-900 tracking-tight">सार्वजनिक खरिद सहयोगी</div>
               <div className="text-[11px] text-slate-400">खरिद प्रक्रिया गाइड</div>
@@ -156,8 +156,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ errorMessage, onLogin, onS
 
           {/* Title */}
           <div className="mb-6">
-            <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50">
-              <LockKeyhole className="h-4.5 w-4.5 text-[#1a4b82]" />
+            <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-[#eff5fc]">
+              <LockKeyhole className="h-4.5 w-4.5 text-[#123f6d]" />
             </div>
             <h1 className="text-xl font-bold text-slate-900">
               {isSignUp ? 'नयाँ खाता बनाउनुहोस्' : 'स्वागत छ'}
@@ -235,7 +235,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ errorMessage, onLogin, onS
 
               <button
                 type="submit" disabled={isSubmitting}
-                className="mt-1 w-full flex items-center justify-center gap-2 rounded-xl bg-[#1a4b82] hover:bg-[#15396a] px-4 py-3 text-sm font-bold text-white shadow-sm transition disabled:opacity-60 disabled:cursor-wait"
+                className="mt-1 w-full flex items-center justify-center gap-2 rounded-xl bg-[#123f6d] hover:bg-[#0e3359] px-4 py-3 text-sm font-bold text-white shadow-sm transition disabled:opacity-60 disabled:cursor-wait"
               >
                 {isSubmitting ? (
                   <><span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" /> खाता बनाउँदैछ...</>
@@ -295,7 +295,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ errorMessage, onLogin, onS
 
               <button
                 type="submit" disabled={isSubmitting}
-                className="mt-1 w-full flex items-center justify-center gap-2 rounded-xl bg-[#1a4b82] hover:bg-[#15396a] px-4 py-3 text-sm font-bold text-white shadow-sm transition disabled:opacity-60 disabled:cursor-wait focus:outline-none focus:ring-2 focus:ring-[#1a4b82]/40 focus:ring-offset-2"
+                className="mt-1 w-full flex items-center justify-center gap-2 rounded-xl bg-[#123f6d] hover:bg-[#0e3359] px-4 py-3 text-sm font-bold text-white shadow-sm transition disabled:opacity-60 disabled:cursor-wait focus:outline-none focus:ring-2 focus:ring-[#123f6d]/40 focus:ring-offset-2"
               >
                 {isSubmitting ? (
                   <><span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" /> लगइन हुँदैछ...</>
@@ -317,7 +317,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ errorMessage, onLogin, onS
             <button
               type="button"
               onClick={() => switchMode(!isSignUp)}
-              className="font-semibold text-[#1a4b82] hover:text-[#15396a] transition-colors"
+              className="font-semibold text-[#123f6d] hover:text-[#0e3359] transition-colors"
             >
               {isSignUp ? 'लगइन गर्नुहोस्' : 'खाता बनाउनुहोस्'}
             </button>

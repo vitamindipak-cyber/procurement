@@ -4,10 +4,10 @@
   --font-sans: "Mukta", "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
   --font-mono: "JetBrains Mono", monospace;
 
-  /* Refined palette */
-  --color-slate-50:  #f6f8fc;
-  --color-slate-100: #edf1f7;
-  --color-slate-200: #dde4ee;
+  /* Soft, cool-neutral surface palette */
+  --color-slate-50:  #f7f9fc;
+  --color-slate-100: #eef2f8;
+  --color-slate-200: #dfe6f0;
 }
 
 @layer base {
@@ -15,33 +15,33 @@
     color-scheme: light;
 
     /* Canvas & ink */
-    --app-canvas:   #f0f4fa;
+    --app-canvas:   #f5f7fb;
     --app-surface:  #ffffff;
-    --app-ink:      #0f1f33;
-    --app-muted:    #566880;
-    --app-border:   #dce4ef;
+    --app-ink:      #0f1c2e;
+    --app-muted:    #5b6b80;
+    --app-border:   #e4e9f2;
 
     /* Brand */
-    --app-primary:  #1a4b82;   /* richer navy */
-    --app-primary-hover: #15396a;
-    --app-accent:   #0d9488;   /* teal */
-    --app-accent-hover: #0a7a71;
+    --app-primary:  #123f6d;   /* deep institutional navy */
+    --app-primary-hover: #0e3359;
+    --app-accent:   #0f766e;   /* calm teal */
+    --app-accent-hover: #0b5f59;
 
-    /* Sidebar */
-    --sb-bg:        #111c2e;   /* deep dark navy */
-    --sb-bg-mid:    #162035;
-    --sb-border:    #1f2f47;
-    --sb-text:      #c8d8ed;
-    --sb-muted:     #718aab;
-    --sb-active-bg: #1e3a5c;
-    --sb-active-fg: #ffffff;
-    --sb-hover-bg:  rgba(255,255,255,0.06);
+    /* Light sidebar */
+    --sb-bg:        #ffffff;
+    --sb-bg-mid:    #ffffff;
+    --sb-border:    #e7ecf4;
+    --sb-text:      #4a5a6e;
+    --sb-muted:     #8b99ab;
+    --sb-active-bg: #eff5fc;
+    --sb-active-fg: #123f6d;
+    --sb-hover-bg:  #f5f8fc;
 
-    /* Header */
-    --hd-bg:        #142040;
-    --hd-border:    #1e3357;
-    --hd-text:      #e8f0fb;
-    --hd-muted:     #8aaed0;
+    /* Light header */
+    --hd-bg:        #ffffff;
+    --hd-border:    #e6ebf3;
+    --hd-text:      #0f1c2e;
+    --hd-muted:     #64748b;
   }
 
   html {
@@ -53,11 +53,17 @@
     font-family: var(--font-sans);
     color: var(--app-ink);
     background:
-      radial-gradient(ellipse 1400px 500px at -5% -5%, rgba(26 75 130 / 0.08), transparent 60%),
-      radial-gradient(ellipse 900px 420px at 105% 5%,  rgba(13 148 136 / 0.06), transparent 55%),
+      radial-gradient(ellipse 1200px 480px at -10% -10%, rgba(18 63 109 / 0.055), transparent 60%),
+      radial-gradient(ellipse 900px 420px at 110% 0%,  rgba(15 118 110 / 0.045), transparent 55%),
       var(--app-canvas);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    line-height: 1.6;
+    letter-spacing: 0.002em;
+  }
+
+  h1, h2, h3, h4 {
+    letter-spacing: -0.014em;
   }
 
   button, a, input, select, textarea {
@@ -71,9 +77,9 @@
   select:focus-visible,
   textarea:focus-visible,
   [tabindex]:focus-visible {
-    outline: 2.5px solid rgba(26 75 130 / 0.45);
+    outline: 2.5px solid rgba(18 63 109 / 0.40);
     outline-offset: 2px;
-    border-radius: 6px;
+    border-radius: 8px;
   }
 }
 
@@ -110,7 +116,7 @@
 /* ─── Card elevation ───────────────────────────────────────────────────── */
 main:not(.login-screen) [class~="rounded-2xl"][class~="bg-white"][class~="border"],
 main:not(.login-screen) [class~="rounded-xl"][class~="bg-white"][class~="border"] {
-  box-shadow: 0 1px 3px rgba(15 31 51 / 0.04), 0 6px 20px rgba(15 31 51 / 0.04);
+  box-shadow: 0 1px 2px rgba(15 28 46 / 0.035), 0 10px 28px -18px rgba(15 28 46 / 0.14);
 }
 
 /* ─── Tables ──────────────────────────────────────────────────────────── */
@@ -124,16 +130,16 @@ main:not(.login-screen) textarea {
   transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
 }
 main:not(.login-screen) input::placeholder,
-main:not(.login-screen) textarea::placeholder { color: #9baec1; }
+main:not(.login-screen) textarea::placeholder { color: #9aa9bb; }
 
 /* ─── Selection ───────────────────────────────────────────────────────── */
-::selection { color: #0a2240; background: #c5daf8; }
+::selection { color: #08213a; background: #cfe2f6; }
 
 /* ─── Scrollbar ───────────────────────────────────────────────────────── */
-::-webkit-scrollbar        { width: 5px; height: 5px; }
+::-webkit-scrollbar        { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track  { background: transparent; }
-::-webkit-scrollbar-thumb  { background: #c2cfe0; border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: #97aec2; }
+::-webkit-scrollbar-thumb  { background: #cbd6e4; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #a9b9cc; }
 
 /* ─── Responsive ──────────────────────────────────────────────────────── */
 @media (max-width: 640px) {
@@ -141,6 +147,21 @@ main:not(.login-screen) textarea::placeholder { color: #9baec1; }
     padding: 1rem 1rem calc(6rem + env(safe-area-inset-bottom, 0px));
   }
   #root footer { padding: 1rem; }
+
+  #root main:not(.login-screen) > div {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  #root main:not(.login-screen) h1,
+  #root main:not(.login-screen) h2,
+  #root main:not(.login-screen) h3 {
+    overflow-wrap: anywhere;
+  }
+
+  #root main:not(.login-screen) [class*="overflow-x-auto"] {
+    scrollbar-width: thin;
+  }
 }
 
 /* ─── Reduced motion ──────────────────────────────────────────────────── */

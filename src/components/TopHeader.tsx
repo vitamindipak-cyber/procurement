@@ -90,8 +90,7 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
 
   return (
     <header
-      className="sticky top-0 z-30 flex flex-col max-w-full"
-      style={{ background: '#0f1a2d', borderBottom: '1px solid #1a2d47' }}
+      className="sticky top-0 z-30 flex flex-col max-w-full bg-white/90 backdrop-blur-md border-b border-slate-200/80"
     >
       {/* ── Main bar ─────────────────────────────────────────────────────── */}
       <div className="min-h-14 flex items-center justify-between px-2.5 sm:px-5 gap-1.5 sm:gap-2">
@@ -102,7 +101,7 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
           {/* Hamburger (mobile only) */}
           <button
             onClick={onToggleSidebarMobile}
-            className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/[.08] lg:hidden transition-colors shrink-0"
+            className="p-2 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 lg:hidden transition-colors shrink-0"
             title="मेनु खोल्नुहोस्"
             aria-label="मेनु खोल्नुहोस्"
           >
@@ -110,15 +109,15 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
           </button>
 
           {/* History nav */}
-          <div className="hidden sm:flex items-center gap-0.5 bg-white/[.06] rounded-lg p-0.5 shrink-0">
+          <div className="hidden sm:flex items-center gap-0.5 bg-slate-100 rounded-lg p-0.5 shrink-0">
             <button
               type="button"
               onClick={onGoBack}
               disabled={!canGoBack}
               className={`p-1.5 rounded-md transition-colors ${
                 canGoBack
-                  ? 'text-slate-300 hover:text-white hover:bg-white/[.1] cursor-pointer'
-                  : 'text-slate-600 cursor-not-allowed'
+                  ? 'text-slate-500 hover:text-slate-900 hover:bg-white hover:shadow-xs cursor-pointer'
+                  : 'text-slate-300 cursor-not-allowed'
               }`}
               title="अघिल्लो पृष्ठ (Alt + ←)"
               aria-label="अघिल्लो पृष्ठ"
@@ -131,8 +130,8 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
               disabled={!canGoForward}
               className={`p-1.5 rounded-md transition-colors ${
                 canGoForward
-                  ? 'text-slate-300 hover:text-white hover:bg-white/[.1] cursor-pointer'
-                  : 'text-slate-600 cursor-not-allowed'
+                  ? 'text-slate-500 hover:text-slate-900 hover:bg-white hover:shadow-xs cursor-pointer'
+                  : 'text-slate-300 cursor-not-allowed'
               }`}
               title="पछिल्लो पृष्ठ (Alt + →)"
               aria-label="पछिल्लो पृष्ठ"
@@ -144,37 +143,37 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
           {/* Breadcrumb */}
           <nav
             aria-label="Breadcrumb"
-            className="flex flex-1 items-center gap-1 text-xs text-slate-400 truncate min-w-0 sm:ml-1"
+            className="flex flex-1 items-center gap-1 text-xs text-slate-500 truncate min-w-0 sm:ml-1"
           >
             <button
               type="button"
               onClick={() => setActiveTab(homeTab)}
-              className="flex items-center gap-1 text-slate-400 hover:text-white transition-colors shrink-0"
+              className="flex items-center gap-1 text-slate-500 hover:text-slate-900 transition-colors shrink-0"
               title="गृहपृष्ठमा जानुहोस्"
             >
               <Home className="w-3.5 h-3.5" />
               <span className="hidden sm:inline text-xs font-medium">गृहपृष्ठ</span>
             </button>
 
-            <ChevronRight className="w-3 h-3 text-slate-600 shrink-0" />
+            <ChevronRight className="w-3 h-3 text-slate-300 shrink-0" />
 
             {current.rootTab && current.rootTab !== activeTab ? (
               <button
                 type="button"
                 onClick={() => setActiveTab(current.rootTab!)}
-                className="text-slate-400 hover:text-white transition-colors truncate max-w-[100px] sm:max-w-none shrink-0 text-xs"
+                className="text-slate-500 hover:text-slate-900 transition-colors truncate max-w-[100px] sm:max-w-none shrink-0 text-xs"
                 title={`${current.category} समूहमा जानुहोस्`}
               >
                 {current.category}
               </button>
             ) : (
-              <span className="text-slate-500 truncate hidden md:inline text-xs">{current.category}</span>
+              <span className="text-slate-400 truncate hidden md:inline text-xs">{current.category}</span>
             )}
 
-            <ChevronRight className="w-3 h-3 text-slate-600 shrink-0" />
+            <ChevronRight className="w-3 h-3 text-slate-300 shrink-0" />
 
             <span
-              className="font-semibold text-white truncate text-xs sm:text-[13px] bg-white/[.08] px-2.5 py-0.5 rounded-lg border border-white/[.07]"
+              className="font-semibold text-slate-900 truncate text-xs sm:text-[13px] bg-slate-100 px-2.5 py-0.5 rounded-lg border border-slate-200/80"
             >
               {current.shortTitle ?? current.title}
             </span>
@@ -191,8 +190,8 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
               onClick={onToggleUserMode}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all border cursor-pointer shrink-0 ${
                 userMode === 'bidder'
-                  ? 'bg-teal-700/80 hover:bg-teal-700 text-white border-teal-600/50'
-                  : 'bg-white/[.07] hover:bg-white/[.12] text-slate-200 border-white/[.1]'
+                  ? 'bg-teal-50 text-teal-800 border-teal-200 hover:bg-teal-100'
+                  : 'bg-white hover:bg-slate-50 text-slate-600 border-slate-200'
               }`}
               title={userMode === 'bidder' ? 'सार्वजनिक निकाय मोडमा स्विच' : 'बोलपत्रदाता मोडमा स्विच'}
               aria-label="मोड स्विच"
@@ -207,12 +206,12 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
           {/* Search */}
           <button
             onClick={onOpenSearch}
-            className="flex items-center gap-2 px-2 py-1.5 sm:px-2.5 text-xs font-medium text-slate-300 bg-white/[.07] hover:bg-white/[.12] rounded-lg transition-colors border border-white/[.08] shrink-0"
+            className="flex items-center gap-2 px-2 py-1.5 sm:px-2.5 text-xs font-medium text-slate-600 bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors border border-slate-200 shrink-0"
             title="खोज तथा फिल्टर (Ctrl+K वा /)"
           >
             <Search className="w-3.5 h-3.5 text-slate-400" />
             <span className="hidden md:inline">खोज्नुहोस्</span>
-            <kbd className="hidden md:inline-block px-1.5 py-0.5 text-[9px] font-mono bg-white/[.08] border border-white/[.12] rounded text-slate-400 leading-none">
+            <kbd className="hidden md:inline-block px-1.5 py-0.5 text-[9px] font-mono bg-white border border-slate-200 rounded text-slate-400 leading-none">
               /
             </kbd>
           </button>
@@ -220,7 +219,7 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
           {/* Print */}
           <button
             onClick={() => window.print()}
-            className="hidden sm:flex p-2 text-slate-400 hover:text-white hover:bg-white/[.08] rounded-lg transition-colors no-print shrink-0"
+            className="hidden sm:flex p-2 text-slate-400 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors no-print shrink-0"
             title="प्रिन्ट"
             aria-label="प्रिन्ट"
           >
@@ -230,7 +229,7 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
           {/* External link */}
           <button
             onClick={() => window.open('https://financial-procedures.vercel.app/', '_blank', 'noopener,noreferrer')}
-            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-semibold text-slate-200 bg-white/[.07] hover:bg-white/[.12] rounded-lg border border-white/[.08] transition-colors shrink-0 whitespace-nowrap"
+            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-semibold text-slate-600 bg-white hover:bg-slate-50 rounded-lg border border-slate-200 transition-colors shrink-0 whitespace-nowrap"
             aria-label="आर्थिक कार्यविधि नयाँ window मा खोल्नुहोस्"
             title="आर्थिक कार्यविधि"
           >
@@ -245,7 +244,7 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
                 onLogout();
               }
             }}
-            className="p-2 text-slate-400 hover:text-red-400 hover:bg-red-500/[.08] rounded-lg transition-colors shrink-0"
+            className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors shrink-0"
             title="लगआउट"
             aria-label="लगआउट"
           >
@@ -257,10 +256,9 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
       {/* ── Recent tabs sub-bar ───────────────────────────────────────────── */}
       {recentTabs.length > 1 && (
         <div
-          className="px-3 sm:px-5 py-1.5 flex items-center gap-2 overflow-x-auto text-[11px] no-print"
-          style={{ background: '#0a1522', borderTop: '1px solid #1a2d47' }}
+          className="px-3 sm:px-5 py-1.5 flex items-center gap-2 overflow-x-auto text-[11px] no-print bg-slate-50/70 border-t border-slate-200/70"
         >
-          <div className="flex items-center gap-1 text-slate-500 font-semibold shrink-0">
+          <div className="flex items-center gap-1 text-slate-400 font-semibold shrink-0">
             <Clock className="w-3 h-3" />
             <span>भर्खरै:</span>
           </div>
@@ -274,13 +272,13 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
                   key={tabId}
                   type="button"
                   onClick={() => setActiveTab(tabId)}
-                  className={`px-2.5 py-0.5 rounded-full transition-all shrink-0 flex items-center gap-1 ${
+                  className={`px-2.5 py-0.5 rounded-full transition-all shrink-0 flex items-center gap-1 border ${
                     isActive
-                      ? 'bg-[#1a4b82] text-white font-bold'
-                      : 'bg-white/[.06] text-slate-400 hover:bg-white/[.1] hover:text-slate-200'
+                      ? 'bg-[#123f6d] text-white font-semibold border-[#123f6d]'
+                      : 'bg-white text-slate-500 border-slate-200 hover:text-slate-800 hover:border-slate-300'
                   }`}
                 >
-                  {isActive && <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />}
+                  {isActive && <span className="w-1.5 h-1.5 rounded-full bg-white/80" />}
                   <span>{meta.shortTitle ?? meta.title}</span>
                 </button>
               );

@@ -142,7 +142,7 @@ export const FloatingProcurementChatLauncher: React.FC<{ onOpen: () => void }> =
       onPointerUp={handlePointerEnd}
       onPointerCancel={handlePointerEnd}
       style={position ? { left: position.left, top: position.top } : undefined}
-      className={`fixed z-40 inline-flex h-12 items-center gap-2 rounded-full border border-blue-200 bg-white px-3 text-blue-800 shadow-lg transition-shadow hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 touch-none sm:h-14 sm:px-4 ${position ? '' : 'bottom-[calc(5.25rem+env(safe-area-inset-bottom))] right-3 lg:bottom-6 lg:right-6'
+      className={`fixed z-40 inline-flex h-12 items-center gap-2 rounded-full border border-slate-200 bg-white px-3 text-[#123f6d] shadow-lg transition-shadow hover:border-[#b9cfe6] hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#123f6d] touch-none sm:h-14 sm:px-4 ${position ? '' : 'bottom-[calc(5.25rem+env(safe-area-inset-bottom))] right-3 lg:bottom-6 lg:right-6'
         } cursor-grab active:cursor-grabbing`}
     >
       <Bot className="h-5 w-5 shrink-0" aria-hidden="true" />

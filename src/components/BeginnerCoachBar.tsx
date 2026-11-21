@@ -41,7 +41,7 @@ export const BeginnerCoachBar: React.FC<BeginnerCoachBarProps> = ({
           type="button"
           onClick={() => onNavigate(coach.actionTab!)}
           className={`inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-bold text-white transition-colors ${
-            isBidder ? 'bg-emerald-800 hover:bg-emerald-900' : 'bg-[#1a4b82] hover:bg-[#15396a]'
+            isBidder ? 'bg-emerald-800 hover:bg-emerald-900' : 'bg-[#123f6d] hover:bg-[#0e3359]'
           }`}
         >
           {coach.actionLabel}

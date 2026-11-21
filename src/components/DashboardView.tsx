@@ -116,63 +116,101 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   return (
     <div className="space-y-6">
       {/* Top Banner / Welcome with Quick Action */}
-      <div className="bg-gradient-to-r from-[#163e68] via-[#1e4f91] to-[#173b63] text-white rounded-2xl p-6 sm:p-8 shadow-sm relative overflow-hidden">
-        <div className="relative z-10 max-w-full md:max-w-[62%]">
-          <span className="text-blue-200 font-semibold text-xs tracking-wider uppercase block mb-1">
-            सार्वजनिक निकाय · खरिद अधिकृत गाइड
-          </span>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-            खरिद प्रक्रियाको पूर्ण ड्यासबोर्ड
-          </h1>
-          <p className="mt-2 text-slate-200 text-sm sm:text-base leading-relaxed">
-            {beginnerMode
-              ? 'तलको चरण छानेर एक-एक गर्दै अघि बढ्नुहोस्। प्रत्येक चरणमा के गर्ने, के नबिर्सने र कुन पृष्ठ खोल्ने लेखिएको छ।'
-              : 'विधि छनोटदेखि मूल्याङ्कन, सम्झौता र फाइल अनुपालनसम्मको मार्गदर्शन — आयोजना ट्र्याकिङसहित।'}
-          </p>
+      <div className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm sm:rounded-3xl">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(18,63,109,0.075),transparent_55%),radial-gradient(ellipse_at_bottom_right,rgba(15,118,110,0.055),transparent_50%)]" />
+        <div className="relative grid gap-4 p-4 sm:gap-8 sm:p-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
+          <div>
+            <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-3 py-1 text-[11px] font-semibold text-slate-600">
+              <Building2 className="h-3.5 w-3.5 text-[#123f6d]" aria-hidden="true" />
+              सार्वजनिक निकाय · खरिद अधिकृत गाइड
+            </span>
+            <h1 className="mt-3 text-xl font-extrabold leading-[1.18] text-slate-900 sm:mt-4 sm:text-3xl lg:text-[2.15rem]">
+              खरिद प्रक्रियाको पूर्ण <span className="text-[#123f6d]">ड्यासबोर्ड</span>
+            </h1>
+            <p className="mt-3 max-w-xl text-sm leading-relaxed text-slate-600 sm:text-[15px]">
+              {beginnerMode
+                ? 'तलको चरण छानेर एक-एक गर्दै अघि बढ्नुहोस्। प्रत्येक चरणमा के गर्ने, के नबिर्सने र कुन पृष्ठ खोल्ने लेखिएको छ।'
+                : 'विधि छनोटदेखि मूल्याङ्कन, सम्झौता र फाइल अनुपालनसम्मको मार्गदर्शन — आयोजना ट्र्याकिङसहित।'}
+            </p>
 
-          <div className="mt-5 flex items-center gap-3 flex-wrap">
-            <button
-              onClick={onOpenNewProjectModal}
-              className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm rounded-lg shadow-sm flex items-center gap-2 transition-colors whitespace-nowrap"
-            >
-              <PlusCircle className="w-4 h-4" />
-              नयाँ खरिद आयोजना थप्नुहोस्
-            </button>
-            {beginnerMode ? (
+            <div className="mt-4 flex flex-col items-stretch gap-2.5 sm:mt-6 sm:flex-row sm:flex-wrap sm:items-center">
               <button
-                type="button"
-                onClick={() => document.getElementById('beginner-journey')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-                className="inline-flex items-center gap-2 rounded-lg border border-white/30 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-white/20"
+                onClick={onOpenNewProjectModal}
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#123f6d] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#0e3359]"
               >
-                <span>चरणबद्ध प्रक्रिया हेर्नुहोस्</span>
-                <ChevronRight className="h-4 w-4 shrink-0" aria-hidden="true" />
+                <PlusCircle className="h-4 w-4" />
+                नयाँ खरिद आयोजना थप्नुहोस्
               </button>
-            ) : onNavigateToGuide && (
-              <button
-                type="button"
-                onClick={() => onNavigateToGuide('advisor')}
-                className="inline-flex items-center gap-2 rounded-lg border border-white/30 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-white/20"
-              >
-                <span>विधि सल्लाहकारबाट सुरु गर्नुहोस्</span>
-                <ChevronRight className="h-4 w-4 shrink-0" aria-hidden="true" />
-              </button>
-            )}
-            <div className="flex items-center gap-2 text-xs text-slate-300 bg-white/10 px-3 py-2 rounded-lg backdrop-blur-xs">
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              <span>१६औँ संशोधनका नयाँ प्रावधानहरू (औसत अङ्क, ५ ठेक्का सीमा, SSF) समावेश</span>
+              {beginnerMode ? (
+                <button
+                  type="button"
+                  onClick={() => document.getElementById('beginner-journey')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50"
+                >
+                  <span>चरणबद्ध प्रक्रिया हेर्नुहोस्</span>
+                  <ChevronRight className="h-4 w-4 shrink-0" aria-hidden="true" />
+                </button>
+              ) : onNavigateToGuide && (
+                <button
+                  type="button"
+                  onClick={() => onNavigateToGuide('advisor')}
+                  className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50"
+                >
+                  <span>विधि सल्लाहकारबाट सुरु गर्नुहोस्</span>
+                  <ChevronRight className="h-4 w-4 shrink-0" aria-hidden="true" />
+                </button>
+              )}
+            </div>
+
+            <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-[11px] font-medium text-slate-500">
+              <span className="inline-flex items-center gap-1.5">
+                <ShieldCheck className="h-3.5 w-3.5 text-teal-600" aria-hidden="true" />
+                १६औँ संशोधन समावेश
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <CheckCircle2 className="h-3.5 w-3.5 text-teal-600" aria-hidden="true" />
+                e-GP अनुपालन
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <Clock className="h-3.5 w-3.5 text-teal-600" aria-hidden="true" />
+                ७ प्रक्रियागत चरण
+              </span>
             </div>
           </div>
-        </div>
 
-        <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[42%] md:block">
-          <img
-            src={dashboardImage}
-            alt=""
-            aria-hidden="true"
-            className="h-full w-full object-cover object-right"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#2563eb]/35 via-[#1e4f91]/50 to-[#173b63]/65" />
-          <div className="absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-[#1e4f91] via-[#1e4f91]/40 to-transparent" />
+          <div className="relative hidden lg:block">
+            <div className="relative overflow-hidden rounded-2xl border border-white/70 shadow-lg">
+              <img
+                src={dashboardImage}
+                alt="सार्वजनिक खरिद कार्यालय"
+                className="h-64 w-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0b2543]/80 via-[#0b2543]/15 to-transparent" />
+            </div>
+            <div className="absolute bottom-4 left-4 right-4 rounded-xl border border-white/60 bg-white/95 p-3.5 shadow-md backdrop-blur-sm">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">हालको अवस्था</span>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-teal-50 px-2 py-0.5 text-[10px] font-semibold text-teal-700">
+                  <span className="h-1.5 w-1.5 rounded-full bg-teal-500" />
+                  सक्रिय
+                </span>
+              </div>
+              <div className="mt-2.5 grid grid-cols-3 gap-2 text-center">
+                <div>
+                  <div className="text-lg font-bold tabular-nums text-slate-900">{projects.length}</div>
+                  <div className="text-[10px] text-slate-500">आयोजना</div>
+                </div>
+                <div className="border-x border-slate-100">
+                  <div className="text-lg font-bold tabular-nums text-slate-900">{biddingCount}</div>
+                  <div className="text-[10px] text-slate-500">बोलपत्रमा</div>
+                </div>
+                <div>
+                  <div className="text-lg font-bold tabular-nums text-slate-900">{executionCount}</div>
+                  <div className="text-[10px] text-slate-500">कार्यान्वयन</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -205,95 +243,98 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
       {/* Metrics Row */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
-          <div className="flex items-center justify-between text-slate-500 text-xs font-medium">
-            <span className="inline-flex items-center gap-1">
-              कुल चालू योजना
-              <BeginnerTooltip title="कुल चालू योजना" content="यस प्रणालीमा राखिएका खरिद आयोजनाको संख्या र तिनीहरूको अनुमानित बजेट।" position="bottom" />
-            </span>
-            <Briefcase className="w-4 h-4 text-blue-600" />
-          </div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-slate-900 tabular-nums">{projects.length}</span>
-            <span className="text-xs text-slate-500">आयोजना</span>
-          </div>
-          <div className="mt-1 text-[11px] text-slate-600 font-mono">
-            {formatCompactCurrency(totalBudget)} बजेट
-          </div>
-        </div>
-
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
-          <div className="flex items-center justify-between text-slate-500 text-xs font-medium">
-            <span className="inline-flex items-center gap-1">
-              पूर्वतयारी/लागत
-              <BeginnerTooltip title="पूर्वतयारी र लागत" content="अहिले योजना बनाउने वा लागत अनुमान स्वीकृत गर्ने चरणमा रहेका आयोजना। खरिदको सुरुका दुई चरण हुन्।" position="bottom" />
-            </span>
-            <span className="w-2 h-2 rounded-full bg-amber-500"></span>
-          </div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-slate-900 tabular-nums">{preparationCount}</span>
-            <span className="text-xs text-slate-500">योजना</span>
-          </div>
-          <div className="mt-1 text-[11px] text-amber-700 font-medium">
-            चरण १ र २ मा
-          </div>
-        </div>
-
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
-          <div className="flex items-center justify-between text-slate-500 text-xs font-medium">
-            <span className="inline-flex items-center gap-1">
-              बोलपत्र आह्वान
-              <BeginnerTooltip title="बोलपत्र आह्वान" content="सूचना प्रकाशित भइसकेको वा प्रस्ताव संकलन हुँदै गरेका आयोजना। अहिले चरण ३ र ४ मा छन्।" position="bottom" />
-            </span>
-            <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-          </div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-slate-900 tabular-nums">{biddingCount}</span>
-            <span className="text-xs text-slate-500">योजना</span>
-          </div>
-          <div className="mt-1 text-[11px] text-blue-700 font-medium">
-            सूचना जारी (चरण ३-४)
-          </div>
-        </div>
-
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
-          <div className="flex items-center justify-between text-slate-500 text-xs font-medium">
-            <span className="inline-flex items-center gap-1">
-              मूल्याङ्कन/आशय
-              <BeginnerTooltip title="मूल्याङ्कन र आशय" content="प्रस्ताव जाँच्ने वा कसलाई छानियो भन्ने सूचना दिने चरणमा रहेका आयोजना।" position="bottom" />
-            </span>
-            <span className="w-2 h-2 rounded-full bg-purple-500"></span>
-          </div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-slate-900 tabular-nums">{evaluationCount}</span>
-            <span className="text-xs text-slate-500">योजना</span>
-          </div>
-          <div className="mt-1 text-[11px] text-purple-700 font-medium">
-            समितिमा विचाराधीन
-          </div>
-        </div>
-
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs col-span-2 sm:col-span-1">
-          <div className="flex items-center justify-between text-slate-500 text-xs font-medium">
-            <span className="inline-flex items-center gap-1">
-              सम्झौता कार्यान्वयन
-              <BeginnerTooltip title="सम्झौता कार्यान्वयन" content="सम्झौता भइसकेर काम, आपूर्ति वा भुक्तानी चलिरहेका आयोजना।" position="bottom" />
-            </span>
-            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-          </div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-slate-900 tabular-nums">{executionCount}</span>
-            <span className="text-xs text-slate-500">योजना</span>
-          </div>
-          <div className="mt-1 text-[11px] text-emerald-700 font-medium">
-            कार्य प्रगतिमा (चरण ७)
-          </div>
-        </div>
+        {[
+          {
+            label: 'कुल चालू योजना',
+            value: projects.length,
+            unit: 'आयोजना',
+            sub: `${formatCompactCurrency(totalBudget)} बजेट`,
+            subClass: 'text-slate-500',
+            icon: Briefcase,
+            tint: 'bg-blue-50 text-blue-700',
+            tooltipTitle: 'कुल चालू योजना',
+            tooltip: 'यस प्रणालीमा राखिएका खरिद आयोजनाको संख्या र तिनीहरूको अनुमानित बजेट।',
+            span: '',
+          },
+          {
+            label: 'पूर्वतयारी/लागत',
+            value: preparationCount,
+            unit: 'योजना',
+            sub: 'चरण १ र २ मा',
+            subClass: 'text-amber-700',
+            icon: Clock,
+            tint: 'bg-amber-50 text-amber-700',
+            tooltipTitle: 'पूर्वतयारी र लागत',
+            tooltip: 'अहिले योजना बनाउने वा लागत अनुमान स्वीकृत गर्ने चरणमा रहेका आयोजना। खरिदको सुरुका दुई चरण हुन्।',
+            span: '',
+          },
+          {
+            label: 'बोलपत्र आह्वान',
+            value: biddingCount,
+            unit: 'योजना',
+            sub: 'सूचना जारी (चरण ३-४)',
+            subClass: 'text-sky-700',
+            icon: FileText,
+            tint: 'bg-sky-50 text-sky-700',
+            tooltipTitle: 'बोलपत्र आह्वान',
+            tooltip: 'सूचना प्रकाशित भइसकेको वा प्रस्ताव संकलन हुँदै गरेका आयोजना। अहिले चरण ३ र ४ मा छन्।',
+            span: '',
+          },
+          {
+            label: 'मूल्याङ्कन/आशय',
+            value: evaluationCount,
+            unit: 'योजना',
+            sub: 'समितिमा विचाराधीन',
+            subClass: 'text-violet-700',
+            icon: CheckCircle2,
+            tint: 'bg-violet-50 text-violet-700',
+            tooltipTitle: 'मूल्याङ्कन र आशय',
+            tooltip: 'प्रस्ताव जाँच्ने वा कसलाई छानियो भन्ने सूचना दिने चरणमा रहेका आयोजना।',
+            span: '',
+          },
+          {
+            label: 'सम्झौता कार्यान्वयन',
+            value: executionCount,
+            unit: 'योजना',
+            sub: 'कार्य प्रगतिमा (चरण ७)',
+            subClass: 'text-emerald-700',
+            icon: Building2,
+            tint: 'bg-emerald-50 text-emerald-700',
+            tooltipTitle: 'सम्झौता कार्यान्वयन',
+            tooltip: 'सम्झौता भइसकेर काम, आपूर्ति वा भुक्तानी चलिरहेका आयोजना।',
+            span: 'col-span-2 sm:col-span-1',
+          },
+        ].map((metric) => {
+          const MetricIcon = metric.icon;
+          return (
+            <div
+              key={metric.label}
+              className={`group rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md sm:p-5 ${metric.span}`}
+            >
+              <div className="flex items-start justify-between gap-2">
+                <span className="inline-flex items-center gap-1 text-[11px] font-semibold leading-snug text-slate-500">
+                  {metric.label}
+                  <BeginnerTooltip title={metric.tooltipTitle} content={metric.tooltip} position="bottom" />
+                </span>
+                <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl ${metric.tint}`}>
+                  <MetricIcon className="h-4 w-4" aria-hidden="true" />
+                </span>
+              </div>
+              <div className="mt-3 flex items-baseline gap-2">
+                <span className="text-2xl font-bold tabular-nums text-slate-900 sm:text-[1.7rem]">{metric.value}</span>
+                <span className="text-[11px] text-slate-500">{metric.unit}</span>
+              </div>
+              <div className={`mt-1.5 text-[11px] font-medium ${metric.subClass}`}>
+                {metric.sub}
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       {/* Projects Management Header & Filters */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
-        <div className="p-4 sm:p-5 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+        <div className="flex flex-col gap-3 border-b border-slate-100 p-3 sm:flex-row sm:items-center sm:justify-between sm:p-5">
           <div>
             <h2 className="text-lg font-bold text-slate-900">
               खरिद आयोजनाहरूको सूची तथा चरणबद्ध स्थिति
@@ -303,16 +344,16 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex w-full items-center gap-2 overflow-x-auto sm:w-auto">
             {/* Filter buttons */}
-            <div className="flex flex-wrap items-center p-1 bg-slate-100 rounded-lg text-xs font-medium" role="group" aria-label="आयोजना प्रकारबाट छान्नुहोस्">
+            <div className="flex w-max items-center rounded-xl bg-slate-100 p-1 text-xs font-medium" role="group" aria-label="आयोजना प्रकारबाट छान्नुहोस्">
               <button
                 onClick={() => setSelectedTypeFilter('all')}
                 aria-pressed={selectedTypeFilter === 'all'}
-                className={`px-2.5 py-1 rounded-md transition-colors ${
+                className={`px-2.5 py-1 rounded-lg transition-colors ${
                   selectedTypeFilter === 'all'
-                    ? 'bg-white text-slate-900 shadow-xs font-semibold'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-white text-[#123f6d] shadow-xs font-semibold'
+                    : 'text-slate-500 hover:text-slate-800'
                 }`}
               >
                 सबै ({projects.length})
@@ -320,10 +361,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <button
                 onClick={() => setSelectedTypeFilter('works')}
                 aria-pressed={selectedTypeFilter === 'works'}
-                className={`px-2.5 py-1 rounded-md transition-colors ${
+                className={`px-2.5 py-1 rounded-lg transition-colors ${
                   selectedTypeFilter === 'works'
-                    ? 'bg-white text-slate-900 shadow-xs font-semibold'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-white text-[#123f6d] shadow-xs font-semibold'
+                    : 'text-slate-500 hover:text-slate-800'
                 }`}
               >
                 निर्माण
@@ -331,10 +372,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <button
                 onClick={() => setSelectedTypeFilter('goods')}
                 aria-pressed={selectedTypeFilter === 'goods'}
-                className={`px-2.5 py-1 rounded-md transition-colors ${
+                className={`px-2.5 py-1 rounded-lg transition-colors ${
                   selectedTypeFilter === 'goods'
-                    ? 'bg-white text-slate-900 shadow-xs font-semibold'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-white text-[#123f6d] shadow-xs font-semibold'
+                    : 'text-slate-500 hover:text-slate-800'
                 }`}
               >
                 मालसामान
@@ -342,10 +383,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <button
                 onClick={() => setSelectedTypeFilter('consulting')}
                 aria-pressed={selectedTypeFilter === 'consulting'}
-                className={`px-2.5 py-1 rounded-md transition-colors ${
+                className={`px-2.5 py-1 rounded-lg transition-colors ${
                   selectedTypeFilter === 'consulting'
-                    ? 'bg-white text-slate-900 shadow-xs font-semibold'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-white text-[#123f6d] shadow-xs font-semibold'
+                    : 'text-slate-500 hover:text-slate-800'
                 }`}
               >
                 परामर्श
@@ -353,10 +394,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <button
                 onClick={() => setSelectedTypeFilter('services')}
                 aria-pressed={selectedTypeFilter === 'services'}
-                className={`px-2.5 py-1 rounded-md transition-colors ${
+                className={`px-2.5 py-1 rounded-lg transition-colors ${
                   selectedTypeFilter === 'services'
-                    ? 'bg-white text-slate-900 shadow-xs font-semibold'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-white text-[#123f6d] shadow-xs font-semibold'
+                    : 'text-slate-500 hover:text-slate-800'
                 }`}
               >
                 गैर-परामर्श सेवा
@@ -369,7 +410,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         <div className="divide-y divide-slate-100">
           {filteredProjects.length === 0 && (
             <div className="px-5 py-12 text-center">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-blue-700">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#eff5fc] text-[#123f6d]">
                 <Briefcase className="h-6 w-6" aria-hidden="true" />
               </div>
               <h3 className="mt-4 text-base font-bold text-slate-900">
@@ -385,17 +426,17 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                   {onNavigateToGuide && (
                     <button
                       onClick={() => onNavigateToGuide('advisor')}
-                      className="inline-flex items-center gap-2 rounded-lg bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-800"
+                      className="inline-flex items-center gap-2 rounded-xl bg-[#123f6d] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0e3359]"
                     >
                       <ShieldCheck className="h-4 w-4" /> पहिले विधि सल्लाहकार चलाउनुहोस्
                     </button>
                   )}
-                  <button onClick={onOpenNewProjectModal} className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                  <button onClick={onOpenNewProjectModal} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50">
                     <PlusCircle className="h-4 w-4" /> पहिलो आयोजना थप्नुहोस्
                   </button>
                 </div>
               ) : (
-                <button onClick={() => setSelectedTypeFilter('all')} className="mt-4 rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                <button onClick={() => setSelectedTypeFilter('all')} className="mt-4 rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50">
                   सबै आयोजना देखाउनुहोस्
                 </button>
               )}
@@ -420,36 +461,36 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                     setSelectedProject(project);
                   }
                 }}
-                className="p-4 sm:p-5 hover:bg-slate-50/80 transition-colors cursor-pointer group"
+                className="p-3 hover:bg-slate-50/60 transition-colors cursor-pointer group sm:p-5"
               >
-                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 sm:gap-4">
                   {/* Left: Project title & metadata */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap text-xs text-slate-500 mb-1.5">
-                      <span className="font-semibold text-slate-800">{project.officeName}</span>
+                      <span className="font-semibold text-slate-700">{project.officeName}</span>
                       <span>·</span>
-                      <span className="text-[11px] px-2 py-0.5 rounded-sm bg-slate-100 text-slate-700 font-medium">
+                      <span className="text-[10px] px-2 py-0.5 rounded-md bg-slate-50 text-slate-600 border border-slate-200/70 font-semibold">
                         {project.procurementType === 'works' ? 'निर्माण कार्य' : project.procurementType === 'goods' ? 'मालसामान' : project.procurementType === 'services' ? 'गैर-परामर्श सेवा' : 'परामर्श सेवा'}
                       </span>
                       <span>·</span>
-                      <span className="text-slate-600">{method?.nameNepali || 'खुला बोलपत्र'}</span>
+                      <span className="text-slate-500">{method?.nameNepali || 'खुला बोलपत्र'}</span>
                     </div>
 
-                    <h3 className="text-base font-bold text-slate-900 group-hover:text-blue-700 transition-colors">
+                    <h3 className="text-[15px] font-bold text-slate-900 group-hover:text-[#123f6d] transition-colors">
                       {project.title}
                     </h3>
 
                     {project.notes && (
-                      <p className="text-xs text-slate-600 mt-1 line-clamp-1 italic">
+                      <p className="text-xs text-slate-500 mt-1 line-clamp-1 italic">
                         टिप्पणी: {project.notes}
                       </p>
                     )}
                   </div>
 
                   {/* Right: Stage, Amount & Progress */}
-                  <div className="flex items-center gap-6 shrink-0 justify-between lg:justify-end">
+                  <div className="grid grid-cols-[minmax(0,1fr)_minmax(130px,1fr)_32px] items-center gap-2 sm:flex sm:items-center sm:gap-6 sm:justify-between lg:justify-end">
                     <div className="text-left lg:text-right">
-                      <div className="text-xs text-slate-500">लागत अनुमान</div>
+                      <div className="text-[11px] text-slate-500">लागत अनुमान</div>
                       <div className="text-sm font-bold text-slate-900 tabular-nums">
                         {formatNepaliCurrency(project.estimatedAmount)}
                       </div>
@@ -459,10 +500,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                       <div className="text-xs font-medium text-slate-700">
                         {stage?.titleNepali.split('.')[1] || 'कार्यान्वयन'}
                       </div>
-                      <div className="flex items-center gap-2 mt-1">
-                        <div className="w-20 bg-slate-200 rounded-full h-2 overflow-hidden">
+                      <div className="flex items-center gap-2 mt-1.5">
+                        <div className="w-20 bg-slate-100 rounded-full h-1.5 overflow-hidden">
                           <div
-                            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                            className="bg-[#123f6d] h-1.5 rounded-full transition-all duration-300"
                             style={{ width: `${project.progressPercent}%` }}
                           ></div>
                         </div>
@@ -472,8 +513,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                       </div>
                     </div>
 
-                    <div className="p-2 text-slate-400 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-all">
-                      <ChevronRight className="w-5 h-5" />
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-50 text-slate-400 group-hover:bg-[#eff5fc] group-hover:text-[#123f6d] transition-all">
+                      <ChevronRight className="w-4 h-4" />
                     </div>
                   </div>
                 </div>
@@ -494,11 +535,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                             isPassed
                               ? 'bg-emerald-500'
                               : isCurrent
-                              ? 'bg-blue-600 ring-2 ring-blue-200'
+                              ? 'bg-[#123f6d] ring-2 ring-[#123f6d]/10'
                               : 'bg-slate-200'
                           }`}
                         ></div>
-                        <span className="text-[10px] text-slate-500 mt-1 hidden sm:block truncate w-full">
+                        <span className={`text-[10px] mt-1 hidden sm:block truncate w-full ${isCurrent ? 'text-[#123f6d] font-semibold' : 'text-slate-400'}`}>
                           {stg.stageNo}. {stg.titleNepali.split('.')[1]?.trim().slice(0, 8)}...
                         </span>
                       </div>
@@ -513,13 +554,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
       {/* Selected Project Drawer / Modal */}
       {selectedProject && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 animate-in fade-in duration-150">
-          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden">
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 animate-in fade-in duration-150">
+          <div className="bg-white rounded-3xl shadow-2xl border border-slate-200/80 w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden">
             {/* Drawer Header */}
-            <div className="p-5 border-b border-slate-200 bg-slate-50 flex items-start justify-between gap-4">
+            <div className="p-5 sm:p-6 border-b border-slate-100 bg-white flex items-start justify-between gap-4">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 text-xs text-slate-500 mb-1">
-                  <span className="font-semibold text-slate-800">{selectedProject.officeName}</span>
+                  <span className="font-semibold text-slate-700">{selectedProject.officeName}</span>
                   <span>·</span>
                   <span>बजेट: {formatNepaliCurrency(selectedProject.estimatedAmount)}</span>
                   <span>·</span>
@@ -532,14 +573,14 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => window.print()}
-                  className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-200/60 rounded-lg transition-colors no-print"
+                  className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors no-print"
                   title="प्रिन्ट सारांश"
                 >
                   <Printer className="w-5 h-5" />
                 </button>
                 <button
                   onClick={() => setSelectedProject(null)}
-                  className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 rounded-lg transition-colors"
+                  className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -547,13 +588,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </div>
 
             {/* Sub-nav inside Drawer */}
-            <div className="px-5 pt-3 border-b border-slate-200 bg-white flex items-center justify-between flex-wrap gap-2 text-xs">
+            <div className="px-5 pt-2 border-b border-slate-100 bg-white flex items-center justify-between flex-wrap gap-2 text-xs">
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setActiveTabInDrawer('timeline')}
-                  className={`py-2 px-3 font-semibold border-b-2 transition-colors ${
+                  className={`py-2.5 px-3 font-semibold border-b-2 transition-colors ${
                     activeTabInDrawer === 'timeline'
-                      ? 'border-red-600 text-red-700'
+                      ? 'border-[#123f6d] text-[#123f6d]'
                       : 'border-transparent text-slate-500 hover:text-slate-800'
                   }`}
                 >
@@ -561,9 +602,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 </button>
                 <button
                   onClick={() => setActiveTabInDrawer('checklist')}
-                  className={`py-2 px-3 font-semibold border-b-2 transition-colors ${
+                  className={`py-2.5 px-3 font-semibold border-b-2 transition-colors ${
                     activeTabInDrawer === 'checklist'
-                      ? 'border-red-600 text-red-700'
+                      ? 'border-[#123f6d] text-[#123f6d]'
                       : 'border-transparent text-slate-500 hover:text-slate-800'
                   }`}
                 >
@@ -571,9 +612,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 </button>
                 <button
                   onClick={() => setActiveTabInDrawer('info')}
-                  className={`py-2 px-3 font-semibold border-b-2 transition-colors ${
+                  className={`py-2.5 px-3 font-semibold border-b-2 transition-colors ${
                     activeTabInDrawer === 'info'
-                      ? 'border-red-600 text-red-700'
+                      ? 'border-[#123f6d] text-[#123f6d]'
                       : 'border-transparent text-slate-500 hover:text-slate-800'
                   }`}
                 >
@@ -587,7 +628,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 <select
                   value={selectedProject.currentStageId}
                   onChange={(e) => advanceStage(selectedProject.id, e.target.value)}
-                  className="text-xs bg-slate-100 border border-slate-300 rounded-md py-1 px-2 font-semibold text-slate-800 focus:outline-hidden focus:ring-1 focus:ring-red-600"
+                  className="text-xs bg-slate-50 border border-slate-200 rounded-lg py-1.5 px-2 font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#123f6d]/20"
                 >
                   {PROCUREMENT_STAGES.map((stg) => (
                     <option key={stg.id} value={stg.id}>
@@ -599,15 +640,15 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </div>
 
             {/* Drawer Body Content */}
-            <div className="p-5 overflow-y-auto flex-1 space-y-6">
+            <div className="p-5 overflow-y-auto flex-1 space-y-6 bg-slate-50/40">
               {activeTabInDrawer === 'timeline' && (
                 <div className="space-y-4">
-                  <div className="bg-slate-50 p-3.5 rounded-lg border border-slate-200 text-xs text-slate-700 flex items-center justify-between">
+                  <div className="bg-white p-3.5 rounded-xl border border-slate-200/80 text-xs text-slate-700 flex items-center justify-between">
                     <div>
                       खरिद विधि: <span className="font-semibold text-slate-900">{PROCUREMENT_METHODS.find(m => m.id === selectedProject.methodId)?.nameNepali}</span>
                     </div>
                     <div>
-                      समग्र प्रगति: <span className="font-bold text-red-700 tabular-nums">{selectedProject.progressPercent}%</span>
+                      समग्र प्रगति: <span className="font-bold text-[#123f6d] tabular-nums">{selectedProject.progressPercent}%</span>
                     </div>
                   </div>
 
@@ -620,12 +661,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                       return (
                         <div
                           key={stg.id}
-                          className={`p-4 rounded-xl border transition-all ${
+                          className={`p-4 rounded-2xl border transition-all ${
                             isCurrent
-                              ? 'border-red-500 bg-red-50/20 shadow-xs ring-1 ring-red-500/20'
+                              ? 'border-[#123f6d]/25 bg-white shadow-xs ring-1 ring-[#123f6d]/10'
                               : isCompleted
-                              ? 'border-slate-200 bg-white'
-                              : 'border-slate-200/60 bg-slate-50/50 opacity-70'
+                              ? 'border-slate-200/80 bg-white'
+                              : 'border-slate-200/60 bg-slate-50/60 opacity-75'
                           }`}
                         >
                           <div className="flex items-start justify-between gap-3">
@@ -635,7 +676,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                                   isCompleted
                                     ? 'bg-emerald-600 text-white'
                                     : isCurrent
-                                    ? 'bg-blue-700 text-white animate-pulse'
+                                    ? 'bg-[#123f6d] text-white'
                                     : 'bg-slate-200 text-slate-600'
                                 }`}
                               >
@@ -646,7 +687,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                                   {stg.titleNepali}
                                 </h4>
                                 <p className="text-xs text-slate-600 mt-1">{stg.description}</p>
-                                <div className="text-[11px] text-slate-600 font-mono mt-1">
+                                <div className="text-[11px] text-slate-500 font-mono mt-1">
                                   कानूनी आधार: {stg.legalBasis}
                                 </div>
                               </div>
@@ -654,9 +695,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
                             <button
                               onClick={() => advanceStage(selectedProject.id, stg.id)}
-                              className={`text-xs px-2.5 py-1 rounded-md font-medium transition-colors whitespace-nowrap ${
+                              className={`text-xs px-2.5 py-1.5 rounded-lg font-semibold transition-colors whitespace-nowrap ${
                                 isCurrent
-                                  ? 'bg-blue-700 text-white'
+                                  ? 'bg-[#123f6d] text-white'
                                   : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
                               }`}
                             >
@@ -699,10 +740,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                       if (stageChecks.length === 0) return null;
 
                       return (
-                        <div key={stg.id} className="border border-slate-200 rounded-xl p-3.5 bg-slate-50/50">
+                        <div key={stg.id} className="border border-slate-200/80 rounded-2xl p-3.5 bg-white">
                           <h4 className="text-xs font-bold text-slate-800 mb-2 uppercase tracking-wide flex items-center justify-between">
                             <span>{stg.titleNepali}</span>
-                            <span className="text-[11px] text-slate-600 font-normal">
+                            <span className="text-[11px] text-slate-500 font-normal">
                               ({stageChecks.filter(c => selectedProject.checklistStatus[c.id]).length} / {stageChecks.length} सम्पन्न)
                             </span>
                           </h4>
@@ -713,13 +754,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                               return (
                                 <label
                                   key={chk.id}
-                                  className="flex items-start gap-2.5 p-2 rounded-lg hover:bg-white transition-colors cursor-pointer text-left bg-white/70 border border-slate-200/60"
+                                  className="flex items-start gap-2.5 p-2.5 rounded-xl hover:bg-slate-50 transition-colors cursor-pointer text-left bg-slate-50/60 border border-slate-200/70"
                                 >
                                   <input
                                     type="checkbox"
                                     checked={isChecked}
                                     onChange={() => toggleChecklist(selectedProject.id, chk.id)}
-                                    className="mt-0.5 w-4 h-4 text-blue-600 rounded-sm border-slate-300 focus:ring-red-500 cursor-pointer"
+                                    className="mt-0.5 w-4 h-4 accent-[#123f6d] rounded border-slate-300 focus:ring-[#123f6d]/30 cursor-pointer"
                                   />
                                   <div className="flex-1 min-w-0">
                                     <span className={`text-xs sm:text-sm font-medium ${isChecked ? 'line-through text-slate-400' : 'text-slate-800'}`}>
@@ -748,26 +789,26 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                     const analysis = analyzeProcurementThreshold(selectedProject.procurementType, selectedProject.estimatedAmount);
                     return (
                       <div className="space-y-4">
-                        <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                        <div className="p-4 bg-white rounded-2xl border border-slate-200/80">
                           <h4 className="text-sm font-bold text-slate-900 mb-2">
                             स्वीकृत गर्ने अधिकारी तथा रकमको सीमा
                           </h4>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                            <div className="p-2.5 bg-white rounded-lg border border-slate-200">
+                            <div className="p-3 bg-slate-50/70 rounded-xl border border-slate-200/70">
                               <span className="text-slate-500 block">लागत अनुमान स्वीकृत गर्ने अधिकारी</span>
                               <span className="font-bold text-slate-900 mt-0.5 block">{analysis.approvingAuthorityCostEstimate}</span>
                             </div>
-                            <div className="p-2.5 bg-white rounded-lg border border-slate-200">
+                            <div className="p-3 bg-slate-50/70 rounded-xl border border-slate-200/70">
                               <span className="text-slate-500 block">बोलपत्र स्वीकृत गर्ने अधिकारी</span>
                               <span className="font-bold text-slate-900 mt-0.5 block">{analysis.approvingAuthorityBidAcceptance}</span>
                             </div>
-                            <div className="p-2.5 bg-white rounded-lg border border-slate-200">
+                            <div className="p-3 bg-slate-50/70 rounded-xl border border-slate-200/70">
                               <span className="text-slate-500 block">बोलपत्र जमानत (Bid Security २-३%)</span>
                               <span className="font-bold text-slate-900 mt-0.5 block font-mono">
                                 {formatNepaliCurrency(analysis.requiredBidSecurityRange.minAmount)} देखि {formatNepaliCurrency(analysis.requiredBidSecurityRange.maxAmount)}
                               </span>
                             </div>
-                            <div className="p-2.5 bg-white rounded-lg border border-slate-200">
+                            <div className="p-3 bg-slate-50/70 rounded-xl border border-slate-200/70">
                               <span className="text-slate-500 block">कार्यसम्पादन जमानत (५%)</span>
                               <span className="font-bold text-slate-900 mt-0.5 block font-mono">
                                 {formatNepaliCurrency(analysis.minimumPerformanceSecurity)} (कबुल अङ्कको ५% — दफा २७(४))
@@ -776,7 +817,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                           </div>
                         </div>
 
-                        <div className="p-4 bg-white rounded-xl border border-slate-200 space-y-2 text-xs text-slate-700">
+                        <div className="p-4 bg-white rounded-2xl border border-slate-200/80 space-y-2 text-xs text-slate-700">
                           <h4 className="font-bold text-slate-900 text-sm">यस आयोजनाका मुख्य कानूनी सर्तहरू:</h4>
                           <div className="flex items-center gap-2">
                             <span className="font-semibold">बोलपत्र मान्य अवधि:</span>
@@ -807,11 +848,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </div>
 
             {/* Drawer Footer */}
-            <div className="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-xs text-slate-600">
+            <div className="p-4 bg-white border-t border-slate-100 flex items-center justify-between text-xs text-slate-600">
               <span className="font-mono text-slate-500">आयोजना ID: {selectedProject.id}</span>
               <button
                 onClick={() => setSelectedProject(null)}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white font-medium rounded-lg transition-colors"
+                className="px-4 py-2 bg-[#123f6d] hover:bg-[#0e3359] text-white font-semibold rounded-lg transition-colors"
               >
                 बन्द गर्नुहोस्
               </button>

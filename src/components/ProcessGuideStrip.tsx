@@ -189,11 +189,11 @@ export const ProcessGuideStrip: React.FC<ProcessGuideStripProps> = ({ audience, 
   return (
     <section
       aria-labelledby="process-guide-heading"
-      className={`rounded-2xl border bg-gradient-to-b from-white to-slate-50/80 p-5 shadow-xs sm:p-6 ${isBidder ? 'border-emerald-200' : 'border-blue-200'}`}
+      className={`rounded-2xl border bg-gradient-to-b from-white to-slate-50/80 p-5 shadow-xs sm:p-6 ${isBidder ? 'border-emerald-200' : 'border-[#dbe6f2]'}`}
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className={`text-[11px] font-bold uppercase tracking-wider ${isBidder ? 'text-emerald-700' : 'text-blue-800'}`}>
+          <p className={`text-[11px] font-bold uppercase tracking-wider ${isBidder ? 'text-emerald-700' : 'text-[#123f6d]'}`}>
             {isBidder ? 'बोलपत्रदाताका लागि सुरु गर्ने मार्ग' : 'सार्वजनिक निकायका लागि सुरु गर्ने मार्ग'}
           </p>
           <h2 id="process-guide-heading" className="mt-0.5 text-lg font-bold text-slate-900">
@@ -205,7 +205,7 @@ export const ProcessGuideStrip: React.FC<ProcessGuideStripProps> = ({ audience, 
               : 'पहिलो पटक हुनुहुन्छ भने चरण १ बाट सुरु गर्नुहोस्। आफ्नो कामअनुसार कुनै पनि कार्ड खोलेर सम्बन्धित मार्गदर्शन हेर्न सक्नुहुन्छ।'}
           </p>
         </div>
-        <span className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-semibold ${isBidder ? 'bg-emerald-50 text-emerald-800' : 'bg-blue-50 text-blue-800'}`}>
+        <span className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-semibold ${isBidder ? 'bg-emerald-50 text-emerald-800' : 'bg-[#eff5fc] text-[#123f6d]'}`}>
           {items.length} वटा चरण · छान्न मिल्ने मार्गदर्शन
         </span>
       </div>
@@ -222,7 +222,7 @@ export const ProcessGuideStrip: React.FC<ProcessGuideStripProps> = ({ audience, 
                 aria-label={`चरण ${item.step}: ${item.title} — ${item.actionLabel || 'मार्गदर्शन खोल्नुहोस्'}`}
                 className={`group block h-full w-full rounded-xl border bg-white text-left transition-all hover:-translate-y-0.5 hover:shadow-sm focus-visible:outline focus-visible:outline-2 ${isDetailedBidderStep ? 'p-4 sm:p-5' : 'min-h-[132px] p-3.5'} ${isBidder
                     ? 'border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/40 focus-visible:outline-emerald-600'
-                    : 'border-slate-200 hover:border-blue-300 hover:bg-blue-50/40 focus-visible:outline-blue-700'
+                    : 'border-slate-200 hover:border-[#b9cfe6] hover:bg-[#f4f8fc] focus-visible:outline-[#123f6d]'
                   }`}
               >
                 {isDetailedBidderStep ? (
@@ -272,11 +272,11 @@ export const ProcessGuideStrip: React.FC<ProcessGuideStripProps> = ({ audience, 
                   </div>
                 ) : (
                   <div className="flex h-full items-start gap-3">
-                    <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${isBidder ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800'}`}>
+                    <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${isBidder ? 'bg-emerald-100 text-emerald-800' : 'bg-[#e4eef9] text-[#123f6d]'}`}>
                       <Icon className="h-5 w-5" aria-hidden="true" />
                     </span>
                     <span className="min-w-0 flex-1">
-                      <span className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold ${isBidder ? 'bg-emerald-50 text-emerald-800' : 'bg-blue-50 text-blue-800'}`}>चरण {item.step}</span>
+                      <span className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold ${isBidder ? 'bg-emerald-50 text-emerald-800' : 'bg-[#eff5fc] text-[#123f6d]'}`}>चरण {item.step}</span>
                       <span className="mt-1 block text-sm font-bold leading-snug text-slate-900">{item.title}</span>
                       <span className="mt-1 block text-xs leading-relaxed text-slate-600">{item.description}</span>
                       {item.checkItems && (
@@ -284,7 +284,7 @@ export const ProcessGuideStrip: React.FC<ProcessGuideStripProps> = ({ audience, 
                           <span className="block text-[10px] font-bold text-slate-700">के गर्नुहोस्?</span>
                           {item.checkItems.map((checkItem) => (
                             <span key={checkItem} className="mt-1 flex items-start gap-1.5 text-[11px] leading-relaxed text-slate-600">
-                              <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-blue-600" aria-hidden="true" />
+                              <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-[#123f6d]" aria-hidden="true" />
                               <span>{checkItem}</span>
                             </span>
                           ))}
@@ -300,7 +300,7 @@ export const ProcessGuideStrip: React.FC<ProcessGuideStripProps> = ({ audience, 
                           <span className="font-bold text-slate-800">अर्को चरण: </span>{item.nextStep}
                         </span>
                       )}
-                      <span className={`mt-3 inline-flex items-center gap-1 text-[11px] font-bold ${isBidder ? 'text-emerald-800' : 'text-blue-800'}`}>
+                      <span className={`mt-3 inline-flex items-center gap-1 text-[11px] font-bold ${isBidder ? 'text-emerald-800' : 'text-[#123f6d]'}`}>
                         {item.actionLabel || 'मार्गदर्शन खोल्नुहोस्'} <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
                       </span>
                     </span>

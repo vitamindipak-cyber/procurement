@@ -1201,16 +1201,16 @@ export const BidderPortalView: React.FC<BidderPortalViewProps> = ({
     };
 
     return (
-      <div className="bg-gradient-to-r from-emerald-900 via-teal-900 to-slate-900 text-white rounded-2xl p-6 sm:p-8 shadow-sm transition-all duration-300 relative overflow-hidden min-h-[162px] flex flex-col justify-center">
+      <div className="relative flex min-h-[132px] flex-col justify-center overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-900 via-teal-900 to-slate-900 p-4 text-white shadow-sm transition-all duration-300 sm:min-h-[162px] sm:p-8">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex-1 min-w-0 max-w-2xl">
-            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-emerald-300 mb-1.5 truncate">
+            <div className="mb-1.5 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wide text-emerald-300 sm:text-xs sm:tracking-wider">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-              <span className="truncate">बोलपत्रदाता विशेष कर्नर • Bidder's Dedicated Portal</span>
+              <span className="line-clamp-1 sm:truncate">बोलपत्रदाता विशेष कर्नर • Bidder's Dedicated Portal</span>
             </div>
-            <h1 className="text-xl lg:text-2xl font-bold tracking-tight flex items-center gap-2">
+            <h1 className="flex flex-wrap items-center gap-2 text-base font-bold tracking-tight sm:text-xl lg:text-2xl">
               <span>बोलपत्रदाताका लागि पूर्ण खरिद गाइड</span>
-              <span className="text-xs bg-emerald-700/80 text-white px-2.5 py-0.5 rounded-full font-medium shrink-0">
+              <span className="shrink-0 rounded-full bg-emerald-700/80 px-2 py-0.5 text-[10px] font-medium text-white sm:text-xs">
                 बोलपत्रदाता मोड
               </span>
             </h1>
@@ -1252,7 +1252,7 @@ export const BidderPortalView: React.FC<BidderPortalViewProps> = ({
       {/* Navigation Sub-Tabs */}
       <div className="bg-white p-2 rounded-2xl border border-slate-200 shadow-2xs">
         <p className="px-2 pt-1 pb-1.5 text-[11px] font-bold uppercase tracking-wide text-slate-500">विषय र उपकरण छान्नुहोस्</p>
-        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+        <div className="-mx-1 flex max-w-full items-center gap-1.5 overflow-x-auto px-1 pb-1 sm:gap-2">
           {[
             { id: 'overview', label: 'ड्यासबोर्ड मुख्य पृष्ठ', icon: Layers },
             { id: 'eligibility', label: 'के म योग्य छु? (निर्माण कार्य)', icon: Calculator },
@@ -1277,7 +1277,7 @@ export const BidderPortalView: React.FC<BidderPortalViewProps> = ({
               <button
                 key={tab.id}
                 onClick={() => setActiveSubTab(tab.id)}
-                className={`flex items-center gap-2 px-3 sm:px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all whitespace-nowrap cursor-pointer ${isActive
+                className={`flex shrink-0 items-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold whitespace-nowrap transition-all cursor-pointer sm:px-3.5 sm:text-sm ${isActive
                   ? 'bg-emerald-800 text-white shadow-xs'
                   : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                   }`}

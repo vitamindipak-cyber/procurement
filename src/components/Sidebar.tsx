@@ -197,15 +197,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
      Colour tokens derived from CSS variables defined in index.css
      ──────────────────────────────────────────────────────────────────── */
   const SB = {
-    bg:       'bg-[#111c2e]',
-    bgMid:    'bg-[#162035]',
-    bgDeep:   'bg-[#0d1726]',
-    border:   'border-[#1f2f47]',
-    text:     'text-[#c8d8ed]',
-    muted:    'text-[#718aab]',
-    activeText: 'text-white',
-    activeBg:   'bg-[#1e3a5c]',
-    hoverBg:    'hover:bg-white/[0.06]',
+    bg:       'bg-white',
+    bgMid:    'bg-white',
+    bgDeep:   'bg-[#fafcff]',
+    border:   'border-[#e7ecf4]',
+    text:     'text-[#4a5a6e]',
+    muted:    'text-[#8b99ab]',
+    activeText: 'text-[#123f6d]',
+    activeBg:   'bg-[#eff5fc]',
+    hoverBg:    'hover:bg-[#f5f8fc]',
   };
 
   return (
@@ -214,7 +214,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {isOpenMobile && (
         <div
           onClick={onCloseMobile}
-          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-40 bg-slate-900/35 backdrop-blur-sm lg:hidden"
           aria-hidden="true"
         />
       )}
@@ -227,6 +227,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           'w-[15.3rem]',
           SB.bg,
           SB.border, 'border-r',
+          'shadow-[0_0_0_1px_rgba(15,28,46,0.02)]',
           'transition-all duration-200 ease-in-out',
           'lg:translate-x-0',
           isOpenMobile ? 'translate-x-0 shadow-2xl' : '-translate-x-full',
@@ -235,14 +236,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         {/* ── Brand header ─────────────────────────────────────────────── */}
         <div className={`shrink-0 ${SB.bgMid} ${SB.border} border-b`}>
-          <div className={`flex items-center ${isCollapsed ? 'justify-center p-3' : 'justify-between px-4 py-3.5'}`}>
+          <div className={`flex items-center ${isCollapsed ? 'justify-center p-3' : 'justify-between px-4 py-4'}`}>
             {isCollapsed ? (
               <div className="flex flex-col items-center gap-2">
                 <button
                   onClick={() => handleNavClick(userMode === 'bidder' ? 'bidder-hub' : 'dashboard')}
                   title="गृहपृष्ठ"
                   aria-label="गृहपृष्ठमा जानुहोस्"
-                  className="w-9 h-9 rounded-xl bg-[#1a4b82] text-white flex items-center justify-center font-bold text-base shadow-sm hover:bg-[#15396a] transition-colors"
+                  className="w-9 h-9 rounded-xl bg-[#123f6d] text-white flex items-center justify-center font-bold text-base shadow-sm hover:bg-[#0e3359] transition-colors"
                 >
                   ख
                 </button>
@@ -251,7 +252,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     onClick={onToggleCollapse}
                     title="Expand sidebar"
                     aria-label="साइडबार खोल्नुहोस्"
-                    className={`hidden lg:flex p-1.5 ${SB.muted} hover:text-white ${SB.hoverBg} rounded-lg transition-colors`}
+                    className={`hidden lg:flex p-1.5 ${SB.muted} hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors`}
                   >
                     <ChevronRight className="w-4 h-4" />
                   </button>
@@ -263,14 +264,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   onClick={() => handleNavClick(userMode === 'bidder' ? 'bidder-hub' : 'dashboard')}
                   className="flex items-center gap-3 text-left group focus:outline-none min-w-0"
                 >
-                  <div className="w-9 h-9 rounded-xl bg-[#1a4b82] text-white flex items-center justify-center font-bold text-base shadow-sm group-hover:bg-[#15396a] transition-colors shrink-0">
+                  <div className="w-9 h-9 rounded-xl bg-[#123f6d] text-white flex items-center justify-center font-bold text-base shadow-sm group-hover:bg-[#0e3359] transition-colors shrink-0">
                     ख
                   </div>
                   <div className="flex flex-col min-w-0">
-                    <span className="text-sm font-bold tracking-tight text-white group-hover:text-blue-100 transition-colors truncate leading-tight">
+                    <span className="text-sm font-bold tracking-tight text-slate-900 group-hover:text-[#123f6d] transition-colors truncate leading-tight">
                       सार्वजनिक खरिद सहयोगी
                     </span>
-                    <span className="text-[10px] text-[#718aab] truncate mt-0.5">
+                    <span className="text-[10px] text-slate-400 truncate mt-0.5">
                       ऐन २०६३ · नियमावली २०६४
                     </span>
                   </div>
@@ -282,14 +283,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       onClick={onToggleCollapse}
                       title="Collapse sidebar"
                       aria-label="साइडबार संकुचित गर्नुहोस्"
-                      className={`hidden lg:flex p-1.5 ${SB.muted} hover:text-white ${SB.hoverBg} rounded-lg transition-colors`}
+                      className={`hidden lg:flex p-1.5 ${SB.muted} hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors`}
                     >
                       <ChevronLeft className="w-4 h-4" />
                     </button>
                   )}
                   <button
                     onClick={onCloseMobile}
-                    className={`p-1.5 ${SB.muted} hover:text-white ${SB.hoverBg} rounded-lg lg:hidden transition-colors`}
+                    className={`p-1.5 ${SB.muted} hover:text-slate-700 hover:bg-slate-100 rounded-lg lg:hidden transition-colors`}
                     title="बन्द गर्नुहोस्"
                     aria-label="Sidebar बन्द"
                   >
@@ -308,23 +309,23 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   type="button"
                   onClick={onToggleUserMode}
                   title={userMode === 'bidder' ? 'सार्वजनिक निकाय मोड' : 'बोलपत्रदाता मोड'}
-                  className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors shadow-sm cursor-pointer ${
+                  className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors shadow-xs cursor-pointer border ${
                     userMode === 'bidder'
-                      ? 'bg-teal-700 hover:bg-teal-600 text-white'
-                      : 'bg-[#1a3250] hover:bg-[#1f3c60] text-[#c8d8ed]'
+                      ? 'bg-teal-700 hover:bg-teal-600 text-white border-teal-700'
+                      : 'bg-white hover:bg-slate-50 text-slate-600 border-slate-200'
                   }`}
                 >
                   {userMode === 'bidder' ? <HardHat className="w-4 h-4" /> : <Building2 className="w-4 h-4" />}
                 </button>
               ) : (
-                <div className="flex rounded-xl bg-[#0d1726] border border-[#1f2f47] p-0.5">
+                <div className="flex rounded-xl bg-slate-100 border border-slate-200/70 p-1">
                   <button
                     type="button"
                     onClick={() => { if (userMode !== 'entity') onToggleUserMode(); }}
-                    className={`flex-1 py-1.5 px-2 rounded-[10px] text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                    className={`flex-1 py-1.5 px-2 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                       userMode === 'entity'
-                        ? 'bg-[#1a4b82] text-white shadow-sm'
-                        : 'text-[#718aab] hover:text-[#c8d8ed]'
+                        ? 'bg-white text-[#123f6d] shadow-xs'
+                        : 'text-slate-500 hover:text-slate-800'
                     }`}
                   >
                     <Building2 className="w-3.5 h-3.5" />
@@ -333,10 +334,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <button
                     type="button"
                     onClick={() => { if (userMode !== 'bidder') onToggleUserMode(); }}
-                    className={`flex-1 py-1.5 px-2 rounded-[10px] text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                    className={`flex-1 py-1.5 px-2 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                       userMode === 'bidder'
                         ? 'bg-teal-700 text-white shadow-sm'
-                        : 'text-[#718aab] hover:text-[#c8d8ed]'
+                        : 'text-slate-500 hover:text-slate-800'
                     }`}
                   >
                     <HardHat className="w-3.5 h-3.5" />
@@ -355,14 +356,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   onClick={() => { onOpenNewProject(); onCloseMobile(); }}
                   title="नयाँ खरिद आयोजना"
                   aria-label="नयाँ खरिद आयोजना थप्नुहोस्"
-                  className="w-9 h-9 bg-[#1a4b82] hover:bg-[#15396a] text-white rounded-xl flex items-center justify-center transition-colors shadow-sm"
+                  className="w-9 h-9 bg-[#123f6d] hover:bg-[#0e3359] text-white rounded-xl flex items-center justify-center transition-colors shadow-sm"
                 >
                   <PlusCircle className="w-4.5 h-4.5" />
                 </button>
               ) : (
                 <button
                   onClick={() => { onOpenNewProject(); onCloseMobile(); }}
-                  className="w-full py-2 px-3 bg-[#1a4b82] hover:bg-[#15396a] text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-colors shadow-sm"
+                  className="w-full py-2.5 px-3 bg-[#123f6d] hover:bg-[#0e3359] text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-colors shadow-sm"
                 >
                   <PlusCircle className="w-4 h-4" />
                   <span>नयाँ खरिद आयोजना थप्नुहोस्</span>
@@ -383,7 +384,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <button
                     type="button"
                     onClick={() => toggleGroupCollapse(group.groupTitle)}
-                    className={`w-full flex items-center justify-between px-2 py-1.5 mt-2 mb-0.5 text-[10px] font-bold uppercase tracking-widest ${SB.muted} hover:text-[#c8d8ed] transition-colors cursor-pointer group`}
+                    className={`w-full flex items-center justify-between px-2 py-1.5 mt-2 mb-0.5 text-[10px] font-bold uppercase tracking-widest ${SB.muted} hover:text-slate-600 transition-colors cursor-pointer group`}
                   >
                     <span>{group.groupTitle}</span>
                     <ChevronDown
@@ -391,7 +392,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     />
                   </button>
                 ) : (
-                  gIdx > 0 && <div className="h-px bg-white/[.07] my-2 mx-1" />
+                  gIdx > 0 && <div className="h-px bg-slate-200/80 my-2 mx-1" />
                 )}
 
                 {/* Nav items */}
@@ -419,23 +420,23 @@ export const Sidebar: React.FC<SidebarProps> = ({
                           aria-label={item.label}
                           aria-current={isActive ? 'page' : undefined}
                           className={[
-                            'w-full flex items-center rounded-xl transition-all group cursor-pointer',
+                            'w-full relative flex items-center rounded-xl transition-all group cursor-pointer',
                             isCollapsed
                               ? `justify-center p-2.5 ${
                                   isActive
-                                    ? 'bg-[#1e3a5c] text-white'
-                                    : `${SB.text} ${SB.hoverBg} hover:text-white`
+                                    ? 'bg-[#eff5fc] text-[#123f6d]'
+                                    : `text-slate-500 ${SB.hoverBg} hover:text-slate-900`
                                 }`
                               : `justify-start gap-2.5 px-3 py-2 ${
                                   isActive
-                                    ? 'bg-[#1e3a5c] text-white'
-                                    : `${SB.text} ${SB.hoverBg} hover:text-white`
+                                    ? 'bg-[#eff5fc] text-[#123f6d]'
+                                    : `text-slate-600 ${SB.hoverBg} hover:text-slate-900`
                                 }`,
                           ].join(' ')}
                         >
                           {/* Active left accent bar */}
                           {!isCollapsed && isActive && (
-                            <span className="absolute left-0 w-0.5 h-6 bg-[#4d9ef5] rounded-r-full" aria-hidden="true" />
+                            <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-[#123f6d] rounded-r-full" aria-hidden="true" />
                           )}
 
                           <Icon
@@ -443,8 +444,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                               isCollapsed ? 'w-5 h-5' : 'w-4 h-4'
                             } ${
                               isActive
-                                ? 'text-[#4d9ef5]'
-                                : `text-[#4a6a8a] group-hover:text-[#8ab4d8]`
+                                ? 'text-[#123f6d]'
+                                : `text-slate-400 group-hover:text-slate-600`
                             }`}
                           />
                           {!isCollapsed && (
@@ -472,7 +473,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           ) : (
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-teal-500 shrink-0" />
-              <span className="text-[11px] text-[#718aab] leading-tight">
+              <span className="text-[11px] text-slate-500 leading-tight">
                 १६औँ संशोधन समावेश
               </span>
             </div>
