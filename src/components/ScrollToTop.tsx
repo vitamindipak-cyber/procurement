@@ -20,15 +20,17 @@ export const ScrollToTop: React.FC = () => {
   if (!isVisible) return null;
 
   return (
-    <button
-      type="button"
-      onClick={scrollToTop}
-      title="माथि जानुहोस् (Scroll to top)"
-      aria-label="माथि जानुहोस्"
-      className="fixed bottom-[calc(9rem+env(safe-area-inset-bottom))] right-3 z-40 box-border flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/20 bg-blue-700 p-0 text-white shadow-lg transition-colors duration-200 hover:bg-blue-800 active:scale-95 no-print lg:bottom-24 lg:right-6 lg:transition-all lg:hover:scale-105"
-    >
-      <ArrowUp className="block h-5 w-5 shrink-0" />
-    </button>
+    <div className="pointer-events-none fixed inset-x-0 bottom-[calc(9rem+env(safe-area-inset-bottom))] z-40 flex max-w-[100vw] justify-end overflow-x-clip px-3 no-print lg:bottom-24 lg:px-6">
+      <button
+        type="button"
+        onClick={scrollToTop}
+        title="माथि जानुहोस् (Scroll to top)"
+        aria-label="माथि जानुहोस्"
+        className="pointer-events-auto box-border flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/20 bg-blue-700 p-0 text-white shadow-lg transition-colors duration-200 hover:bg-blue-800 active:scale-95 lg:transition-all lg:hover:scale-105"
+      >
+        <ArrowUp className="block h-5 w-5 shrink-0" />
+      </button>
+    </div>
   );
 };
 
