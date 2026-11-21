@@ -2,7 +2,7 @@ import { Session } from '@supabase/supabase-js';
 import { AppUser, ManagedUserInput, UserRole } from '../types/auth';
 import { TrackedProject } from '../types/procurement';
 import { Database, Json, supabase } from './supabase';
-import { PRACTICAL_SIMULATION_CASES } from '../data/practicalSimulationCases';
+import { PRACTICAL_SIMULATION_CASES, SIMULATION_CASES_BY_KEY } from '../data/practicalSimulationCases';
 import {
   SimulationAttempt,
   SimulationAnswerKey,
@@ -28,7 +28,7 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 
 const isSimulationCaseContent = (value: unknown): value is SimulationCaseContent => {
   if (!isRecord(value) || typeof value.title !== 'string' || typeof value.category !== 'string'
-    || (value.difficulty !== 'सुरुआती' && value.difficulty !== 'मध्यम' && value.difficulty !== 'उन्नत')
+    || (value.difficulty !== 'सरल' && value.difficulty !== 'मध्यम' && value.difficulty !== 'उन्नत')
     || typeof value.estimatedMinutes !== 'number'
     || typeof value.scenario !== 'string' || !Array.isArray(value.steps)
     || !Array.isArray(value.objectives) || !value.objectives.every((item) => typeof item === 'string')
@@ -62,15 +62,16 @@ const parseStoredArray = <T,>(
   key: string,
   guard: (value: unknown) => value is T,
   fallback: T[],
+  transform?: (item: unknown) => unknown,
 ): T[] => {
   try {
     const raw = localStorage.getItem(key);
     if (!raw) return fallback;
     const parsed: unknown = JSON.parse(raw);
-    if (!Array.isArray(parsed) || !parsed.every(guard)) {
-      throw new Error('Stored data has an unexpected shape.');
-    }
-    return parsed;
+    if (!Array.isArray(parsed)) throw new Error('Stored data has an unexpected shape.');
+    const items = transform ? parsed.map(transform) : parsed;
+    if (!items.every(guard)) throw new Error('Stored data has an unexpected shape.');
+    return items;
   } catch (error) {
     console.error(`Failed to load local simulation data (${key}).`, error);
     throw new Error('स्थानीय अभ्यास विवरण पढ्न सकिएन। ब्राउजर भण्डारण जाँचेर पुनः प्रयास गर्नुहोस्।');
@@ -88,11 +89,21 @@ const saveStoredArray = <T,>(key: string, value: T[]): void => {
 
 const toJson = (value: object): Json => JSON.parse(JSON.stringify(value)) as Json;
 
+const migrateSimulationCaseVersion = (item: unknown): unknown => {
+  if (!isRecord(item)) return item;
+  const content = isRecord(item['content']) ? { ...item['content'] } : item['content'];
+  if (isRecord(content) && content['difficulty'] === 'सुरुआती') {
+    content['difficulty'] = 'सरल';
+  }
+  return { ...item, content };
+};
+
 const getLocalSimulationCases = (): SimulationCaseVersion[] => {
   const storedCases = parseStoredArray(
     LOCAL_STORAGE_KEY_SIMULATION_CASES,
     isSimulationCaseVersion,
     PRACTICAL_SIMULATION_CASES,
+    migrateSimulationCaseVersion,
   );
   const existingKeys = new Set(storedCases.map((simulationCase) => simulationCase.caseKey));
   const missingDefaults = PRACTICAL_SIMULATION_CASES.filter(
@@ -185,11 +196,66 @@ const isSimulationAnswerKey = (value: unknown): value is SimulationAnswerKey => 
   });
 };
 
-const parseSimulationCaseContent = (value: unknown): SimulationCaseContent => {
-  if (!isSimulationCaseContent(value)) {
-    throw new Error('अभ्यास केसको सामग्री अमान्य छ।');
+export const sanitizeSimulationText = (text: string): string => {
+  if (!text) return '';
+  return text
+    .replace(/उपकरणको\s+आधारभूत\s+үнийг\s+मात्र\s+लिएж\s+सूचना\s+प्रकाशित\s+गर्ने।?/g, 'उपकरणको आधारभूत मूल्य मात्र लिएर सूचना प्रकाशित गर्ने।')
+    .replace(/CMC-ийн\s+үнэлгээг\s+тендер\s+нээсний\s+дараа\s+тог[^\s।]*।?/g, 'CMC वा अतिरिक्त सेवाको लागत सम्झौतापछि थप गर्ने।')
+    .replace(/зөрүүтэй\s+мэт\s+देखिन्छ/g, 'शर्तसँग फरक देखिन्छ')
+    .replace(/бүх\s+заманатанд\s+нэг\s+хуучин\s+хугацаа\s+тулгах\s+санаа/g, 'सबै जमानतमा एउटै पुरानो म्याद लाद्ने सोच')
+    .replace(/निर्मાણ/g, 'निर्माण')
+    .replace(/үнийг/g, 'मूल्य')
+    .replace(/үнэлгээг/g, 'मूल्याङ्कन')
+    .replace(/тендер/g, 'बोलपत्र')
+    .replace(/нээсний/g, 'खोलिसकेको')
+    .replace(/дараа/g, 'पछि')
+    .replace(/тогтоо[^\s।]*/g, 'तय गर्ने')
+    .replace(/хугацаа/g, 'म्याद')
+    .replace(/тулгах/g, 'लाद्ने')
+    .replace(/санаа/g, 'सोच')
+    .replace(/зөрүүтэй/g, 'फरक')
+    .replace(/заманатанд/g, 'जमानतमा')
+    .replace(/мэт/g, 'जस्तो')
+    .replace(/бүх/g, 'सबै')
+    .replace(/нэг/g, 'एउटा')
+    .replace(/хуучин/g, 'पुरानो')
+    .replace(/[\u0400-\u04FF]/g, '')
+    .replace(/[\u0A80-\u0AFF]/g, '')
+    .replace(/ {2,}/g, ' ')
+    .trim();
+};
+
+export const sanitizeSimulationContent = (value: unknown): unknown => {
+  if (typeof value === 'string') {
+    return sanitizeSimulationText(value);
+  }
+  if (Array.isArray(value)) {
+    return value.map((item) => sanitizeSimulationContent(item));
+  }
+  if (isRecord(value)) {
+    const result: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(value)) {
+      result[k] = sanitizeSimulationContent(v);
+    }
+    return result;
   }
   return value;
+};
+
+const normalizeDifficulty = (value: unknown): unknown => {
+  if (!isRecord(value)) return value;
+  const content = { ...value };
+  if (content['difficulty'] === 'सुरुआती') content['difficulty'] = 'सरल';
+  return content;
+};
+
+const parseSimulationCaseContent = (value: unknown): SimulationCaseContent => {
+  const sanitized = sanitizeSimulationContent(value);
+  const normalized = normalizeDifficulty(sanitized);
+  if (!isSimulationCaseContent(normalized)) {
+    throw new Error('अभ्यास केसको सामग्री अमान्य छ।');
+  }
+  return normalized;
 };
 
 const mapSimulationResultRow = (
@@ -263,16 +329,29 @@ export const ensureDefaultSimulationCases = async (): Promise<void> => {
   if (!supabase) return;
   const { data, error } = await requireSupabase()
     .from('simulation_case_versions')
-    .select('case_key')
-    .in('case_key', PRACTICAL_SIMULATION_CASES.map((item) => item.caseKey));
-  const existingKeys = new Set(requireSimulationData(data, error, 'simulation_case_versions').map((item) => item.case_key));
+    .select('case_key, content, version')
+    .in('case_key', PRACTICAL_SIMULATION_CASES.map((item) => item.caseKey))
+    .order('version', { ascending: false });
+  const rows = requireSimulationData(data, error, 'simulation_case_versions');
+  const existingKeys = new Set(rows.map((item) => item.case_key));
+  const latestRowPerKey = new Map<string, { case_key: string; content: unknown; version: number }>();
+  for (const row of rows) {
+    if (!latestRowPerKey.has(row.case_key)) {
+      latestRowPerKey.set(row.case_key, row);
+    }
+  }
 
-  const missingCases = PRACTICAL_SIMULATION_CASES.filter(
-    (simulationCase) => !existingKeys.has(simulationCase.caseKey),
-  );
+  const casesToPublish = PRACTICAL_SIMULATION_CASES.filter((simulationCase) => {
+    if (!existingKeys.has(simulationCase.caseKey)) return true;
+    const latestRow = latestRowPerKey.get(simulationCase.caseKey);
+    if (!latestRow) return true;
+    const jsonStr = JSON.stringify(latestRow.content);
+    return /[\u0400-\u04FF\u0A80-\u0AFF]/.test(jsonStr) || /\?{2,}/.test(jsonStr);
+  });
+
   const batchSize = 5;
-  for (let index = 0; index < missingCases.length; index += batchSize) {
-    const batch = missingCases.slice(index, index + batchSize);
+  for (let index = 0; index < casesToPublish.length; index += batchSize) {
+    const batch = casesToPublish.slice(index, index + batchSize);
     await Promise.all(batch.map((simulationCase) => {
       if (!simulationCase.answerKey) {
         throw new Error(`Default case ${simulationCase.caseKey} has no answer key.`);
@@ -299,11 +378,16 @@ export const listPublishedSimulationCases = async (): Promise<SimulationCaseVers
 
   for (const row of rows) {
     if (latest.has(row.case_key)) continue;
+    let content = parseSimulationCaseContent(row.content);
+    const localCase = SIMULATION_CASES_BY_KEY.get(row.case_key);
+    if (localCase && (/[\u0400-\u04FF\u0A80-\u0AFF]/.test(JSON.stringify(row.content)) || /\?{2,}/.test(JSON.stringify(row.content)))) {
+      content = localCase.content;
+    }
     latest.set(row.case_key, {
       caseKey: row.case_key,
       version: row.version,
       status: row.status,
-      content: parseSimulationCaseContent(row.content),
+      content,
       createdAt: row.created_at,
     });
   }
@@ -330,11 +414,16 @@ export const getPublishedSimulationCaseVersion = async (
     .eq('status', 'published')
     .single();
   const row = requireSimulationData(data, error, 'simulation_case_versions');
+  let content = parseSimulationCaseContent(row.content);
+  const localCase = SIMULATION_CASES_BY_KEY.get(row.case_key);
+  if (localCase && (/[\u0400-\u04FF\u0A80-\u0AFF]/.test(JSON.stringify(row.content)) || /\?{2,}/.test(JSON.stringify(row.content)))) {
+    content = localCase.content;
+  }
   return {
     caseKey: row.case_key,
     version: row.version,
     status: row.status,
-    content: parseSimulationCaseContent(row.content),
+    content,
     createdAt: row.created_at,
   };
 };
@@ -348,11 +437,16 @@ export const listAdminSimulationCaseVersions = async (): Promise<SimulationCaseV
     if (!isSimulationAnswerKey(row.answer_key)) {
       throw new Error(`केस ${row.case_key} को rubric/उत्तर-सूची अमान्य छ।`);
     }
+    let content = parseSimulationCaseContent(row.content);
+    const localCase = SIMULATION_CASES_BY_KEY.get(row.case_key);
+    if (localCase && (/[\u0400-\u04FF\u0A80-\u0AFF]/.test(JSON.stringify(row.content)) || /\?{2,}/.test(JSON.stringify(row.content)))) {
+      content = localCase.content;
+    }
     return {
       caseKey: row.case_key,
       version: row.version,
       status: row.status,
-      content: parseSimulationCaseContent(row.content),
+      content,
       answerKey: row.answer_key,
       createdAt: row.created_at,
     };
@@ -401,6 +495,7 @@ export const saveSimulationCaseVersion = async (
 export const startSimulationAttempt = async (
   userId: string,
   simulationCase: SimulationCaseVersion,
+  mode: 'practice' | 'exam' = 'practice',
 ): Promise<SimulationAttempt> => {
   if (simulationCase.status !== 'published') throw new Error('प्रकाशित केस मात्र सुरु गर्न सकिन्छ।');
 
@@ -420,6 +515,7 @@ export const startSimulationAttempt = async (
       answers: {},
       startedAt: now,
       updatedAt: now,
+      mode,
     };
     saveStoredArray(LOCAL_STORAGE_KEY_SIMULATION_ATTEMPTS, [attempt, ...attempts]);
     return attempt;

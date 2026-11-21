@@ -17,6 +17,19 @@ export interface SimulationOption {
   label: string;
 }
 
+export type SimulationTargetAudience = 'सार्वजनिक निकाय' | 'बोलपत्रदाता' | 'दुवै';
+
+export interface SimulationMockDocument {
+  id: string;
+  title: string;
+  documentType: 'bid-bond' | 'boq-sheet' | 'jv-agreement' | 'clarification-letter' | 'tax-clearance' | 'office-memo' | 'other';
+  issuer?: string;
+  date?: string;
+  referenceNo?: string;
+  content: string;
+  notes?: string[];
+}
+
 export interface SimulationStep {
   id: string;
   title: string;
@@ -32,13 +45,15 @@ export interface SimulationStep {
 export interface SimulationCaseContent {
   title: string;
   category: string;
-  difficulty: 'सुरुआती' | 'मध्यम' | 'उन्नत';
+  difficulty: 'सरल' | 'मध्यम' | 'उन्नत';
   estimatedMinutes: number;
   scenario: string;
   objectives: string[];
   priorKnowledge: string[];
   steps: SimulationStep[];
   legalReferenceIds: string[];
+  targetAudience?: SimulationTargetAudience;
+  mockDocuments?: SimulationMockDocument[];
 }
 
 export interface ChoiceAnswerKey {
@@ -111,6 +126,8 @@ export interface SimulationAttempt {
   startedAt: string;
   updatedAt: string;
   result?: SimulationResult;
+  mode?: 'practice' | 'exam';
+  timeSpentSeconds?: number;
 }
 
 export interface SimulationCertificate {
