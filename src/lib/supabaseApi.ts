@@ -105,13 +105,14 @@ const getLocalSimulationCases = (): SimulationCaseVersion[] => {
     PRACTICAL_SIMULATION_CASES,
     migrateSimulationCaseVersion,
   );
-  const existingKeys = new Set(storedCases.map((simulationCase) => simulationCase.caseKey));
+  const canonicalMap = new Map(PRACTICAL_SIMULATION_CASES.map((c) => [c.caseKey, c]));
+  // Always update canonical cases with the latest definitions from code
+  const updatedStoredCases = storedCases.map((c) => canonicalMap.get(c.caseKey) || c);
+  const existingKeys = new Set(updatedStoredCases.map((c) => c.caseKey));
   const missingDefaults = PRACTICAL_SIMULATION_CASES.filter(
-    (simulationCase) => !existingKeys.has(simulationCase.caseKey),
+    (c) => !existingKeys.has(c.caseKey),
   );
-  if (missingDefaults.length === 0) return storedCases;
-
-  const mergedCases = [...storedCases, ...missingDefaults];
+  const mergedCases = [...updatedStoredCases, ...missingDefaults];
   saveStoredArray(LOCAL_STORAGE_KEY_SIMULATION_CASES, mergedCases);
   return mergedCases;
 };
@@ -346,7 +347,8 @@ export const ensureDefaultSimulationCases = async (): Promise<void> => {
     const latestRow = latestRowPerKey.get(simulationCase.caseKey);
     if (!latestRow) return true;
     const jsonStr = JSON.stringify(latestRow.content);
-    return /[\u0400-\u04FF\u0A80-\u0AFF]/.test(jsonStr) || /\?{2,}/.test(jsonStr);
+    const localStr = JSON.stringify(simulationCase.content);
+    return jsonStr !== localStr || /[\u0400-\u04FF\u0A80-\u0AFF]/.test(jsonStr) || /\?{2,}/.test(jsonStr);
   });
 
   const batchSize = 5;
@@ -380,7 +382,7 @@ export const listPublishedSimulationCases = async (): Promise<SimulationCaseVers
     if (latest.has(row.case_key)) continue;
     let content = parseSimulationCaseContent(row.content);
     const localCase = SIMULATION_CASES_BY_KEY.get(row.case_key);
-    if (localCase && (/[\u0400-\u04FF\u0A80-\u0AFF]/.test(JSON.stringify(row.content)) || /\?{2,}/.test(JSON.stringify(row.content)))) {
+    if (localCase && localCase.version >= row.version) {
       content = localCase.content;
     }
     latest.set(row.case_key, {
@@ -416,7 +418,7 @@ export const getPublishedSimulationCaseVersion = async (
   const row = requireSimulationData(data, error, 'simulation_case_versions');
   let content = parseSimulationCaseContent(row.content);
   const localCase = SIMULATION_CASES_BY_KEY.get(row.case_key);
-  if (localCase && (/[\u0400-\u04FF\u0A80-\u0AFF]/.test(JSON.stringify(row.content)) || /\?{2,}/.test(JSON.stringify(row.content)))) {
+  if (localCase && localCase.version >= row.version) {
     content = localCase.content;
   }
   return {
@@ -439,7 +441,7 @@ export const listAdminSimulationCaseVersions = async (): Promise<SimulationCaseV
     }
     let content = parseSimulationCaseContent(row.content);
     const localCase = SIMULATION_CASES_BY_KEY.get(row.case_key);
-    if (localCase && (/[\u0400-\u04FF\u0A80-\u0AFF]/.test(JSON.stringify(row.content)) || /\?{2,}/.test(JSON.stringify(row.content)))) {
+    if (localCase && localCase.version >= row.version) {
       content = localCase.content;
     }
     return {
