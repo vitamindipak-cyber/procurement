@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-labelledby="title description">
+  <title id="title">वार्षिक खरिद योजना</title>
+  <desc id="description">आवश्यकता, बजेट, समयतालिका र समीक्षा जोडिएको सार्वजनिक खरिद योजनाको illustration</desc>
+  <defs>
+    <linearGradient id="background" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#123f6d"/>
+      <stop offset="1" stop-color="#0f766e"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="14" flood-color="#08213a" flood-opacity=".18"/>
+    </filter>
+  </defs>
+  <rect width="1280" height="720" fill="url(#background)"/>
+  <circle cx="1120" cy="90" r="180" fill="#ffffff" opacity=".06"/>
+  <circle cx="130" cy="650" r="220" fill="#ffffff" opacity=".05"/>
+  <text x="84" y="115" fill="#dbeafe" font-family="Mukta, sans-serif" font-size="26" font-weight="700">सार्वजनिक खरिद · सिकाइ पाठ</text>
+  <text x="84" y="178" fill="#ffffff" font-family="Mukta, sans-serif" font-size="42" font-weight="800">वार्षिक खरिद योजना</text>
+  <text x="84" y="222" fill="#e2e8f0" font-family="Mukta, sans-serif" font-size="24">आवश्यकता · बजेट · समय · समीक्षा</text>
+  <g filter="url(#shadow)">
+    <rect x="84" y="284" width="1112" height="330" rx="28" fill="#ffffff"/>
+    <rect x="136" y="332" width="286" height="232" rx="18" fill="#eff6ff"/>
+    <rect x="481" y="332" width="286" height="232" rx="18" fill="#ecfdf5"/>
+    <rect x="826" y="332" width="318" height="232" rx="18" fill="#fffbeb"/>
+  </g>
+  <g fill="none" stroke="#123f6d" stroke-linecap="round" stroke-linejoin="round" stroke-width="9">
+    <path d="M183 390h138v118H183z"/>
+    <path d="M210 420h84M210 450h62M210 480h75"/>
+    <path d="M527 403h80l30 30v75H527z"/>
+    <path d="M607 403v31h30"/>
+    <path d="m548 467 18 18 37-41"/>
+    <path d="M906 500v-65M972 500v-101M1038 500v-82"/>
+    <path d="M880 514h184"/>
+  </g>
+  <text x="178" y="542" fill="#123f6d" font-family="Mukta, sans-serif" font-size="24" font-weight="700">योजना</text>
+  <text x="529" y="542" fill="#123f6d" font-family="Mukta, sans-serif" font-size="24" font-weight="700">समीक्षा</text>
+  <text x="900" y="542" fill="#123f6d" font-family="Mukta, sans-serif" font-size="24" font-weight="700">बजेट र प्रगति</text>
+  <text x="84" y="672" fill="#e2e8f0" font-family="Mukta, sans-serif" font-size="18">स्थिर preview illustration · वास्तविक MP4 भिडियो होइन</text>
+</svg>

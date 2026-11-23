@@ -1,5 +1,6 @@
 export type SimulationSection =
   | 'dashboard'
+  | 'learning'
   | 'cases'
   | 'progress'
   | 'reports'
