@@ -22,6 +22,7 @@ const LOCAL_STORAGE_KEY_SESSION = 'app_local_session_user';
 const LOCAL_STORAGE_KEY_SIMULATION_CASES = 'app_local_simulation_case_versions';
 const LOCAL_STORAGE_KEY_SIMULATION_ATTEMPTS = 'app_local_simulation_attempts';
 const LOCAL_STORAGE_KEY_SIMULATION_CERTIFICATES = 'app_local_simulation_certificates';
+const LOCAL_STORAGE_KEY_AUDIT_LOGS = 'app_local_audit_logs';
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -157,6 +158,106 @@ const createLocalId = (): string =>
   typeof crypto !== 'undefined' && 'randomUUID' in crypto
     ? crypto.randomUUID()
     : `local-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+
+export interface AuditLogRecord {
+  id: string;
+  occurred_at: string;
+  actor_id: string | null;
+  actor_username: string;
+  action: string;
+  entity_type: string;
+  entity_id: string | null;
+  details: Json;
+  deleted_at: string | null;
+  deleted_by: string | null;
+}
+
+export interface AuditLogPage {
+  items: AuditLogRecord[];
+  total: number;
+}
+
+const isAuditLogRecord = (value: unknown): value is AuditLogRecord =>
+  isRecord(value)
+  && typeof value.id === 'string'
+  && typeof value.occurred_at === 'string'
+  && (typeof value.actor_id === 'string' || value.actor_id === null)
+  && typeof value.actor_username === 'string'
+  && typeof value.action === 'string'
+  && typeof value.entity_type === 'string'
+  && (typeof value.entity_id === 'string' || value.entity_id === null)
+  && isRecord(value.details)
+  && (typeof value.deleted_at === 'string' || value.deleted_at === null)
+  && (typeof value.deleted_by === 'string' || value.deleted_by === null);
+
+const getLocalAuditLogs = (): AuditLogRecord[] => {
+  try {
+    const raw = localStorage.getItem(LOCAL_STORAGE_KEY_AUDIT_LOGS);
+    if (!raw) return [];
+    const parsed: unknown = JSON.parse(raw);
+    if (!Array.isArray(parsed) || !parsed.every(isAuditLogRecord)) {
+      throw new Error('Stored audit log data has an unexpected shape.');
+    }
+    return parsed;
+  } catch (error) {
+    console.error('Failed to load local audit logs.', error);
+    throw new Error('स्थानीय audit log पढ्न सकिएन। ब्राउजर भण्डारण जाँचेर पुनः प्रयास गर्नुहोस्।');
+  }
+};
+
+const saveLocalAuditLogs = (logs: AuditLogRecord[]): void => {
+  try {
+    localStorage.setItem(LOCAL_STORAGE_KEY_AUDIT_LOGS, JSON.stringify(logs));
+  } catch (error) {
+    console.error('Failed to save local audit logs.', error);
+    throw new Error('Audit log स्थानीय रूपमा सुरक्षित गर्न सकिएन। ब्राउजर भण्डारण जाँचेर पुनः प्रयास गर्नुहोस्।');
+  }
+};
+
+const getLocalAuditActor = (): { id: string | null; username: string } => {
+  try {
+    const raw = localStorage.getItem(LOCAL_STORAGE_KEY_SESSION);
+    if (raw) {
+      const user: unknown = JSON.parse(raw);
+      if (isRecord(user) && typeof user.id === 'string' && typeof user.username === 'string') {
+        return { id: user.id, username: user.username };
+      }
+    }
+  } catch (error) {
+    console.error('Failed to read the current local audit actor.', error);
+  }
+  return { id: null, username: 'system' };
+};
+
+const createLocalAuditEvent = (
+  action: string,
+  entityType: string,
+  entityId: string | null,
+  details: Record<string, Json>,
+): AuditLogRecord => {
+  const actor = getLocalAuditActor();
+  return {
+    id: createLocalId(),
+    occurred_at: new Date().toISOString(),
+    actor_id: actor.id,
+    actor_username: actor.username,
+    action,
+    entity_type: entityType,
+    entity_id: entityId,
+    details,
+    deleted_at: null,
+    deleted_by: null,
+  };
+};
+
+const recordLocalAuditEvent = (
+  action: string,
+  entityType: string,
+  entityId: string | null,
+  details: Record<string, Json> = {},
+): void => {
+  saveLocalAuditLogs([createLocalAuditEvent(action, entityType, entityId, details), ...getLocalAuditLogs()]);
+};
 
 const isSimulationScoreRow = (value: unknown): value is SimulationScoreRow =>
   isRecord(value)
@@ -472,6 +573,9 @@ export const saveSimulationCaseVersion = async (
       createdAt: new Date().toISOString(),
     };
     saveStoredArray(LOCAL_STORAGE_KEY_SIMULATION_CASES, [...versions, created]);
+    recordLocalAuditEvent('created', 'simulation_case_version', draft.caseKey, {
+      changed_fields: ['case_key', 'version', 'status'],
+    });
     return created;
   }
 
@@ -520,6 +624,11 @@ export const startSimulationAttempt = async (
       mode,
     };
     saveStoredArray(LOCAL_STORAGE_KEY_SIMULATION_ATTEMPTS, [attempt, ...attempts]);
+    recordLocalAuditEvent('created', 'simulation_attempt', attempt.id, {
+      case_key: attempt.caseKey,
+      case_version: attempt.caseVersion,
+      mode,
+    });
     return attempt;
   }
 
@@ -567,6 +676,9 @@ export const saveSimulationAnswer = async (
     });
     if (!updated) throw new Error('सक्रिय अभ्यास भेटिएन।');
     saveStoredArray(LOCAL_STORAGE_KEY_SIMULATION_ATTEMPTS, next);
+    recordLocalAuditEvent('updated', 'simulation_answer', `${attemptId}:${stepId}`, {
+      changed_fields: ['response'],
+    });
     return;
   }
 
@@ -599,6 +711,10 @@ export const completeSimulationAttempt = async (
       ? { ...item, status: 'completed' as const, updatedAt: result.completedAt, result }
       : item);
     saveStoredArray(LOCAL_STORAGE_KEY_SIMULATION_ATTEMPTS, updated);
+    recordLocalAuditEvent('completed', 'simulation_attempt', attemptId, {
+      score: result.score,
+      passed: result.passed,
+    });
     return result;
   }
 
@@ -913,6 +1029,103 @@ const requireData = <T,>(data: T | null, error: { message: string } | null): T =
   return data;
 };
 
+export const listAuditLogs = async (
+  page: number,
+  pageSize: number,
+  includeDeleted = false,
+): Promise<AuditLogPage> => {
+  if (!Number.isInteger(page) || page < 0 || !Number.isInteger(pageSize)
+    || pageSize < 1 || pageSize > 100) {
+    throw new Error('Audit log पृष्ठ विवरण अमान्य छ।');
+  }
+
+  if (!supabase) {
+    const logs = getLocalAuditLogs()
+      .filter((entry) => includeDeleted || entry.deleted_at === null)
+      .sort((a, b) => b.occurred_at.localeCompare(a.occurred_at));
+    const start = page * pageSize;
+    return { items: logs.slice(start, start + pageSize), total: logs.length };
+  }
+
+  let query = requireSupabase()
+    .from('audit_logs')
+    .select('*', { count: 'exact' });
+  if (!includeDeleted) query = query.is('deleted_at', null);
+  const { data, error, count } = await query
+    .order('occurred_at', { ascending: false })
+    .order('id', { ascending: false })
+    .range(page * pageSize, ((page + 1) * pageSize) - 1);
+  if (error) {
+    if (error.code === 'PGRST202' || error.code === '42P01') {
+      throw new Error('Audit log migration लागू भएको छैन। `supabase db push` चलाउनुहोस् र पुनः प्रयास गर्नुहोस्।');
+    }
+    throw new Error(error.message);
+  }
+  return { items: requireData(data, null), total: count ?? 0 };
+};
+
+export const recordAuditEvent = async (
+  action: string,
+  entityType: string,
+  entityId: string | null,
+  details: Record<string, Json> = {},
+): Promise<void> => {
+  if (!supabase) {
+    recordLocalAuditEvent(action, entityType, entityId, details);
+    return;
+  }
+  const { error } = await requireSupabase().rpc('record_audit_event', {
+    p_action: action,
+    p_entity_type: entityType,
+    p_entity_id: entityId,
+    p_details: details,
+  });
+  if (error) {
+    if (error.code === 'PGRST202') {
+      throw new Error('Audit log migration लागू भएको छैन। `supabase db push` चलाउनुहोस् र पुनः प्रयास गर्नुहोस्।');
+    }
+    throw new Error(error.message);
+  }
+};
+
+export const softDeleteAuditLogs = async (ids: string[]): Promise<number> => {
+  const uniqueIds = [...new Set(ids)];
+  if (uniqueIds.length === 0) throw new Error('कम्तीमा एउटा audit log छान्नुहोस्।');
+
+  if (!supabase) {
+    const selected = new Set(uniqueIds);
+    const actor = getLocalAuditActor();
+    const deletedAt = new Date().toISOString();
+    let deletedCount = 0;
+    const updated = getLocalAuditLogs().map((entry) => {
+      if (!selected.has(entry.id) || entry.deleted_at !== null) return entry;
+      deletedCount += 1;
+      return { ...entry, deleted_at: deletedAt, deleted_by: actor.id };
+    });
+    if (deletedCount > 0) {
+      const event = createLocalAuditEvent(
+        'audit_logs_soft_deleted',
+        'audit_log',
+        null,
+        { deleted_count: deletedCount },
+      );
+      saveLocalAuditLogs([event, ...updated]);
+    }
+    return deletedCount;
+  }
+
+  const { data, error } = await requireSupabase().rpc('soft_delete_audit_logs', {
+    p_ids: uniqueIds,
+  });
+  if (error) {
+    if (error.code === 'PGRST202') {
+      throw new Error('Audit log migration लागू भएको छैन। `supabase db push` चलाउनुहोस् र पुनः प्रयास गर्नुहोस्।');
+    }
+    throw new Error(error.message);
+  }
+  return requireData(data, null);
+};
+
 const simulationSchemaCacheError = (resource: string): Error =>
   new Error(
     `Supabase schema cache मा ${resource} भेटिएन। Practical Simulation migration लागू गर्न `
@@ -956,6 +1169,7 @@ export const signInWithUsername = async (username: string, password: string): Pr
     try {
       localStorage.setItem(LOCAL_STORAGE_KEY_SESSION, JSON.stringify(existing));
     } catch {}
+    recordLocalAuditEvent('login_success', 'authentication', existing.id, { method: 'local' });
     return existing;
   }
 
@@ -967,7 +1181,9 @@ export const signInWithUsername = async (username: string, password: string): Pr
       password,
     });
     const authUser = requireData(data.user, error);
-    return getAppUser(authUser.id);
+    const user = await getAppUser(authUser.id);
+    await recordAuditEvent('login_success', 'authentication', user.id, { method: 'email' });
+    return user;
   }
 
   const { data, error } = await client.functions.invoke<{
@@ -980,7 +1196,9 @@ export const signInWithUsername = async (username: string, password: string): Pr
 
   const { data: sessionData, error: sessionError } = await client.auth.setSession(data.session);
   const authUser = requireData(sessionData.user, sessionError);
-  return getAppUser(authUser.id);
+  const user = await getAppUser(authUser.id);
+  await recordAuditEvent('login_success', 'authentication', user.id, { method: 'username' });
+  return user;
 };
 
 export const signUpWithEmail = async (
@@ -1001,6 +1219,7 @@ export const signUpWithEmail = async (
     try {
       localStorage.setItem(LOCAL_STORAGE_KEY_SESSION, JSON.stringify(newUser));
     } catch {}
+    recordLocalAuditEvent('account_created', 'user', newUser.id, { method: 'local_signup' });
     return newUser;
   }
 
@@ -1066,6 +1285,15 @@ export const restoreSessionUser = async (): Promise<AppUser | null> => {
 };
 
 export const signOut = async (): Promise<void> => {
+  if (supabase) {
+    const { data, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError) throw new Error(sessionError.message);
+    if (data.session) {
+      await recordAuditEvent('logout', 'authentication', data.session.user.id);
+    }
+  } else {
+    recordLocalAuditEvent('logout', 'authentication', null);
+  }
   try {
     localStorage.removeItem(LOCAL_STORAGE_KEY_SESSION);
   } catch {}
@@ -1154,6 +1382,9 @@ export const createProject = async (
       id: project.id || `proj-local-${Date.now()}`,
     };
     saveLocalProjects([newProj, ...projects]);
+    recordLocalAuditEvent('created', 'project', newProj.id, {
+      changed_fields: ['project'],
+    });
     return newProj;
   }
 
@@ -1170,6 +1401,9 @@ export const updateProject = async (project: TrackedProject): Promise<TrackedPro
     const projects = getLocalProjects();
     const updatedList = projects.map((p) => (p.id === project.id ? project : p));
     saveLocalProjects(updatedList);
+    recordLocalAuditEvent('updated', 'project', project.id, {
+      changed_fields: ['project'],
+    });
     return project;
   }
 
@@ -1245,6 +1479,9 @@ export const createManagedUser = async (input: ManagedUserInput): Promise<AppUse
       createdAt: new Date().toISOString(),
     };
     saveLocalUsers([...users, newUser]);
+    recordLocalAuditEvent('admin_user_created', 'user', newUser.id, {
+      changed_fields: ['username', 'role'],
+    });
     return newUser;
   }
   const response = await invokeUserFunction({ action: 'create', ...input });
@@ -1265,6 +1502,9 @@ export const updateManagedUser = async (id: string, input: ManagedUserInput): Pr
     });
     saveLocalUsers(newUsers);
     if (!updated) throw new Error('प्रयोगकर्ता भेटिएन।');
+    recordLocalAuditEvent('admin_user_updated', 'user', id, {
+      changed_fields: ['username', 'role'],
+    });
     return updated;
   }
   const response = await invokeUserFunction({ action: 'update', id, ...input });
@@ -1276,6 +1516,9 @@ export const deleteManagedUser = async (id: string): Promise<void> => {
   if (!supabase) {
     const users = getLocalUsers();
     saveLocalUsers(users.filter((u) => u.id !== id));
+    if (users.some((user) => user.id === id)) {
+      recordLocalAuditEvent('admin_user_deleted', 'user', id);
+    }
     return;
   }
   await invokeUserFunction({ action: 'delete', id });

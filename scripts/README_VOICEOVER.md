@@ -25,14 +25,15 @@ python scripts/generate_natural_voiceovers.py --lesson annual-procurement-plan
 ```bash
 python scripts/generate_natural_voiceovers.py --all --voice ne-NP-HemkalaNeural
 ```
+यो आवाजले `.female.ne.mp3` variant बनाउँछ; `--remux-video` थप्दा पुरुष MP4 यथावत् राखेर `.female.mp4` variant बनाउँछ।
 
-### बोल्ने गति मिलाउन (default: -5%)
+### बोल्ने गति मिलाउन (default: +20%)
 ```bash
-# अलि ढिलो — अझ स्पष्ट सुनिन्छ
-python scripts/generate_natural_voiceovers.py --all --rate -8%
+# अलि ढिलो
+python scripts/generate_natural_voiceovers.py --all --rate +10%
 
 # अलि छिटो
-python scripts/generate_natural_voiceovers.py --all --rate -2%
+python scripts/generate_natural_voiceovers.py --all --rate +30%
 ```
 
 ### भिडियोमा नयाँ audio merge गर्न (FFmpeg आवश्यक)
@@ -42,14 +43,9 @@ python scripts/generate_natural_voiceovers.py --all --remux-video
 
 ---
 
-## २. Script को मुख्य सुधारहरू (v2)
+## २. Transcript बाट narration
 
-### SSML Prosody
-Plain text को सट्टा SSML document पठाइन्छ:
-- `<prosody rate="-5%">` — neural voice लाई lecture-pace मा ल्याउँछ
-- `<s>...</s>` — प्रत्येक वाक्यलाई sentence unit दिन्छ
-- `<break time="180ms"/>` — वाक्यपछि natural pause
-- `<break time="900ms"/>` — दृश्यबीच ठूलो pause
+Generator ले `## दृश्य` heading मुनिका narration अनुच्छेद मात्र बोल्छ; शीर्षक, टिप्पणी र Markdown metadata बोल्दैन। Edge TTS लाई plain text दिइन्छ, SSML markup होइन, र गति `--rate` विकल्पबाट सिधै मिलाइन्छ।
 
 ### Phonetic Dictionary
 ३५+ procurement acronyms लाई Nepali ध्वनिमा बदल्छ:
@@ -61,12 +57,11 @@ Plain text को सट्टा SSML document पठाइन्छ:
 | RFP | आर-एफ-पी |
 | PPMO | पी-पी-एम-ओ |
 | PPRC | पी-पी-आर-सी |
+| IP | आई-पी |
 | GRN | जी-आर-एन |
 | LOI / LOA / EOI | अक्षर-अक्षर |
 
-### Micro-pause Injection
-- अल्पविराम (`,`) पछि: 80 ms break
-- em-dash (`—`) पछि: 120 ms break
+English terms `Red Flag(s)` पनि देवनागरी उच्चारणमा बदलिन्छन्। Slash (`/`) ले छुट्याएका विकल्पलाई बोल्दा “वा” भनिन्छ।
 
 ---
 

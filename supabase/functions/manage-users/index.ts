@@ -97,6 +97,24 @@ Deno.serve(async (request: Request) => {
     return jsonResponse(403, { error: 'Admin access required.' });
   }
 
+  const recordAdminAudit = async (
+    eventAction: string,
+    entityId: string,
+    details: Record<string, unknown>,
+  ): Promise<Response | null> => {
+    const { error } = await callerClient.rpc('record_audit_event', {
+      p_action: eventAction,
+      p_entity_type: 'user',
+      p_entity_id: entityId,
+      p_details: details,
+    });
+    if (!error) return null;
+    console.error('User management succeeded, but its audit event could not be recorded.', error);
+    return jsonResponse(500, {
+      error: 'The user change completed, but its audit event could not be recorded. Do not retry the change; refresh the page and contact an administrator.',
+    });
+  };
+
   if (action === 'list') {
     const { data, error } = await serviceClient
       .from('user_profiles')
@@ -136,6 +154,10 @@ Deno.serve(async (request: Request) => {
       await serviceClient.auth.admin.deleteUser(created.user.id);
       return jsonResponse(500, { error: 'Could not create user profile.' });
     }
+    const auditError = await recordAdminAudit('admin_user_created', profile.id, {
+      changed_fields: ['username', 'role'],
+    });
+    if (auditError) return auditError;
     return jsonResponse(200, { user: profile });
   }
 
@@ -153,7 +175,7 @@ Deno.serve(async (request: Request) => {
 
     const { data: target, error: targetError } = await serviceClient
       .from('user_profiles')
-      .select('role')
+      .select('username, role')
       .eq('id', id)
       .single();
     if (targetError || !target) return jsonResponse(404, { error: 'User not found.' });
@@ -184,6 +206,14 @@ Deno.serve(async (request: Request) => {
     if (profileUpdateError || !profile) {
       return jsonResponse(500, { error: 'Authentication changed, but the user profile could not be updated.' });
     }
+    const changedFields = ['username', 'role'].filter((field) =>
+      field === 'username' ? target.username !== profile.username : target.role !== profile.role,
+    );
+    if (password) changedFields.push('password');
+    const auditError = await recordAdminAudit('admin_user_updated', profile.id, {
+      changed_fields: changedFields,
+    });
+    if (auditError) return auditError;
     return jsonResponse(200, { user: profile });
   }
 
@@ -194,7 +224,7 @@ Deno.serve(async (request: Request) => {
 
     const { data: target, error: targetError } = await serviceClient
       .from('user_profiles')
-      .select('role')
+      .select('username, role')
       .eq('id', id)
       .single();
     if (targetError || !target) return jsonResponse(404, { error: 'User not found.' });
@@ -209,6 +239,12 @@ Deno.serve(async (request: Request) => {
 
     const { error } = await serviceClient.auth.admin.deleteUser(id);
     if (error) return jsonResponse(400, { error: error.message });
+    const auditError = await recordAdminAudit('admin_user_deleted', id, {
+      changed_fields: ['account'],
+      username: target.username,
+      role: target.role,
+    });
+    if (auditError) return auditError;
     return jsonResponse(200, { success: true });
   }
 

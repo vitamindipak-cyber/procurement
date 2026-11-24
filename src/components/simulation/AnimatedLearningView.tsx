@@ -127,8 +127,10 @@ export const AnimatedLearningView: React.FC<AnimatedLearningViewProps> = ({
   const [transcriptRetryCount, setTranscriptRetryCount] = useState(0);
   const [transcriptVisible, setTranscriptVisible] = useState(true);
   const [subtitlesOn, setSubtitlesOn] = useState(false);
+  const [narrationVoice, setNarrationVoice] = useState<'male' | 'female'>('male');
   const [playbackRate, setPlaybackRate] = useState(1);
   const [mediaError, setMediaError] = useState('');
+  const [playbackNotice, setPlaybackNotice] = useState('');
   const [retryCount, setRetryCount] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -155,9 +157,18 @@ export const AnimatedLearningView: React.FC<AnimatedLearningViewProps> = ({
   });
   const videoRef = useRef<HTMLVideoElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const pendingVideoSwitchRef = useRef<{ time: number; wasPlaying: boolean; volume: number; muted: boolean } | null>(null);
 
   const lesson = lessons.find((item) => item.lessonId === selectedLessonId) ?? lessons[0];
+  const mediaCacheVersion = '20261124-phonetic-voiceovers';
   const watchedStorageKey = `${WATCHED_LESSONS_STORAGE_KEY}:${encodeURIComponent(progressScope)}`;
+  const femaleVideoPath = lesson?.videoPath.endsWith('.mp4')
+    ? lesson.videoPath.replace(/\.mp4$/u, '.female.mp4')
+    : undefined;
+
+  const getActiveNarrationMedia = (): HTMLMediaElement | null => {
+    return lesson?.videoAvailable ? videoRef.current : audioRef.current;
+  };
 
   useEffect(() => {
     try {
@@ -211,12 +222,13 @@ export const AnimatedLearningView: React.FC<AnimatedLearningViewProps> = ({
     for (const track of Array.from(media.textTracks)) {
       track.mode = subtitlesOn ? 'showing' : 'disabled';
     }
-  }, [subtitlesOn, lesson?.lessonId, retryCount, mediaError]);
+  }, [subtitlesOn, lesson?.lessonId, narrationVoice, retryCount, mediaError]);
 
   useEffect(() => {
-    const media = videoRef.current ?? audioRef.current;
-    if (media) media.playbackRate = playbackRate;
-  }, [playbackRate, retryCount]);
+    for (const media of [videoRef.current, audioRef.current]) {
+      if (media) media.playbackRate = playbackRate;
+    }
+  }, [playbackRate, lesson?.lessonId, narrationVoice, retryCount]);
 
   useEffect(() => {
     voiceEnhancer.setEnhanced(voiceEnhancerOn);
@@ -228,7 +240,7 @@ export const AnimatedLearningView: React.FC<AnimatedLearningViewProps> = ({
   }, [voiceEnhancerOn]);
 
   useEffect(() => {
-    const media = videoRef.current ?? audioRef.current;
+    const media = getActiveNarrationMedia();
     const isPlaying = media ? !media.paused && !media.ended : false;
     voiceEnhancer.setBgmEnabled(ambientBgmOn, isPlaying);
     try {
@@ -239,18 +251,49 @@ export const AnimatedLearningView: React.FC<AnimatedLearningViewProps> = ({
   }, [ambientBgmOn]);
 
   useEffect(() => {
-    const media = videoRef.current ?? audioRef.current;
+    const media = getActiveNarrationMedia();
     if (media) {
       voiceEnhancer.attachMedia(media);
     }
     return () => {
       voiceEnhancer.updateBgmState(false);
     };
-  }, [lesson?.lessonId, retryCount]);
+  }, [lesson?.lessonId, narrationVoice, retryCount]);
+
+  const handleVoiceToggle = () => {
+    const video = videoRef.current;
+    if (video) {
+      pendingVideoSwitchRef.current = {
+        time: video.currentTime,
+        wasPlaying: !video.paused && !video.ended,
+        volume: video.volume,
+        muted: video.muted,
+      };
+    }
+    setMediaError('');
+    setPlaybackNotice('');
+    setNarrationVoice((voice) => (voice === 'male' ? 'female' : 'male'));
+  };
+
+  const handleVideoLoadedMetadata = () => {
+    const video = videoRef.current;
+    const pending = pendingVideoSwitchRef.current;
+    if (!video || !pending) return;
+
+    pendingVideoSwitchRef.current = null;
+    video.currentTime = Math.min(pending.time, Number.isFinite(video.duration) ? video.duration : pending.time);
+    video.volume = pending.volume;
+    video.muted = pending.muted;
+    video.playbackRate = playbackRate;
+    if (pending.wasPlaying) {
+      video.play().catch(() => setPlaybackNotice('आवाज बदलिएपछि भिडियो रोकिएको छ। जारी राख्न Play थिच्नुहोस्।'));
+    }
+  };
 
   const handleMediaPlay = () => {
+    setPlaybackNotice('');
     voiceEnhancer.resume();
-    const media = videoRef.current ?? audioRef.current;
+    const media = getActiveNarrationMedia();
     if (media) {
       voiceEnhancer.attachMedia(media);
       voiceEnhancer.updateBgmState(true);
@@ -378,6 +421,8 @@ export const AnimatedLearningView: React.FC<AnimatedLearningViewProps> = ({
                   onSelectLesson(item.lessonId);
                   setSelectedSceneIndex(0);
                   setMediaError('');
+                  setPlaybackNotice('');
+                  pendingVideoSwitchRef.current = null;
                 }}
                 className={`w-full rounded-2xl border p-4 text-left transition-colors ${selected
                   ? 'border-[#123f6d] bg-blue-50 ring-1 ring-[#123f6d]/15'
@@ -455,7 +500,7 @@ export const AnimatedLearningView: React.FC<AnimatedLearningViewProps> = ({
                   <>
                     {lesson.videoAvailable ? (
                       <video
-                        key={`${lesson.lessonId}-${retryCount}`}
+                        key={`${lesson.lessonId}-${retryCount}-${narrationVoice}`}
                         ref={videoRef}
                         className="aspect-video w-full rounded-xl bg-slate-950"
                         controls
@@ -468,9 +513,13 @@ export const AnimatedLearningView: React.FC<AnimatedLearningViewProps> = ({
                         onPlay={handleMediaPlay}
                         onPause={handleMediaPause}
                         onEnded={handleMediaEnded}
+                        onLoadedMetadata={handleVideoLoadedMetadata}
                       >
-                        <source src={`${lesson.videoPath}?v=20261124`} type="video/mp4" />
-                        <track kind="subtitles" src={`${lesson.subtitlePath}?v=20261124`} srcLang="ne" label="नेपाली" />
+                        <source
+                          src={`${narrationVoice === 'female' && femaleVideoPath ? femaleVideoPath : lesson.videoPath}?v=${mediaCacheVersion}`}
+                          type="video/mp4"
+                        />
+                        <track kind="subtitles" src={`${lesson.subtitlePath}?v=${mediaCacheVersion}`} srcLang="ne" label="नेपाली" />
                         तपाईंको browser ले HTML5 भिडियो समर्थन गर्दैन। Transcript पढ्नुहोस्।
                       </video>
                     ) : (
@@ -489,11 +538,14 @@ export const AnimatedLearningView: React.FC<AnimatedLearningViewProps> = ({
                           onPause={handleMediaPause}
                           onEnded={handleMediaEnded}
                         >
-                          <source src={`${lesson.voiceOverPath}?v=20261124`} type="audio/mpeg" />
-                          <track kind="subtitles" src={`${lesson.subtitlePath}?v=20261124`} srcLang="ne" label="नेपाली" />
+                          <source src={`${lesson.voiceOverPath}?v=${mediaCacheVersion}`} type="audio/mpeg" />
+                          <track kind="subtitles" src={`${lesson.subtitlePath}?v=${mediaCacheVersion}`} srcLang="ne" label="नेपाली" />
                           तपाईंको browser ले audio समर्थन गर्दैन। Transcript पढ्नुहोस्।
                         </audio>
                       </div>
+                    )}
+                    {playbackNotice && (
+                      <p role="status" className="text-sm text-amber-900">{playbackNotice}</p>
                     )}
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <label className="inline-flex items-center gap-2 text-sm font-semibold text-slate-700">
@@ -517,6 +569,16 @@ export const AnimatedLearningView: React.FC<AnimatedLearningViewProps> = ({
                       >
                         नेपाली subtitles {subtitlesOn ? 'बन्द गर्नुहोस्' : 'खोल्नुहोस्'}
                       </button>
+                      {lesson.videoAvailable && femaleVideoPath && (
+                        <button
+                          type="button"
+                          aria-pressed={narrationVoice === 'female'}
+                          onClick={handleVoiceToggle}
+                          className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                        >
+                          {narrationVoice === 'female' ? 'पुरुष आवाजमा स्विच गर्नुहोस्' : 'महिला आवाजमा स्विच गर्नुहोस्'}
+                        </button>
+                      )}
                     </div>
 
                     <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-blue-100 bg-blue-50/60 p-3">

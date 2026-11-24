@@ -245,6 +245,45 @@ export interface Database {
         };
         Relationships: [];
       };
+      audit_logs: {
+        Row: {
+          id: string;
+          occurred_at: string;
+          actor_id: string | null;
+          actor_username: string;
+          action: string;
+          entity_type: string;
+          entity_id: string | null;
+          details: Json;
+          deleted_at: string | null;
+          deleted_by: string | null;
+        };
+        Insert: {
+          id?: string;
+          occurred_at?: string;
+          actor_id?: string | null;
+          actor_username?: string;
+          action: string;
+          entity_type: string;
+          entity_id?: string | null;
+          details?: Json;
+          deleted_at?: string | null;
+          deleted_by?: string | null;
+        };
+        Update: {
+          id?: string;
+          occurred_at?: string;
+          actor_id?: string | null;
+          actor_username?: string;
+          action?: string;
+          entity_type?: string;
+          entity_id?: string | null;
+          details?: Json;
+          deleted_at?: string | null;
+          deleted_by?: string | null;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -286,6 +325,19 @@ export interface Database {
       verify_simulation_certificate: {
         Args: { p_certificate_code: string };
         Returns: Json;
+      };
+      record_audit_event: {
+        Args: {
+          p_action: string;
+          p_entity_type: string;
+          p_entity_id?: string | null;
+          p_details?: Json;
+        };
+        Returns: string;
+      };
+      soft_delete_audit_logs: {
+        Args: { p_ids: string[] };
+        Returns: number;
       };
     };
     Enums: Record<string, never>;

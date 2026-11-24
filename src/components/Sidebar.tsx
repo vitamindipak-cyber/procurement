@@ -129,7 +129,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
           { id: 'advisor',          label: 'खरिद सल्लाहकार',              icon: Sparkles },
           { id: 'workflow-wizard',  label: 'चरणबद्ध गाइड',                icon: ClipboardList },
           ...(userRole === 'admin'
-            ? [{ id: 'user-management', label: 'प्रयोगकर्ता व्यवस्थापन', icon: Users }]
+            ? [
+              { id: 'user-management', label: 'प्रयोगकर्ता व्यवस्थापन', icon: Users },
+              { id: 'audit-log', label: 'Audit log / audit trail', icon: ClipboardList },
+            ]
             : []),
         ],
       },
@@ -172,7 +175,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
       ].filter((group) => group.items.length > 0);
     }
 
-    const primaryIds = ['dashboard', 'workflow-wizard', 'simulation-dashboard'];
+    const primaryIds = [
+      'dashboard',
+      'workflow-wizard',
+      'simulation-dashboard',
+      ...(userRole === 'admin' ? ['user-management', 'audit-log'] : []),
+    ];
     const toolIds = ['advisor', 'methods', 'calculator', 'checklists', 'bid-evaluation'];
     const documentIds = ['templates'];
     const helpIds = ['law-corpus', 'dilemma-solver', 'glossary'];

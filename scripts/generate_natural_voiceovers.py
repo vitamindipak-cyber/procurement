@@ -10,11 +10,9 @@ elif sys.platform == 'win32':
 Generate polished Nepali neural voice-over for procurement lessons.
 
 Uses Microsoft Edge TTS (ne-NP-SagarNeural / ne-NP-HemkalaNeural) with:
-  - mstts:express-as style="newscast-formal" for authoritative lecture tone
-  - Per-sentence <s> units so the neural model infers its own intonation
-  - Calibrated SSML breaks: sentence · comma · dash · scene boundary
+  - narration text extracted from transcript scene bodies only
   - Phonetic dictionary: 40+ procurement acronyms → Nepali letter-by-letter
-  - Emphasis prosody on key Nepali instructional phrases
+  - Native Edge TTS rate control and punctuation-based phrasing
   - Retry logic (3 attempts, 8-second back-off) for transient network errors
 
 Prerequisites:
@@ -62,6 +60,7 @@ PHONETIC_REPLACEMENTS: dict[str, str] = {
     # Regulatory bodies
     r'\bPPMO\b':  'पी-पी-एम-ओ',
     r'\bPPRC\b':  'पी-पी-आर-सी',
+    r'\bIP\b':    'आई-पी',
     # Tax & finance
     r'\bPAN\b':   'प्यान',
     r'\bVAT\b':   'भ्याट',
@@ -78,6 +77,73 @@ PHONETIC_REPLACEMENTS: dict[str, str] = {
     r'\bEOI\b':   'ई-ओ-आई',
     r'\bNTP\b':   'एन-टी-पी',
     r'\bMoU\b':   'एम-ओ-यु',
+    r'\bRed Flags\b': 'रेड फ्ल्यागहरू',
+    r'\bRed Flag\b':  'रेड फ्ल्याग',
+    r'\bfirst-ranked\b': 'पहिलो स्थानमा रहेको',
+    r'\bshow-cause\b': 'कारण देखाऊ',
+    r'\bopportunity to cure\b': 'सुधार गर्ने अवसर',
+    r'\bjoint inventory\b': 'संयुक्त इन्भेन्टरी',
+    r'\bdecision log\b': 'निर्णय अभिलेख',
+    r'\bdecision trail\b': 'निर्णयको क्रमिक अभिलेख',
+    r'\bopen claim\b': 'खुला दाबी',
+    r'\bspare parts\b': 'स्पेयर पार्ट्स',
+    r'\btender questions\b': 'टेन्डरसम्बन्धी प्रश्नहरू',
+    r'\bsupplier evaluation\b': 'आपूर्तिकर्ता मूल्याङ्कन',
+    r'\bplanning and procurement cycle\b': 'योजना र खरिद चक्र',
+    r'\bdigital record\b': 'डिजिटल अभिलेख',
+    r'\bdispute hold\b': 'विवाद रोक्का',
+    r'\blegal hold\b': 'कानुनी रोक्का',
+    r'\bupload event\b': 'अपलोड घटना',
+    r'\bfile ID\b': 'फाइल आईडी',
+    r'\bdeliverables\b': 'डेलिभरेबल्स',
+    r'\bcopy\b': 'कपी',
+    r'\bdecision\b': 'डिसिजन',
+    r'\bhash\b': 'ह्यास',
+    r'\blog\b': 'लग',
+    r'\branked\b': 'र्याङ्क्ड',
+    r'\bcause\b': 'कज',
+    r'\bcure\b': 'क्योर',
+    r'\bjoint\b': 'जोइन्ट',
+    r'\bnotice\b': 'नोटिस',
+    r'\bopportunity\b': 'अपर्च्युनिटी',
+    r'\bbaseline\b': 'बेसलाइन',
+    r'\bclaims\b': 'क्लेम्स',
+    r'\bclaim\b': 'क्लेम',
+    r'\bcycle\b': 'साइकल',
+    r'\bdocumentation\b': 'डकुमेन्टेसन',
+    r'\bevaluation\b': 'इभ्यालुएसन',
+    r'\bmonitoring\b': 'मोनिटरिङ',
+    r'\bparts\b': 'पार्ट्स',
+    r'\bplanning\b': 'प्लानिङ',
+    r'\bprocurement\b': 'प्रोक्योरमेन्ट',
+    r'\bquestions\b': 'क्वेस्चन्स',
+    r'\bregister\b': 'रजिस्टर',
+    r'\bspare\b': 'स्पेयर',
+    r'\bsupplier\b': 'सप्लायर',
+    r'\btender\b': 'टेन्डर',
+    r'\bwarranty\b': 'वारेन्टी',
+    r'\breference\b': 'रेफरेन्स',
+    r'\bstatus\b': 'स्टाटस',
+    r'\bbackup\b': 'ब्याकअप',
+    r'\bdigital\b': 'डिजिटल',
+    r'\bdispute\b': 'डिस्प्युट',
+    r'\bevent\b': 'इभेन्ट',
+    r'\bhold\b': 'होल्ड',
+    r'\bID\b': 'आईडी',
+    r'\bindex\b': 'इन्डेक्स',
+    r'\blegal\b': 'लिगल',
+    r'\brecord\b': 'रेकर्ड',
+    r'\bstamp\b': 'स्ट्याम्प',
+    r'\bsupplementary\b': 'सप्लिमेन्टरी',
+    r'\bsystem\b': 'सिस्टम',
+    r'\bupload\b': 'अपलोड',
+    r'\bmeeting\b': 'मिटिङ',
+    r'\bnote\b': 'नोट',
+    r'\brecusal\b': 'रिक्युजल',
+    r'\btrail\b': 'ट्रेल',
+    r'\bA\b': 'ए',
+    r'\bB\b': 'बी',
+    r'\bC\b': 'सी',
     # English loanwords — written in Devanagari to avoid robotic English pronunciation
     r'\bAudit\b':          'अडिट',
     r'\baudit\b':          'अडिट',
@@ -131,8 +197,8 @@ MS_AFTER_COLON     = 100   # after colon (:) — slight pause before list
 MS_BETWEEN_SCENES  = 950   # between दृश्यs — listener resets
 MS_OPENER_PAUSE    = 400   # after the first introductory sentence of scene 1
 
-# SSML rate & pitch defaults
-DEFAULT_RATE  = "-5%"
+# Default voice rate and SSML helper pitch
+DEFAULT_RATE  = "+20%"
 DEFAULT_PITCH = "+0Hz"
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -144,6 +210,15 @@ def apply_phonetic_tuning(text: str) -> str:
     for pattern, replacement in PHONETIC_REPLACEMENTS.items():
         text = re.sub(pattern, replacement, text, flags=re.IGNORECASE)
     return text
+
+
+def build_narration_text(scenes: list[dict]) -> str:
+    """Build plain spoken text from transcript narration, excluding scene metadata."""
+    narration = [
+        re.sub(r'\s*/\s*', ' वा ', apply_phonetic_tuning(scene['narration']))
+        for scene in scenes
+    ]
+    return '\n\n'.join(narration)
 
 
 def _brk(ms: int) -> str:
@@ -340,33 +415,24 @@ async def generate_lesson_audio(
         return False
 
     print(f"  → {lesson_id}: {len(scenes)} scenes, voice={voice}, rate={rate}")
+    narration = build_narration_text(scenes)
+    communicate = edge_tts.Communicate(text=narration, voice=voice, rate=rate)
 
-    # Try with express-as first; fall back without it if unsupported
-    for use_express in (True, False):
-        ssml = build_full_ssml(scenes, voice=voice, rate=rate, use_express_as=use_express)
-        communicate = edge_tts.Communicate(text=ssml, voice=voice)
-
-        for attempt in range(1, max_retries + 1):
-            try:
-                os.makedirs(os.path.dirname(os.path.abspath(output_audio)), exist_ok=True)
-                await _attempt_save(communicate, output_audio)
-                # Verify non-empty output
-                size = os.path.getsize(output_audio)
-                if size < 10_000:
-                    raise RuntimeError(f"Output suspiciously small: {size} bytes")
-                kb = size // 1024
-                label = "express-as" if use_express else "plain"
-                print(f"  OK {output_audio} ({kb} KB) [{label}]")
-                return True
-            except Exception as exc:
-                print(f"  Attempt {attempt}/{max_retries} failed: {exc}")
-                if attempt < max_retries:
-                    time.sleep(retry_delay)
-                else:
-                    if use_express:
-                        print("  Retrying without express-as style...")
-                        break  # try without express-as
-                    return False
+    for attempt in range(1, max_retries + 1):
+        try:
+            os.makedirs(os.path.dirname(os.path.abspath(output_audio)), exist_ok=True)
+            await _attempt_save(communicate, output_audio)
+            size = os.path.getsize(output_audio)
+            if size < 10_000:
+                raise RuntimeError(f"Output suspiciously small: {size} bytes")
+            print(f"  OK {output_audio} ({size // 1024} KB) [transcript text]")
+            return True
+        except Exception as exc:
+            print(f"  Attempt {attempt}/{max_retries} failed: {exc}")
+            if attempt < max_retries:
+                time.sleep(retry_delay)
+            else:
+                return False
 
     return False
 
@@ -383,7 +449,8 @@ def remux_video_with_audio(video_input: str, audio_input: str, output_video: str
     cmd = [
         'ffmpeg', '-y',
         '-i', video_input, '-i', audio_input,
-        '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k',
+        '-map', '0:v:0', '-map', '1:a:0',
+        '-c:v', 'copy', '-af', 'apad', '-c:a', 'aac', '-b:a', '192k',
         '-shortest', output_video,
     ]
     try:
@@ -418,7 +485,7 @@ Examples:
     ap.add_argument('--voice',        type=str,  default='ne-NP-SagarNeural',
                     choices=['ne-NP-SagarNeural', 'ne-NP-HemkalaNeural'])
     ap.add_argument('--rate',         type=str,  default=DEFAULT_RATE,
-                    help='SSML rate, e.g. -5%% or -8%%')
+                    help='Edge TTS rate, e.g. -5%% or -8%%')
     ap.add_argument('--force',        action='store_true',
                     help='Re-generate even if audio already exists')
     ap.add_argument('--remux-video',  action='store_true')
@@ -449,7 +516,8 @@ Examples:
     ok = fail = skipped = 0
 
     for lesson_id, transcript_path in lesson_files:
-        audio_out = os.path.join(audio_dir, f"{lesson_id}.ne.mp3")
+        voice_suffix = '.female' if args.voice == 'ne-NP-HemkalaNeural' else ''
+        audio_out = os.path.join(audio_dir, f"{lesson_id}{voice_suffix}.ne.mp3")
 
         if not args.force and os.path.exists(audio_out):
             size = os.path.getsize(audio_out)
@@ -466,9 +534,10 @@ Examples:
             ok += 1
             if args.remux_video:
                 vin  = os.path.join(videos_dir, f"{lesson_id}.mp4")
-                vout = os.path.join(videos_dir, f"{lesson_id}.remux.mp4")
+                vout = os.path.join(videos_dir, f"{lesson_id}{voice_suffix}.remux.mp4")
                 if remux_video_with_audio(vin, audio_out, vout):
-                    os.replace(vout, vin)
+                    target = os.path.join(videos_dir, f"{lesson_id}{voice_suffix}.mp4")
+                    os.replace(vout, target)
         else:
             fail += 1
 

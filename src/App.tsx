@@ -35,6 +35,7 @@ const ProcurementWorkflowWizard = lazy(() => import('./components/ProcurementWor
 const SearchAndFilterModal = lazy(() => import('./components/SearchAndFilterModal').then(m => ({ default: m.SearchAndFilterModal })));
 const NewProjectModal = lazy(() => import('./components/NewProjectModal').then(m => ({ default: m.NewProjectModal })));
 const UserManagementView = lazy(() => import('./components/UserManagementView').then(m => ({ default: m.UserManagementView })));
+const AdminAuditLogView = lazy(() => import('./components/AdminAuditLogView').then(m => ({ default: m.AdminAuditLogView })));
 const BidderPortalView = lazy(() => import('./components/BidderPortalView').then(m => ({ default: m.BidderPortalView })));
 const BiddingFormsGenerator = lazy(() => import('./components/BiddingFormsGenerator').then(m => ({ default: m.BiddingFormsGenerator })));
 const IcbProcurementHub = lazy(() => import('./components/IcbProcurementHub').then(m => ({ default: m.IcbProcurementHub })));
@@ -134,7 +135,8 @@ function ProcurementApp({
   };
 
   const setActiveTab = (tabId: string, addToHistory = true) => {
-    if (tabId === 'simulation-case-management' && currentUser.role !== 'admin') return;
+    if (['simulation-case-management', 'user-management', 'audit-log'].includes(tabId)
+      && currentUser.role !== 'admin') return;
     // If it's a bidder sidebar sub-tab, redirect to bidder-hub with the right initialSubTab
     if (BIDDER_SUBTAB_MAP[tabId]) {
       const subTabId = BIDDER_SUBTAB_MAP[tabId];
@@ -357,7 +359,7 @@ function ProcurementApp({
   }, [activeTab, currentUser.role]);
 
   useEffect(() => {
-    if (currentUser.role !== 'admin' && activeTab === 'user-management') {
+    if (currentUser.role !== 'admin' && ['user-management', 'audit-log'].includes(activeTab)) {
       setActiveTab('dashboard');
     }
   }, [activeTab, currentUser.role]);
@@ -741,6 +743,10 @@ function ProcurementApp({
                   onDeleteUser={handleDeleteUser}
                 />
               )
+          )}
+
+          {activeTab === 'audit-log' && currentUser.role === 'admin' && (
+            <AdminAuditLogView />
           )}
 
           {activeTab === 'procurement-chat' && (

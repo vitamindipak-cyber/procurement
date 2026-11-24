@@ -45,6 +45,15 @@ versions. Public certificate verification uses the database verification
 function. Apply migrations before using the lab; local browser-mode certificates
 are labelled samples and are not official credentials.
 
+The audit-log migration records successful logins, account creation, admin
+user-management actions, and changes to profiles, projects, and simulation
+records. Database policies restrict reading and soft-deleting entries to
+admins. Deletion retains the original entry and records a separate deletion
+event; deleted entries can be included in the admin view. Event details contain
+changed field names rather than passwords, answers, or project contents. In
+local browser mode, audit entries are stored only in that browser's local
+storage and are not tamper-proof.
+
 If the app reports that `public.list_admin_simulation_case_versions()` is
 missing from the schema cache, first apply pending migrations with
 `supabase db push`. In Supabase **SQL Editor**, confirm that the function exists:
@@ -110,6 +119,9 @@ The user list is read through the database's admin-only row-level security
 policy. New users are confirmed immediately and can log in using their username
 and the password assigned by the admin. Passwords are managed by Supabase Auth,
 never stored in the application profile table.
+
+Apply the audit-log migration before deploying `manage-users` so admin account
+changes can be written to the audit trail.
 
 These app-managed accounts use the reserved `.example` email domain and are
 auto-confirmed, so this workflow does not send verification emails. To deliver
@@ -180,6 +192,7 @@ placeholder `.example` addresses.
 - `simulation_case_versions`: published/draft case content and protected answer keys.
 - `simulation_attempts`, `simulation_answers`, `simulation_results`: per-user work and server-graded outcomes.
 - `simulation_certificates`: certificate records with public status verification.
+- `audit_logs`: authenticated actor, action, entity reference, safe change details, and soft-deletion metadata.
 - Auth profile trigger: creates a `user` profile for each new Auth account.
 - RLS: project visibility is per-user, with admin access across users.
 - Simulation: users can only manage their own attempts; case authoring is admin-only.

@@ -46,6 +46,7 @@ export const TAB_TITLES: Record<string, TabMeta> = {
   advisor:              { title: 'खरिद विधि सल्लाहकार',                                  shortTitle: 'विधि सल्लाहकार',    category: 'सुरुआत',              rootTab: 'advisor' },
   'workflow-wizard':    { title: 'चरणबद्ध खरिद कार्ययोजना',                            shortTitle: 'कार्ययोजना',         category: 'प्रक्रिया',            rootTab: 'workflow-wizard' },
   'user-management':    { title: 'प्रयोगकर्ता व्यवस्थापन',                             shortTitle: 'प्रयोगकर्ता',       category: 'प्रणाली व्यवस्थापन',   rootTab: 'dashboard' },
+  'audit-log':           { title: 'Audit log / audit trail',                             shortTitle: 'Audit log',         category: 'प्रणाली व्यवस्थापन',   rootTab: 'dashboard' },
   'dilemma-solver':     { title: 'खरिद समस्या समाधान',                                  shortTitle: 'समस्या समाधान',     category: 'सल्लाह तथा नजिर',       rootTab: 'dilemma-solver' },
   methods:              { title: 'खरिदका सम्पूर्ण विधिहरू',                             shortTitle: 'खरिद विधिहरू',      category: 'विधिहरू',               rootTab: 'methods' },
   'method-checklists':  { title: 'विधि अनुसारको चेकलिस्ट',                             shortTitle: 'विधिगत चेकलिस्ट',  category: 'अनुपालन',               rootTab: 'methods' },
