@@ -23,6 +23,7 @@ export interface TabMeta {
 export const TAB_TITLES: Record<string, TabMeta> = {
   dashboard:            { title: 'ड्यासबोर्ड तथा आयोजना अनुगमन',                       shortTitle: 'ड्यासबोर्ड',       category: 'व्यवस्थापन',           rootTab: 'dashboard' },
   'simulation-dashboard': { title: 'व्यावहारिक अभ्यासशाला', shortTitle: 'अभ्यासशाला', category: 'Practical Simulation Lab', rootTab: 'simulation-dashboard' },
+  'simulation-learning': { title: 'भिडियोबाट सिकौँ', shortTitle: 'भिडियो सिकाइ', category: 'Practical Simulation Lab', rootTab: 'simulation-dashboard' },
   'simulation-cases': { title: 'अभ्यास केसहरू', shortTitle: 'अभ्यास केस', category: 'Practical Simulation Lab', rootTab: 'simulation-dashboard' },
   'simulation-progress': { title: 'अभ्यास प्रगति', shortTitle: 'प्रगति', category: 'Practical Simulation Lab', rootTab: 'simulation-dashboard' },
   'simulation-reports': { title: 'अभ्यास प्रतिवेदन', shortTitle: 'प्रतिवेदन', category: 'Practical Simulation Lab', rootTab: 'simulation-dashboard' },

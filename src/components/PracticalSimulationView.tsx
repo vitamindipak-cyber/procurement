@@ -13,6 +13,7 @@ import {
   FileJson2,
   FileText,
   Filter,
+  Film,
   GraduationCap,
   ListChecks,
   Play,
@@ -60,6 +61,8 @@ import { SimulationDocViewerModal } from './simulation/SimulationDocViewerModal'
 import { SimulationLegalDrawer } from './simulation/SimulationLegalDrawer';
 import { SimulationCalculatorModal } from './simulation/SimulationCalculatorModal';
 import { SimulationOfficeMinuteModal } from './simulation/SimulationOfficeMinuteModal';
+import { AnimatedLearningView } from './simulation/AnimatedLearningView';
+import { ANIMATED_LESSONS } from '../data/animatedLessons';
 
 const SECTION_TO_TAB: Record<SimulationSection, string> = SIMULATION_SECTION_TO_TAB;
 
@@ -69,6 +72,7 @@ const TAB_TO_SECTION = Object.fromEntries(
 
 const sectionLinks: Array<{ id: SimulationSection; label: string; icon: typeof GraduationCap }> = [
   { id: 'dashboard', label: 'अवलोकन', icon: GraduationCap },
+  { id: 'learning', label: 'भिडियोबाट सिकौँ', icon: Film },
   { id: 'cases', label: 'अभ्यास केस', icon: ListChecks },
   { id: 'progress', label: 'प्रगति', icon: ClipboardCheck },
   { id: 'reports', label: 'प्रतिवेदन', icon: FileJson2 },
@@ -110,6 +114,7 @@ export const PracticalSimulationView: React.FC<PracticalSimulationViewProps> = (
   const [adminVersions, setAdminVersions] = useState<SimulationCaseVersion[]>([]);
   const [activeAttempt, setActiveAttempt] = useState<SimulationAttempt | null>(null);
   const [activeCase, setActiveCase] = useState<SimulationCaseVersion | null>(null);
+  const [selectedLearningLessonId, setSelectedLearningLessonId] = useState(ANIMATED_LESSONS[0]?.lessonId ?? '');
   const [stepIndex, setStepIndex] = useState(0);
   const [numericDrafts, setNumericDrafts] = useState<Record<string, string>>({});
   const [visibleHintStepId, setVisibleHintStepId] = useState<string | null>(null);
@@ -708,6 +713,18 @@ export const PracticalSimulationView: React.FC<PracticalSimulationViewProps> = (
             </section>
           )}
 
+          {section === 'learning' && (
+            <AnimatedLearningView
+              lessons={ANIMATED_LESSONS}
+              cases={cases}
+              attempts={attempts}
+              selectedLessonId={selectedLearningLessonId}
+              progressScope={currentUser.id}
+              onSelectLesson={setSelectedLearningLessonId}
+              onStartSimulation={(simulationCase) => void beginCase(simulationCase)}
+            />
+          )}
+
           {section === 'cases' && (
             <section className="space-y-5">
               {activeAttempt && activeCase ? (
@@ -727,6 +744,9 @@ export const PracticalSimulationView: React.FC<PracticalSimulationViewProps> = (
                         setExamTimeRemaining(null);
                         navigate('progress');
                       }}
+                      onReturnToLesson={ANIMATED_LESSONS.some((lesson) => lesson.linkedSimulationId === activeCase.caseKey)
+                        ? () => navigate('learning')
+                        : undefined}
                       onOpenOfficeMinute={() => setIsOfficeMinuteOpen(true)}
                       onOpenLegalRef={(ref) => setActiveLegalRef(ref)}
                     />
@@ -1615,6 +1635,7 @@ const ResultPanel = ({
   onRetry,
   working,
   onReturn,
+  onReturnToLesson,
   onOpenOfficeMinute,
   onOpenLegalRef,
 }: {
@@ -1626,6 +1647,7 @@ const ResultPanel = ({
   onRetry: () => void;
   working: boolean;
   onReturn: () => void;
+  onReturnToLesson?: () => void;
   onOpenOfficeMinute: () => void;
   onOpenLegalRef: (ref: SimulationLegalReference) => void;
 }) => {
@@ -1665,14 +1687,20 @@ const ResultPanel = ({
         {result.breakdown.map((row) => {
           const step = simulationCase.content.steps.find((item) => item.id === row.stepId);
           const legalRefs = step?.legalReferenceIds ?? [];
+          const submittedAnswer = attempt.answers[row.stepId];
+          const selectedOption = step?.options?.find((option) => option.id === submittedAnswer);
+          const submittedAnswerLabel = submittedAnswer === undefined
+            ? 'उत्तर दिइएको छैन'
+            : selectedOption?.label ?? String(submittedAnswer);
           return (
             <article key={row.stepId} className={`rounded-xl border p-4 ${row.isCorrect ? 'border-emerald-200 bg-emerald-50/40' : 'border-red-200 bg-red-50/40'}`}>
               <div className="flex flex-wrap justify-between gap-2">
                 <h3 className="font-semibold text-slate-900">{step?.title ?? row.stepId}</h3>
                 <span className={`rounded-full px-2.5 py-0.5 text-sm font-bold ${row.isCorrect ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}`}>
-                  {row.pointsEarned}/{row.pointsAvailable}
+                  {row.isCorrect ? 'सही निर्णय' : 'सुधार गर्नुपर्ने निर्णय'} · {row.pointsEarned}/{row.pointsAvailable}
                 </span>
               </div>
+              <p className="mt-2 text-sm leading-6 text-slate-700"><strong>तपाईंको निर्णय:</strong> {submittedAnswerLabel}</p>
               <p className="mt-2 text-sm leading-6 text-slate-600">{row.explanation}</p>
               <p className="mt-2 text-xs text-slate-500 flex items-center gap-1.5">
                 <i className="fas fa-check-circle text-emerald-600 text-xs"></i>
@@ -1705,6 +1733,11 @@ const ResultPanel = ({
       {/* Action row */}
       <div className="flex flex-col gap-3 border-t border-slate-100 pt-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="flex flex-wrap gap-2">
+          {onReturnToLesson && (
+            <button type="button" onClick={onReturnToLesson} className="rounded-xl border border-[#123f6d] bg-blue-50 px-4 py-2.5 text-sm font-semibold text-[#123f6d] hover:bg-blue-100">
+              सम्बन्धित पाठमा फर्कनुहोस्
+            </button>
+          )}
           <button type="button" onClick={onReturn} className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">
             प्रगति हेर्नुहोस्
           </button>
